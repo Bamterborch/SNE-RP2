@@ -1,0 +1,11 @@
+\section{Methodology}
+In order to establish a BGP hijack alerting system using BGP advertisements and publically accesible information regarding ownership of subnets and AS numbers. We think about creating an algorithm that will deduct scores on specified events.\\
+When creating a BGP neighbourship with an ISP, the customer has a couple of options regarding to the route information it receives from the ISP. 
+
+\begin{description}
+\item[\textbf{Default only}] When choosing for the default route, the ISP will only advertise a 0.0.0.0/0 route to the customer.
+\item[\textbf{Partial routing table}] A partial (directly connected routes to the ISP) database is advertised along with a default route when partial is choosen.
+\item[\textbf{Full routing table}] A full routing database will be advertised when the customer chooses the full mode.
+\end{description}
+
+We would like to look into the possibility of getting the most valuable information from BGP updates, we would like to receive a full routing table from an ISP. According to Vervier et al. \cite{vervier2015mind} hijackers only pick networks that are unused for a long time or not advertised by the official owner. This means that these networks are often subnets of larger adres blocks. A sudden BGP update advertising a part of a Dutch network behind a non-Dutch ISP should be a red flag, and the alghorithm needs to deduct a value. This kind of metadata regarding prefixes can be collected by quering WHOIS or RIPE STATS \cite{ripestats}. Further resources could be ICMP traceroutes, AS path sources and BGP looking glasses. When a threshold is reached, the system will raise an alert. As we aim the system to be self-learning, false positives will be ruled out as much as possible as the systems is online for a longer time. A blueprint should be made out of the current BGP topology. As this hijack monitoring system needs a starting point, we assume that today's topology is correct. Of course, this does not hold true, as it's likely for some prefixes to be hijacked at the moment of creating the blueprint. When a hijacks is found during the creation of this system we need to discus what to do with the information.

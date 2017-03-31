@@ -1,0 +1,14 @@
+\section{Related Work}
+
+A method to detect BGP hijacking by Xin Hu et al. \cite{hu2007accurate} describes a way of detecting BGP hijacking by sending TCP SYN packets from a spoofed IP address within a hijacked subnet. By looking into the IP ID numbers, they tested if the subnet is hijacked or not. However, this is only applicable for hijacked subnets which are in use by the registered owner. According to Vervier et al.
+\cite{vervier2015mind}, spammers prefer to hijack prefixes which have never been advertised, or at least haven't been for a very long time.\\
+
+<<<<<<< HEAD
+Another approach was introduced by Zheng et al. \cite{zheng2007light}, which aims to detect BGP hijacks merely by utilizing ICMP traceroute and hop counts. Although this method has a false positive rate of 0.22\%, it's not applicable for monitoring prefixes for which no hosts are online or prefixes that were never advertised before.
+=======
+Another approach was introduced by Zheng et al. \cite{zheng2007light}, which aims to detect BGP hijacks merely by utilizing ICMP traceroute and hop counts. Although this method has a false positive rate of 0.22\%, it's not applicable for monitoring prefixes for which no hosts are online.\\
+>>>>>>> 39e652bba6318c417f16ed07edddb35c379fd16a
+
+Some other BGP monitoring system are available nowadays, but these systems are often payed web services with some limitations like a limit of prefixes that are being monitored. BGPMON and cyclops are examples of other software tools used for monitoring BGP Hijacks.
+
+ 
