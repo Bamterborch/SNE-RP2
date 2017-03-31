@@ -1,2 +1,0 @@
-# SNE-RP2
-SNE RP2
