@@ -1,4 +1,3 @@
-
 # This makefile builds the proposal
-TARGET=proposal
+TARGET=report
 include Makefile.include

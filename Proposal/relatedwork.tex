@@ -1,10 +1,17 @@
 \section{Related Work}
 
-A method to detect BGP hijacking by Xin Hu et al. \cite{hu2007accurate} describes a way of detecting BGP hijacking by sending TCP SYN packets from a spoofed IP address within a hijacked subnet. By looking into the IP ID numbers, they tested if the subnet is hijacked or not. However, this is only applicable for hijacked subnets which are in use by the registered owner. According to Vervier et al.
-\cite{vervier2015mind}, spammers prefer to hijack prefixes which have never been advertised, or at least haven't been for a very long time.\\
+When looking at the goal of this research, there is not much related work to be found. 
+Some tools claim to offer high bandwidth testing between devices. But they all have there own limitations. 
+A tool that is easy to use like Iperf, using a client and a server side Iperf is the right tool to generate the necessary load on a link. But there are big differences in the amount of traffic generated when using TCP versus the use of UDP.
+Generating bandwidth using UDP is a extensively researched topic \todo{reference to different researches}. But generating high volumes of TCP traffic is not researched extensively.  
 
-Another approach was introduced by Zheng et al. \cite{zheng2007light}, which aims to detect BGP hijacks merely by utilizing ICMP traceroute and hop counts. Although this method has a false positive rate of 0.22\%, it's not applicable for monitoring prefixes for which no hosts are online or prefixes that were never advertised before.
+Depending on the test to be executed, different limits should be reached. 
+When looking into throughput tests, specific parameters need to be set like MTU size and the ability to send jumbo packets.
+To reach the maximum amount of packets, small packets with a high rate need to be send onto the link. The chosen operating system or tools need to be able to offer these specifics.
+Denial of Service attacks on systems are build up out of multiple TCP session depleting the host system which results into unavailability on the host. All systems in between can also experience problems by the amount of data coming into the network.
+\todo [inline] {reference this where possible}
 
-Some other BGP monitoring system are available nowadays, but these systems are often payed web services with some limitations like a limit of prefixes that are being monitored. BGPMON and cyclops are examples of other software tools used for monitoring BGP Hijacks.
+The available tools are:
 
- 
+\todo[inline]{make a table with the available tools to generate traffic and the specifications of the tools}
+

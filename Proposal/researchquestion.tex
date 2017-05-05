@@ -1,15 +1,17 @@
 \section{Research Question}
 
-Nikhef deals with enormous amounts of data to transport and process. For this reason they own servers that can handle these amounts of data. The amount of data keeps on growing and the specs of the servers are also keep getting better and better. Interfaces of 100GBe are nothing new. 
-Security measurements need to be scaled to these levels as well. A security device needs to be able to handle the cumulation of the flows going trough the security device. The specs of the machines are measured in the same way. The term used for this is IMIX, this is short for Internet Mix. This should resemble the traffic that can be seen in "real-world" conditions. This is all valid and "pretty" traffic. But the real world traffic is not always "pretty". A lot of attacks are performed daily. Therefore the need for a tool that gives the administrator the opertunity to test a machine on higher bandwiths that the regular tools. This brings us to the research question that will drive this research. 
+Nikhef deals with enormous amounts of data to transport and process, the amounts of data keep growing.  
+Interfaces of 100GB/s are getting common for servers
+With the growth of the amount of data, system specifications also need to grow.
+Generating UDP traffic is easy, a lot of tools are able to generate high amounts of UDP traffic, since UDP does not keep track of sessions which doesn't impact memory usage on systems. The tools basically dump traffic onto the line to fill it up. When TCP sessions come into play.
+The host, generating the data, has to appoint system resources for the sessions and has to keep track of them. The three way handshake as a start of the session also requires performance from the generating machine. This is how machines are brought down to their knees. A depletion of resources will break down every system. \\
   
 \textbf{The research question is as follows:}\\
-Where are the current limitations for traffic generation in order to test real world DDOS attacks on machines.
+How to perform high bandwidth session based throughput tests? \\
 
-\textbf{This question contains a couple topics that need to be addressed}\\
-\begin{itemize}
-\item{What is the current maximum bandwith and how is this maximum reached?}
-\item{What available techniques are out there to generate traffic?}
-\item{How can a system be stressed in an optimal way to make it crash?}
-\end{itemize}
+The term "high bandwidth" references to 40Gb/s. \\
+The term "session based" references to TCP traffic. \\
+
+Depending on the requirements of the system a different test could be needed. 
+So therefore this research will also focus on the specifics of data generation and what tool specifics are needed for a defined set of tests. This creates a framework for the needs of high bandwidth throughput testing.  
 

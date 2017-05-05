@@ -1,0 +1,56 @@
+Wireless netwerk: speeltuin
+	password: dikketieten
+
+wipkip.nikhef.nl
+username: bramtb
+password: Malibu_7up
+
+Servers: Schommel  	mgmt:10.60.66.18
+			40Gb:10.10.10.20
+	 Hangmat	mgmt:10.60.66.20
+			40Gb:10.10.10.10
+username: root
+password: RSA-key
+
+
+Router: Kroonsteentje 	10.60.66.41
+	username: root
+	password: Jemoeder!
+
+
+Commands:
+
+Hangmat - 
+./pkt-gen -i ixl0 -f tx -d 10.10.10.1 -s 10.10.10.2 -l 60 -S 68:05:ca:32:17:e0 -R 19000000 -a 1,2 -c 2 -p 2
+/usr/src/tools/tools/netmap/
+./pkt-gen -i ixl0 -f tx -d 194.171.96.109 -s 192.87.92.6 -S 68:05:ca:32:17:e0 -R 500000000 -a 1 -T 10000
+screen ./pkt-gen -i ixl0 -f tx -s 10.10.10.111 -S 68:05:ca:32:17:e0 -T 10000000 -D 00:07:43:39:8b:40 -d 10.10.10.60 -l 1500
+
+Schommel -
+./pktgen_sample03_burst_single_flow.sh -i eth2 -m 3c:8a:b0:34:2f:f0 -d 192.87.92.0 -s 64 -t 8
+ ifconfig eth2 txqueuelen 10000
+cd /usr/src/linux-headers-4.4.0-59/samples/pktgen/
+
+
+Kroonsteentje: 
+
+set interfaces et-0/0/2 unit 0 family ethernet-switching vlan members Bram
+set interfaces et-0/0/4 unit 0 family ethernet-switching vlan members Bram
+set vlans Bram vlan-id 560
+
+Interface et-0/0/2 connected to Hangmat interface ixl0
+Interface et-0/0/4 connected to Schommel interface eth2 
+
+
+Bevindingen tot nu toe:
+Wanneer ik vanaf de Ubuntu machine een pktgen start kan ik bijna 40 Gb/s halen. resultaat is 39,x 
+Maar wanneer ik dit doe vanaf FreeBSD haal ik maximaal 28 Gb/s. 
+
+Iperf gaat niet hard genoeg. 
+Iperf3 op bsd was nog niet gelukt. Het blijft uitsluitend Iperf.
+
+OM bandbreedte te verhogen moet de packet size omhoog gezet worden, om aantal packets per second te verhogen moet de packets size kleiner worden gemaakt.
+
+Andere optie om naar te kijken: 
+juniper warp17
+

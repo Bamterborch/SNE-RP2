@@ -1,11 +1,12 @@
 \section{Methodology}
-In order to establish a BGP hijack alerting system using BGP advertisements and publically accesible information regarding ownership of subnets and AS numbers. We think about creating an algorithm that will deduct scores on specified events.\\
-When creating a BGP neighbourship with an ISP, the customer has a couple of options regarding to the route information it receives from the ISP. 
+In order to establish 40Gb/s of session based data a couple of things need to be chosen.
+First an operating system should be chosen to perform the tests on. Preliminary to this research some days are used to explore the pitfalls around bandwidth generation. Two identical systems are used to do performance tests.
+One running Ubuntu and the other running FreeBSD. 
+The kernel addon pktgen is used to generate UDP traffic to different systems. The amount of 40Gb/s was easily reached on both systems.
+But there was a main difference regarding the amount of packets per second (pps). The Ubuntu machine peaked around 42.000 pps where the FreeBSD machine was capable of hitting 42 million pps (the limit of the switching hardware)
 
-\begin{description}
-\item[\textbf{Default only}] When choosing for the default route, the ISP will only advertise a 0.0.0.0/0 route to the customer.
-\item[\textbf{Partial routing table}] A partial (directly connected routes to the ISP) database is advertised along with a default route when partial is choosen.
-\item[\textbf{Full routing table}] A full routing database will be advertised when the customer chooses the full mode.
-\end{description}
+Therefore preliminary tests will be performed over multiple OS-es. Since the limitation of two identical machines and running into time restriction, one operating system will be selected to perform final tests that have there base at the preliminary tests.
 
-We would like to look into the possibility of getting the most valuable information from BGP updates, we would like to receive a full routing table from an ISP. According to Vervier et al. \cite{vervier2015mind} hijackers only pick networks that are unused for a long time or not advertised by the official owner. This means that these networks are often subnets of larger adres blocks. A sudden BGP update advertising a part of a Dutch network behind a non-Dutch ISP should be a red flag, and the alghorithm needs to deduct a value. This kind of metadata regarding prefixes can be collected by quering WHOIS or RIPE STATS \cite{ripestats}. Further resources could be ICMP traceroutes, AS path sources and BGP looking glasses. When a threshold is reached, the system will raise an alert. As we aim the system to be self-learning, false positives will be ruled out as much as possible as the systems is online for a longer time. A blueprint should be made out of the current BGP topology. As this hijack monitoring system needs a starting point, we assume that today's topology is correct. Of course, this does not hold true, as it's likely for some prefixes to be hijacked at the moment of creating the blueprint. When a hijacks is found during the creation of this system we need to discus what to do with the information.
+When the results of the preliminary tests are available, recommendations are written and a framework is produced that can be used as a guidance to build a software suite to perform overall tests in high bandwidth infrastructures.
+
+The goal of this research is to find the limitations in session based throughput testing and creating a framework that allows Engineers at Nikhef to fully test there systems to the maximum specifications. 

@@ -1,0 +1,33 @@
+\chapter{Problem statement}\label{ch:problem}
+Several existing options and features have been discussed in the previous chapter. According to the comparison table, no ideal solutions exist. Summarizing, some existing methods are web-based, impacting data confidentiality. Second, some methods assume the monitored prefixes fall within the same administrative domain as the team monitoring them. When monitoring machines in another administrative domain, it is not desirable to perform portscans. Furthermore, fingerprinting on the data plane can easily be faked by the attacker. Third, some methods don't allow for near real-time hijack detection. Another limitation concerns unused prefixes, which are not mentioned in most of the papers, although exactly these prefixes are a popular target among hijackers \cite{vervier2015mind}. 
+
+\section{Requirements}\label{sec:requirements}
+\paragraph{Restrict data leakage}\mbox{}\\
+Preventing information loss to the public domain is of great interest to this project. Although prefix and AS information is already publicly available, it might not be desirable for an organization to disclose information about the monitored prefixes into the public.
+
+\paragraph{Detect hijacks of unused prefixes}\label{par:requnused}\mbox{}\\
+Contrary to existing methods, detecting hijacks of unused prefixes should be detected, especially since these kind of attacks gain popularity \cite{vervier2015mind}.
+
+\paragraph{Handle legitimate MOAS conflicts}\label{par:legitmoas}\mbox{}\\
+As control-plane BGP detection algorithms have been marked as unreliable \cite{zhang2008ispy,shi2012detecting}, this project aims to improve on that. Since the use of data-plane information gathering is not desirable for this project, routing information gathering will be limited to control-plane data.
+
+\paragraph{Restrict information sources to public available resources}\mbox{}\\
+This paper focuses on monitoring prefixes which are located in a different administrative domain. In order to monitor a prefix, there is no need for any node to be online within this prefix. Furthermore, no administrative control is required over the nodes residing in the monitored prefixes.
+
+\paragraph{BGP hijacks must be detected near real-time}\mbox{}\\
+As described by RIPElabs, it takes approximately 40 seconds for a BGP announcement, and about three minutes for a withdrawal to be propagated over the BGP infrastructure \cite{ripelabsbgpupdates}. In contrast to the control plane detection system PHAS\cite{lad2006phas}, this project aims to detect BGP hijacks within this timeframe.
+
+\section{Research question}\label{sec:researchquestion}
+The requirements mentioned in the previous part can be collaborated into one research question:
+
+\begin{center}
+\textit{How to create an early detection system for BGP hijacks for a fixed number of IP-ranges and AS numbers using public resources?}
+\end{center}
+
+The research question require three subquestions to be answered before the research question can be answered. 
+
+\begin{description}
+    \item{\textbf{What public resources are available that could be used to detect BGP hijacking, without disclosing IP prefix information?}}\hfill \\ In order to detect legitimate MOAS conflicts and increase the reliability for control plane data, new information sources need to be leveraged.
+    \item{\textbf{What's the reliability of these public resources for monitoring prefix hijacks in The Netherlands?}}\hfill \\ When detecting hijacks for a large number of prefixes, the obtained data source should be complete so reliable hijack detection can be guaranteed.
+    \item{\textbf{How to detect BGP hijacks using this public information, with a low number of false positives?}}\hfill \\ To create a hijack detection system, an algorithm is needed that leverages aquired information sources.
+\end{description}

@@ -1,0 +1,107 @@
+\documentclass[11pt,a4paper,notitlepage,openany]{report}
+\usepackage{floatrow}
+\usepackage[pdftex]{graphicx}
+\usepackage[hyphens]{url}
+\usepackage[super,comma]{natbib}
+\usepackage{listings}
+\usepackage{minted}
+\usepackage{multicol}
+\usepackage{datetime}
+\newdateformat{mydate}{\THEDAY\ \monthname[\THEMONTH] \THEYEAR}
+\usepackage{csquotes}
+\usepackage[linktoc=all]{hyperref}
+\usepackage{changepage}
+\usepackage{xcolor, colortbl}
+\usepackage{tabu}
+\usepackage{pdfpages}
+\usepackage{amsmath}
+\usepackage{pgfplots}
+\usepackage[justification=centering]{caption}
+\usepackage[titletoc,title]{appendix}
+\usepackage{lscape}
+\usepackage{geometry}
+\usepackage{titling}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{pifont}
+\usepackage{titlesec}
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+
+
+% Useful custom commands which make text look better
+%
+% Issue by \<NAME> i.e. \hdfs
+%
+\usepackage{relsize}
+\usepackage{xspace}
+\newcommand{\post}{\textsmaller{POST}\xspace}
+\newcommand{\tcpdump}{\textsmaller{TCPDUMP}\xspace}
+\newcommand{\sslsplit}{\textsmaller{SSL}split\xspace}
+\newcommand*\rot{\rotatebox{90}}
+\newcommand*\OK{\ding{51}}
+\algtext*{EndIf}% Remove "end if" text
+
+\definecolor{butter1}{rgb}{0.988,0.914,0.310}
+\definecolor{chocolate1}{rgb}{0.914,0.725,0.431}
+\definecolor{chameleon1}{rgb}{0.541,0.886,0.204}
+\definecolor{skyblue1}{rgb}{0.447,0.624,0.812}
+\definecolor{plum1}{rgb}{0.678,0.498,0.659}
+\definecolor{scarletred1}{rgb}{0.937,0.161,0.161}
+\pgfplotsset{compat=newest}
+
+\titleformat{\chapter}[display]
+{\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{5pt}{20pt}
+
+\begin{document}
+\begin{titlingpage}
+\noindent
+\begin{center}
+\textsc{\Large Universiteit van Amsterdam}\\[0.2cm]
+\textsc{\large System and Network Engineering}\\[0.5cm]
+
+{ \large \bfseries Research Project 1}\\[0.2cm]
+{ \LARGE \bfseries BGP Hijack Alert System}\\[0.5cm]
+\begin{footnotesize}
+\begin{multicols}{2}
+Jeroen Schutrup\\
+\texttt{jeroen.schutrup@os3.nl}\\
+Bram ter Borch\\
+\texttt{bram.terborch@os3.nl}
+\end{multicols}
+{\large \mydate\today}
+\end{footnotesize}
+
+\centering
+\vspace{2.0cm}
+\includegraphics[scale=0.07]{images/uva_logo.png}
+\vspace*{2.5cm}
+\begin{abstract}
+The Internet's main routing protocol is called Border Gateway Protocol (BGP). Everyone using the Internet relies on BGP to work properly. Back in 1989 when BGP was developed, it was not developed from a security perspective. Nowadays everyone knows the Internet is a place filled with malicious users trying to gain benefits from breaking services provided on the Internet. BGP is an open door for the malicious users. It's not incredibly difficult to borrow someone else's IP space when having access to a BGP peering. This is also known as a BGP hijack.\par
+BGP hijacks come in different forms, this paper explains five types of hijacks including a type that was never mentioned in any research before. A new algorithm for detecting these five different types is discussed and tested. An architecture for the algorithm is created as a proof of concept and a real world full BGP feed is used as test data. The results are discussed within this paper. The algorithm uses IRR-records to validate the origin of a BGP update message. To be sure this is a valid source for the algorithm a small test was performed on all Dutch prefixes to see if they are covered with at least one IRR registration.  
+\end{abstract}
+\end{center}
+\end{titlingpage}
+
+\renewcommand{\contentsname}{Table of Contents}
+\setcounter{tocdepth}{1}
+\tableofcontents
+\addtocontents{toc}{\protect\enlargethispage{45mm}}
+\begin{flushleft}
+\end{flushleft}
+\input{chapters/introduction.tex}
+\input{chapters/related.tex}
+\input{chapters/problem.tex}
+\input{chapters/model.tex}
+\input{chapters/experimentation.tex}
+\input{chapters/conclusion.tex}
+% UNCOMMENT THIS TO PRINT ONLY CITED REFERENCES
+\nocite{*}
+\bibliographystyle{unsrt}
+\bibliography{report}
+\begin{appendices}
+\appendix
+\input{appendices/comparison.tex}
+\input{appendices/flowchart.tex}
+\end{appendices}
+\end{document}

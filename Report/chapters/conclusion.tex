@@ -1,0 +1,61 @@
+\chapter{Conclusion}\label{ch:conclusion}
+Since the current BGP implementation allows anyone with access to a BGP feed to announce arbitrary prefixes BGP hijacks will happen on a daily basis. Therefore the need for a proper BGP monitoring system exists. Such a system should be able to alert on all five types of hijacks. Online services are available for owners of a small number of prefixes, but using these services cause data leakage. Other solutions are only able to detect hijacks for active subnets and suffer from a high false-positive rate. One solution tries to detect hijacks from the clients sides perspective the majority of the solutions look into data-plane or control-plane data. Most control-plane applications offer near real-time detection and cause minimal overhead. Data-plane solutions can greatly improve the detection accuracy, but have a significant overhead and alerts are often generated with a delay.\par
+
+Some prefixes have multiple IRR registrations and could be advertised by multiple ASes. These MOAS prefixes could raise a lot of false positives when the system doesn't recognize them in a proper way. Large organizations often use multiple different ISP's to connect to the Internet for redundancy purposes which is also known as multi-homing. This means that the AS-path changes on an ISP failover and could trigger an AS hijack alert for most systems. This is obviously not a real hijack but a false positive.\par
+
+Organizations needing to monitor a number of prefixes, have concerns about leaking valuable information to external services, are in need of MOAS and multi-homing support and don't want to rely on commercial vendors. There was no available solution meeting these requirements until now. The BGP Hijack Alert System provides a reliable, stealthy way of detecting the four known types of hijacks and detects the hijack introduced in this paper. Along with the support for IPv4 and IPv6 prefix monitoring make BHAS a proper BGP hijack alert system. A new algorithm utilizes public available information such as geolocations and the IRR registry in order to detect BGP hijacks. Leveraging a BGP feed enables near real-time detection of prefix hijacks.
+
+\begin{table}[h]
+\centering
+\label{table:bhasfeatures}
+\begin{tabular}{p{4cm}|p{3cm}|p{7cm}|}
+\multicolumn{1}{l|}{} & \multicolumn{1}{c|}{\textbf{BHAS}} & \multicolumn{1}{c|}{\textbf{Description}} \\ \hline
+\textbf{Detect prefix hijack\cite{hu2007accurate}} & Yes & With one BGP feed BHAS is limited in detecting full prefixes. \\ \hline
+\textbf{Detect prefix and AS hijack\cite{hu2007accurate}} & Yes & With only one BGP feed BHAS is limited in detecting AS and prefix hijacks. \\ \hline
+\textbf{Detect more specific hijack\cite{hu2007accurate, zheng2007light, shi2012detecting}} & Yes & More specifics will always be detected when connected to a full BGP feed \\ \hline
+\textbf{Detect more specific and original AS hijack\cite{hu2007accurate, shi2012detecting}} & Yes & More specifics will always be detected when connected to a full BGP feed \\ \hline
+\textbf{Detect hijack of unused prefixes \cite{vervier2015mind}} & Yes & BHAS is able to detect hijacks of unused prefixes \\ \hline
+\textbf{Detect valid change of AS\cite{zhang2008ispy, shi2012detecting}} & Yes & By doing a RIPEstat query on a possible hijack BHAS will check for IRR registration updates  \\ \hline
+\textbf{Support for Multi Origin AS (MOAS)\cite{zheng2007light}} & Yes & Monitored prefixes will be stored in the database with all registered ASes \\ \hline
+\textbf{Detection delay\cite{shi2012detecting}} & Max 40 seconds & It takes 40 seconds before a BGP update is distributed across the world \\ \hline
+\textbf{Overhead\cite{shi2012detecting}} & full BGP feed, RIPEstat queries & BHAS needs a full BGP feed to work and RIPEstat queries are send in the case of possible hijacks  \\ \hline
+\textbf{Stealty\cite{hu2007accurate}} & Yes & BHAS can be implemented by using a snapshot of the RIPEstat database. This will introduce a delay \\ \hline
+\textbf{Disclose prefixes to the public} & Yes & RIPEstat API is used in case of possible hijacks. \\ \hline
+\textbf{Identify attacker\cite{shi2012detecting, zhang2008ispy}} & Yes & BHAS will report the announcing AS and Upstream AS of a hijack. \\ \hline
+\end{tabular}
+\caption{BHAS is compared to the same rich feature set as the other solutions referred in chapter \ref{ch:related}}
+\end{table}
+
+\section{Discussion}\label{sec:finaldiscussion}
+\subsection{Strengths}\label{subsec:strengths}
+\paragraph{Hijack types}\label{par:hijacktypes}\mbox{}\\
+BHAS is capable of detecting five different types of hijacks by comparing the prefix from the update to all prefixes in the database and decides if this is a subnet, a prefix match or a supernet of a prefix within the database. This way BHAS is able to detect hijacks by a less specific route announcement. \par 
+
+\paragraph{Registered updates}\label{par:registeredupdates}\mbox{}\\
+Organizations are allowed to sell IP space. Before a hijack type 1, 2 or 5 is alerted, BHAS will always check the RIPEstat API to see if the change of announcing AS is a valid one. When the change is valid the database with monitored prefixes will be updated with the new records.\par
+
+In 2015 a foreign ISP (UPC) bought a Dutch ISP (ZIGGO). They operate under the same name and could start advertising all the owned prefixes under the same ASN. This will result in an anomaly in the monitoring system. Some networks will be announced by a different AS and by a different router, many systems will detect this as a prefix hijack because these systems work with a baseline and don't query external sources for valid changes. For customers of the ISP owning a ASN the AS-path will be changed to the 'new' ASN as upstream AS. This could result in a AS hijack alert when monitoring tools support this feature. BHAS will check the RIPEstat database when a prefix and ASN doesn't match in the database to see if there is a registration of the change. So the example of the 2 Dutch ISP's, the changes need to be registered in the RIPEstat database. When the administration is correct BHAS will not alert for a prefix Hijack and will update the monitored prefix table. When the upstream AS is changed in the AS-path BHAS checks for the geolocation of the new upstream and compares this to the geolocation of the announcing AS. When these match the system considers this as a valid change like a multi-homed network should work.
+
+\paragraph{MOAS support}\label{par:moassupport}\mbox{}\\
+Multiple Origin Autonomous System (MOAS) prefixes will not trigger an alarm in the BHAS model. The monitoring database will be filled with all possible announcing origin ASes. Some networks are allowed to be announced by 30 ASes according to RIPEstats IRR information.
+
+\paragraph{Multi-home support}\label{par:multihomesupport}\mbox{}\\
+Large companies often choose to connect their network to the Internet by multiple ISPs. This is called Multi-home. BHAS is capable of detecting this anomaly in the AS-path by comparing the country code of the new upstream AS to the country code of the announcing AS.
+
+\paragraph{IPv4 and IPv6 support}\label{par:ipv4andipv6support}\mbox{}\\
+BHAS detects IPv4 and IPv6 hijacks on all five types of hijacks. The algorithm does not make a difference between IPv4 or IPv6 prefixes.  
+
+\subsection{Limitations}\label{subsec:limitations}
+This model is limited by the amount of BGP feeds it receives. In the case of an AS hijack or a full prefix hijack on the other side of the world the system will never raise an alarm when it's connected to only one BGP feed. A BGP neighbor will not re-announce a route to a prefix when it has a more preferred route to it. It will save the update in its BGP table but will never forward it to a neighbor. When a route to a network is learned with a longer path than the original it will not forward it to neighbors. To make this system more effective it should have BGP peers with ISP's all over the world. \par
+
+The model that is used as the fundamentals to create BHAS supports the use of Multi Originating AS (MOAS) but they must have an IRR registration. Some articles are written about the state of the IRR registration \cite{irraccuracy, routehygiene} stating that about 46\% of the information is accurate. It turns out that 96\% of the Dutch prefixes is registered. There is no way of telling if these registrations are correct.
+
+\section{Future work}\label{ch:futurework}
+\paragraph{Validate hijack alerts}\label{par:validatehijackalerts}
+BHAS generates hijack alerts since it is connected to the live BGP feed. It is unknown if these alerts are all valid. The amount of generated false positives and false negatives should be studied and determined how to lower these, if necessary. 
+
+\paragraph{Compare to other solutions}\label{par:comapreother}
+It would be a good test to see how well BHAS performs in comparison to other hijack monitoring tools. Looking into detection speed and the number of false positives and false negatives would be very interesting.
+
+\paragraph{Other sources of information}\label{par:falsepositive}
+BHAS is now depending on a full BGP feed. But there are more sources of information to utilize and to improve the results of the algorithm. Some of the sources have a delay \cite{routeviews} where other sources provide near real-time feeds in a different format \cite{bgpmonio}. Previous studies showed a large number of looking glasses accessible over the Internet of which the routing table can be downloaded without disclosing prefix information. In what way could these different sources be added as a data source for BHAS?  
