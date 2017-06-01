@@ -1,17 +1,31 @@
 \section{Related Work}
 
-When looking at the goal of this research, there is not much related work to be found. 
-Some tools claim to offer high bandwidth testing between devices. But they all have there own limitations. 
-A tool that is easy to use like Iperf, using a client and a server side Iperf is the right tool to generate the necessary load on a link. But there are big differences in the amount of traffic generated when using TCP versus the use of UDP.
-Generating bandwidth using UDP is a extensively researched topic \todo{reference to different researches}. But generating high volumes of TCP traffic is not researched extensively.  
+Looking at the goal of this research, there is not much related work to be found.
+RFC6349 \cite{RFC6349} describes a framework for TCP throughput testing. The framework is using iPerf to perform the tests.     
+
+Some of the available tools claim to offer high bandwidth testing between devices. But they all have there own limitations. 
+A tool like iPerf, using a client and a server side application, is the right tool to generate the necessary load on a link. But there are big differences in the amount of traffic generated when using TCP versus the use of UDP.
+Generating bandwidth using UDP is a extensively researched topic, tools like pktgen \cite{pktgen} iPerf \cite{iperf} and Harpoon \cite{harpoon} are able to send high volumes of data over alink. But generating high volumes of TCP traffic is not researched extensively.  
 
 Depending on the test to be executed, different limits should be reached. 
 When looking into throughput tests, specific parameters need to be set like MTU size and the ability to send jumbo packets.
 To reach the maximum amount of packets, small packets with a high rate need to be send onto the link. The chosen operating system or tools need to be able to offer these specifics.
-Denial of Service attacks on systems are build up out of multiple TCP session depleting the host system which results into unavailability on the host. All systems in between can also experience problems by the amount of data coming into the network.
-\todo [inline] {reference this where possible}
+Denial of Service attacks on systems are build up out of multiple TCP session depleting the host system which results into unavailability on the host. All systems in between can also experience problems by the amount of data it has to forward to the end host.
 
-The available tools are:
+The available tools are shown in table \ref{table:tools}.
 
-\todo[inline]{make a table with the available tools to generate traffic and the specifications of the tools}
+\begin{table*}[ht]
+\centering
+\begin{tabular}{|c|c|} \hline
+\textbf{Tool} & \textbf{Protocol} \\ \hline
+iPerf & TCP\& UDP \\ \hline
+PKTgen & UDP \\ \hline
+DPDK toolkit & TCP \& UDP \\ \hline
+Harpoon & TCP \& UDP \\ \hline
+HPING  & TCP \& UDP\\ \hline
+WARP17 & TCP \& UDP \\ \hline
+\end{tabular}
+\caption{available tools}
+\label{table:tools}
+\end{table*}
 

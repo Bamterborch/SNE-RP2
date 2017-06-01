@@ -13,7 +13,7 @@ username: root
 password: RSA-key
 
 
-Router: Kroonsteentje 	10.60.66.41
+Router: Kroonsteentje 	10.60.66.41 vervangen door 10.60.66.43
 	username: root
 	password: Jemoeder!
 
