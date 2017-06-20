@@ -9,6 +9,13 @@ Servers: Schommel  	mgmt:10.60.66.18
 			40Gb:10.10.10.20
 	 Hangmat	mgmt:10.60.66.20
 			40Gb:10.10.10.10
+	weegschaal	mgmt:10.60.66.24
+			40Gb:10.10.10.30
+	Achtbaan	mgmt:194.171.96.106
+			100Gb:
+	Woensel		mgmt:10.60.66.11 
+			100Gb:
+
 username: root
 password: RSA-key
 
@@ -17,6 +24,14 @@ Router: Kroonsteentje 	10.60.66.41 vervangen door 10.60.66.43
 	username: root
 	password: Jemoeder!
 
+root@QFX10k2A> show interfaces descriptions 
+Interface       Admin Link Description
+et-0/0/0        up    up   Uplink Speeltuin-02
+et-0/0/1        up    up   Schommel
+et-0/0/2        up    up   Hangmat
+
+    Bram                3c:fd:fe:9e:1e:20   D             -   et-0/0/2.0             0         0       
+    Bram                68:05:ca:32:17:e0   D             -   et-0/0/1.0             0         0   
 
 Commands:
 
@@ -25,6 +40,11 @@ Hangmat -
 /usr/src/tools/tools/netmap/
 ./pkt-gen -i ixl0 -f tx -d 194.171.96.109 -s 192.87.92.6 -S 68:05:ca:32:17:e0 -R 500000000 -a 1 -T 10000
 screen ./pkt-gen -i ixl0 -f tx -s 10.10.10.111 -S 68:05:ca:32:17:e0 -T 10000000 -D 00:07:43:39:8b:40 -d 10.10.10.60 -l 1500
+
+root@hangmat:/usr/src/tools/tools/netmap # ./pkt-gen -i ixl0 -d 10.10.10.20 -s 10.10.10.10 -S 3c:fd:fe:9e:1e:20 -D 68:05:ca:32:17:e0 -l 40 -R 50000000 -f tx
+
+407.025292 main_thread [1528] 42555821 pps (42598377 pkts in 1001000 usec)
+
 
 Schommel -
 ./pktgen_sample03_burst_single_flow.sh -i eth2 -m 3c:8a:b0:34:2f:f0 -d 192.87.92.0 -s 64 -t 8
@@ -37,6 +57,15 @@ Kroonsteentje:
 set interfaces et-0/0/2 unit 0 family ethernet-switching vlan members Bram
 set interfaces et-0/0/4 unit 0 family ethernet-switching vlan members Bram
 set vlans Bram vlan-id 560
+
+Nieuwe qfx10k2 
+
+root@QFX10k2A> show configuration | display set | match bram    
+set interfaces et-0/0/1 unit 0 family ethernet-switching vlan members Bram
+set interfaces et-0/0/2 unit 0 family ethernet-switching vlan members Bram
+set vlans Bram vlan-id 560
+
+
 
 Interface et-0/0/2 connected to Hangmat interface ixl0
 Interface et-0/0/4 connected to Schommel interface eth2 
@@ -54,3 +83,7 @@ OM bandbreedte te verhogen moet de packet size omhoog gezet worden, om aantal pa
 Andere optie om naar te kijken: 
 juniper warp17
 
+
+Limitations:
+Chelsio card inside server can go up to 40M packets.
+http://www.chelsio.com/wp-content/uploads/resources/T5-40Gb-FreeBSD-Netmap.pdf

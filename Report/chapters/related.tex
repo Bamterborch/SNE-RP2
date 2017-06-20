@@ -1,49 +1,61 @@
-\chapter{Related work}\label{ch:related}
-This chapter aims to give an introduction into BGP hijacking and discuss efforts that have been put into detection and symptoms of BGP hijacking. The first section gives an overview of different types of BGP hijacks. Following up, current available solutions and methods to detect prefix hijacks are described, and each of their respective limitations will be elaborated on. Finally, the features which are found interesting for this research are explained.\par
+\chapter{Related Work}\label{ch:related}
+As seen in the previous chapter \ref{ch:problem} the goal of this research is a framework for high bandwidth session based throughput testing.
+The term "session based" refers to TCP sessions being build to transfer packets from client to server. 
+The term "high bandwidth" refers to links of 40Gb/s and more.
 
-\section{BGP hijack types}\label{sec:hijacks}
-The paper of \emph{Hu et al.} \cite{hu2007accurate} describes five types of BGP hijacks, four of these are considered relevant for this project. These attacks concern the hijacking of a prefix or a subnet of a prefix, advertised by an AS different from the origin AS. Other types of attacks are announcing the prefix or a subnet, but advertised by a third party under the same ASN as the original ASN. The fifth type in the paper of \emph{Hu et al.},which is out of scope for this project, concerns an event also known as BGP leaking\cite{ballani2007study}.
+Filling up a link with data is easy, Running IPERF3 in multiple sessions can fill up a link of 100Gb/s with UDP traffic. 
+There is some effort made to rewrite IPERF3 to work on top of DPDK. But this did not provide the outcome that was hoped for according to the author of the research paper. \ref{jelte}
 
-\begin{enumerate}
-	\item \textbf{Hijack a prefix:} A full prefix owned by an organization is advertised by an AS which does not have ownership over this prefix.
-	\item \textbf{Hijack a subnet of a prefix:} A subnet of the prefix from an organization is advertised by an AS which does not have ownership over this prefix.
-	\item \textbf{Hijack a prefix and its AS:} The AS number and its prefix are being advertised by an organization which does not have ownership over these objects.
-	\item \textbf{Hijack a subnet and its AS:} A subnet of the prefix and its original AS number are being advertised by an organization which does not have ownership over these objects.
-\end{enumerate}
+\section{transport layer protocols}
+The differences in throughput can be found inside the transport layer protocols.
+\subsection{UDP}
 
-In case of a prefix hijack, an entire, already announced prefix is advertised once more by another administrative domain. The basics of BGP ensure that only preferred routes are advertised to BGP peers. Upon receiving a more expensive, a.k.a. a less preferred route, a BGP router will save this route into its BGP table to be used as a fallback route. This fallback route will only be advertised to its neighbors when the preferred route is no longer valid. A consequence of this behavior is, since all routers already have a route to the original prefix, that the hijack will only be noticed by a limited number of nodes in the BGP infrastructure. When observing a subnet hijack, the availability of the subnet is unique and will be propagated throughout the Internet. Therefore, such an event will be witnessed by all BGP nodes, regardless of the originating ASN.\par
 
-\section{Available tools and methods}\label{sec:availabletools}
-Monitoring the Border Gateway Protocol can be done in different ways. This research divides solutions by the way they gain information to detect a prefix hijack. These approaches are displayed in a comparison chart, shown in Appendix \ref{appendix:comparison}. This and upcoming section will discuss these methods and their feature sets.\\\par
+\subsection{TCP}
 
-Some tools use control-plane information to detect hijacks, while other solutions detect hijacks by data-plane information. Control-plane information is information from the router itself, like a BGP feed or the BGP table of the router. In contrary, data-plane information comes from information sources effected by control-plane decisions. For example, a routing decision on the control-plane effects a data-plane ICMP traceroute. Existing tools utilize control-plane as well as data-plane information. For example, the approach of \emph{Zheng et al}\cite{zheng2007light} primarily uses control-plane data. However, in the case of a suspected hijack it uses data-plane information to verify the validity of the hijack.
 
-\paragraph{Web services}\label{par:webserices}\mbox{ }\\
-Web services like BGPmon \cite{bgpmon} and Dyn.com \cite{dyn} commercialized BGP prefix monitoring. As these web services are closed source they don't offer insight in methods used to detect prefix hijacks. For some organizations it is not desirable to use such webservices because they are limited in the number of prefixes they can monitor and customers need to disclose prefix information.\par
+\subsection{application specific}
 
-\paragraph{Theoretical methods}\label{par:theoretical}\mbox{ }\\
-A number of theories regarding BGP hijack alerting have been published \cite{hu2007accurate,zheng2007light,lad2006phas,bgpduplicate,avramopoulos2006stealth,biersack2012visual,yan2009bgpmon,zhang2008ispy,shi2012detecting}. However, they all come with some limitations, or are not applicable for this project's use case. A method proposed by \emph{Hu et al.} \cite{hu2007accurate} utilizes a full BGP feed to detect anomalies for the monitored prefixes. When an anomaly is detected, the algorithm uses data-plane, e.g. ICMP traceroute information. Moreover, it uses IP packet Identification (ID) values to validate the hijack. Therefore, this system needs live clients within the monitored prefix, as well as clients in network mimicking the original prefix. An approach taken by \emph{Zheng et al.} \cite{zheng2007light} uses data-plane information to detect a hijack. With this approach, monitoring nodes are strategically placed on the path which is traversed to an Autonomous System. These nodes are effectively functioning as reference points. Assuming that the path from these nodes to the monitored AS should always stay unchanged, hijacks can be detected whenever this path does change. A variety of additional methods \cite{avramopoulos2006stealth,biersack2012visual} exist on these kind of data-plane hijack detection schemes. However, utilizing data-plane information is hardly scalable\cite{shi2012detecting}, can be countered by the attackers \cite{zheng2007light} and limits the detection of hijacks on sub-prefixes\cite{zheng2007light}. Because of the requirements discussed in chapter \ref{sec:requirements}, data-plane methods are not desirable for this project as they often require administrative control over the monitored prefixes, and don't support granular prefix monitoring\cite{shi2012detecting}.
 
-\paragraph{iSpy}\label{par:ispy}\mbox{ }\\
-iSPY\cite{zhang2008ispy} is worth mentioning as it, contrary to methods discussed so far, monitors BGP hijacks from the perspective of the prefix itself. By actively probing major external transit networks it effectively tests for Internet connectivity. It thereby distinguishes between regular network failures and prefix hijacks.
+\section{Tools}\label{sec:tools}
+A lot of simple tools are available for bandwidth testing. These tools fulfill some purposes that are required within this research.
+This research has taken the tools from table \ref{table:tools} to see if there is any use for session bases bandwidth testing on high volumes. 
 
-\paragraph{Tooling}\label{par:tooling}\mbox{}\\
-Theoretical models aside, work has been done on actual implementations\cite{lad2006phas}\cite{bgpmonsaif}. The Prefix Hijack Alert System (PHAS) has been one of the first doing so. However, PHAS suffers from a high amount of false positives\cite{zheng2007light}. This is caused by the fact that it's very hard to distinguish between hijacks and regular changes in the routing topology when using control-plane data\cite{vervier2015mind,shi2012detecting}. PHAS is also fairly late in detecting hijacks, as it comes with a three hour delay\cite{lad2006phas}. Another available tool is BGPmon.py\cite{bgpmonsaif}. This tool, written by \emph{Saif El-Sherei}, relies on a complete baseline completely set by the user, including an origin AS, prefix and its country code. It does however not have a mechanism to automatically update this data, and to detect MOAS conflicts, as the valid upstream provider is not known to the monitoring application.
+\begin{table*}[ht]
+\centering
+\begin{tabular}{|c|c|} \hline
+\textbf{Tool} & \textbf{Protocol} \\ \hline
+iPerf3 & TCP\& UDP \\ \hline
+HPING  & TCP \& UDP\\ \hline
+Bonesi & TCP \& UDP\\ \hline
+PKTgen Kernel & UDP \\ \hline
+PKTGEN DPDK & TCP \& UDP \\ \hline
+WARP17 & TCP \& UDP \& HTTP \\ \hline
+\end{tabular}
+\caption{available tools}
+\label{table:tools}
+\end{table*} 
 
-\section{Feature comparison}\label{sec:comparison}
-This section helps to further clarify existing methods and their features as displayed in Appendix \ref{appendix:comparison}. Features in the leftmost column are either referenced from existing papers, or are included because they could be of great value for a hijack detection system, although they were not explicitly mentioned in existing papers. In the next paragraphs, all of these features will be discussed.
+\subsection{iPerf3}\label{sub:iperf3}
+Iperf3 is an improved version of Iperf that makes it possible the send traffic at higher rates than its predecessors. Since it needs a client and server to generate traffic and the fact that it is hard to generate traffic over 40Gb/s. A small test is performed to see if Iperf3 can be used to generate high bandwidth session based traffic streams. The test and the results can be found in chapter \ref{ch:method}. 
 
-\paragraph{Hijack detection types}\label{par:hijackdetectiontypes}\mbox{}\\
-As discussed, four types of BGP hijacks can be identified \cite{hu2007accurate}, and are included as features in the comparison chart. There has not been done a lot of work concerning hijack detection of unused prefixes. This concerns prefixes which are assigned, but should not be announced on the Internet. According to \emph{Vervier et al.}, exactly these prefixes are a popular target among hijackers\cite{vervier2015mind}. In order to lower the amount of false positives, legitimate transfers of prefixes among Autonomous Systems should be detected as well\cite{zhao2001analysis}.
+\subsection{PKTgen(kernel module}\label{sub:pktgen}
+To generate a single flow of UDP traffic without the need of an application at the other side, PKTGEN from the linux kernel is the way to go. During the test phase preceding this paper, PKTGEN was tested on an Ubuntu machine and on a FreeBSD machine. 
+This was done to see if there are any major differences at the kernel level that offer more bandwidth or more packets per second. As it turned out, FreeBSD has the ability to generate 40 million packets per second (pps) from one single thread. Ubuntu needs 6 threads to reach the maximum amount of pps on a 40 Gb link. Other major differences are not found during this research between the different kernels. Therefore the FreeBSD kernel was abandoned after one week. 
 
-\paragraph{Multiple Origin AS (MOAS)}\mbox{}\\
-Accuracy of control-plane information is degraded when Multiple Origin AS conflicts are observed \cite{zheng2007light}. It is difficult to distinguish between legitimate MOAS conflicts and prefix hijacks, as in both cases a change of origin AS is observed. MOAS conflicts are usually short-term, and can be caused by multihoming, faulty configurations or the use of anycast addresses\cite{zhao2001analysis}. Identifying MOAS conflicts is key for a hijack detection system, as the number of MOAS conflicts are yearly increasing by roughly 20\%\cite{zhao2001analysis}.
+\subsection{Bonesi}\label{sub:bonesi}
+Bonesi is marketed as a DDOS test tool. It offers the ability to use random sources for TCP syn messages at a high rate. Possibly depleting resources at the targeted device, or Device Under Test (DUT). Resources that can be depleted are memory, since every session needs memory allocation, or session table limits.  
 
-\paragraph{Detection delay \& stealthiness}\mbox{}\\
-Some existing systems suffer from a high detection delay\cite{shi2012detecting}. As research of RIPElabs shows, it takes approximately 40 seconds for a BGP update to be propagated over the worldwide BGP infrastructure\cite{ripelabsbgpupdates}. Therefore, this project intends to realize a real-time hijack detection speed. When monitoring prefixes in another administrative domain, it might not be desirable to probe the monitored network. Existing proposals use port scanning, ICMP requests or TCP handshakes in their hijack verification process\cite{hu2007accurate,zhang2008ispy,zheng2007light}. Although this techniques increase detection accuracy it may not be desirable for an organization to send this kind of traffic to a network which is not under their administrative control. This can occur when monitoring another organization their network. Therefore achieving a stealthy solution is preferrable. Furthermore, these data-plane techniques are only applicable when monitoring a network with at least one online node in it. Even then it is still not able to detect more specific hijacks.
+\subsection{HING}\label{sub:hping}
 
-\paragraph{Scalability \& information disclosure}\mbox{}\\
-Hijack detection schemes based on data-plane information suffer from poor scalability\cite{shi2012detecting}. Therefore, creating an easy scalable anomaly detection scheme is crucial. Although the majority of all reviewed systems don't disclose information into the public, organizations monitoring their prefixes using web services are identifiable when registered to such a service. In order to remain anonymous, preventing information leaking is key to this project, meaning an organization monitoring a prefix should not be traceable for doing so in any way.
 
-\paragraph{Attacker identification}\mbox{}\\
-In order to handle and mitigate the effects of BGP hijacks, it is key to get to know information regarding the attacker\cite{zhang2008ispy}. Solely using data-plane information won't identify the attacker. Using control-plane data is essential when seeking knowledge regarding a hijacker and his AS or his Internet Service Providers AS (ISP)\cite{shi2012detecting}.
+\subsection{DPDK toolkit}\label{sub:dpdk}
+The Data Plane Development Kit (DPDK) offers the availability to generate traffic from userland, bypassing the kernel, and directly talking to the hardware. In order to make DPDK run, supported hardware needs to be used. Tools can be created to run on top of DPDK. PKTGEN and WARP17 are two tools that are written on top of DPDK and should provided the ability to generate traffic in high volumes both UDP and TCP based.  
+
+\subsubsection{PKTGEN}\label{subsub:dpdk-pktgen}
+
+\subsubsection{WARP17}\label{subsub:dpdk-WARP17}
+
+\subsubsection{..}\label{}
+
+

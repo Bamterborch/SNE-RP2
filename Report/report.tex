@@ -23,10 +23,12 @@
 \usepackage{titling}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{dirtytalk}
+\usepackage{todonotes}
 \usepackage{pifont}
 \usepackage{titlesec}
 \newfloatcommand{capbtabbox}{table}[][\FBwidth]
-
+\usepackage{array}
 
 % Useful custom commands which make text look better
 %
@@ -61,14 +63,10 @@
 \textsc{\large System and Network Engineering}\\[0.5cm]
 
 { \large \bfseries Research Project 1}\\[0.2cm]
-{ \LARGE \bfseries BGP Hijack Alert System}\\[0.5cm]
+{ \LARGE \bfseries Session based high bandwidth throughput testing}\\[0.5cm]
 \begin{footnotesize}
-\begin{multicols}{2}
-Jeroen Schutrup\\
-\texttt{jeroen.schutrup@os3.nl}\\
 Bram ter Borch\\
 \texttt{bram.terborch@os3.nl}
-\end{multicols}
 {\large \mydate\today}
 \end{footnotesize}
 
@@ -77,8 +75,7 @@ Bram ter Borch\\
 \includegraphics[scale=0.07]{images/uva_logo.png}
 \vspace*{2.5cm}
 \begin{abstract}
-The Internet's main routing protocol is called Border Gateway Protocol (BGP). Everyone using the Internet relies on BGP to work properly. Back in 1989 when BGP was developed, it was not developed from a security perspective. Nowadays everyone knows the Internet is a place filled with malicious users trying to gain benefits from breaking services provided on the Internet. BGP is an open door for the malicious users. It's not incredibly difficult to borrow someone else's IP space when having access to a BGP peering. This is also known as a BGP hijack.\par
-BGP hijacks come in different forms, this paper explains five types of hijacks including a type that was never mentioned in any research before. A new algorithm for detecting these five different types is discussed and tested. An architecture for the algorithm is created as a proof of concept and a real world full BGP feed is used as test data. The results are discussed within this paper. The algorithm uses IRR-records to validate the origin of a BGP update message. To be sure this is a valid source for the algorithm a small test was performed on all Dutch prefixes to see if they are covered with at least one IRR registration.  
+This will become the abstract.
 \end{abstract}
 \end{center}
 \end{titlingpage}
@@ -90,18 +87,19 @@ BGP hijacks come in different forms, this paper explains five types of hijacks i
 \begin{flushleft}
 \end{flushleft}
 \input{chapters/introduction.tex}
-\input{chapters/related.tex}
 \input{chapters/problem.tex}
-\input{chapters/model.tex}
+\input{chapters/related.tex}
 \input{chapters/experimentation.tex}
+\input{chapters/method.tex}
+\input{chapters/results.tex}
 \input{chapters/conclusion.tex}
 % UNCOMMENT THIS TO PRINT ONLY CITED REFERENCES
 \nocite{*}
 \bibliographystyle{unsrt}
 \bibliography{report}
-\begin{appendices}
-\appendix
-\input{appendices/comparison.tex}
-\input{appendices/flowchart.tex}
-\end{appendices}
+%\begin{appendices}
+%\appendix
+%\input{appendices/comparison.tex}
+%\input{appendices/flowchart.tex}
+%\end{appendices}
 \end{document}

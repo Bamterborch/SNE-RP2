@@ -1,87 +1,32 @@
 \enlargethispage {45mm}
 \contentsline {chapter}{\numberline {1}Introduction}{2}{chapter.1}
-\contentsline {section}{\numberline {1.1}Scope}{3}{section.1.1}
-\contentsline {section}{\numberline {1.2}Layout}{3}{section.1.2}
+\contentsline {section}{\numberline {1.1}Scope}{2}{section.1.1}
+\contentsline {section}{\numberline {1.2}Document layout}{3}{section.1.2}
 \contentsline {section}{\numberline {1.3}Terminology}{3}{section.1.3}
-\contentsline {chapter}{\numberline {2}Related work}{4}{chapter.2}
-\contentsline {section}{\numberline {2.1}BGP hijack types}{4}{section.2.1}
-\contentsline {section}{\numberline {2.2}Available tools and methods}{5}{section.2.2}
-\contentsline {paragraph}{Web services}{5}{section.2.2}
-\contentsline {paragraph}{Theoretical methods}{5}{section.2.2}
-\contentsline {paragraph}{iSpy}{6}{section.2.2}
-\contentsline {paragraph}{Tooling}{6}{section.2.2}
-\contentsline {section}{\numberline {2.3}Feature comparison}{6}{section.2.3}
-\contentsline {paragraph}{Hijack detection types}{6}{section.2.3}
-\contentsline {paragraph}{Multiple Origin AS (MOAS)}{6}{section.2.3}
-\contentsline {paragraph}{Detection delay \& stealthiness}{7}{section.2.3}
-\contentsline {paragraph}{Scalability \& information disclosure}{7}{section.2.3}
-\contentsline {paragraph}{Attacker identification}{7}{section.2.3}
-\contentsline {chapter}{\numberline {3}Problem statement}{8}{chapter.3}
-\contentsline {section}{\numberline {3.1}Requirements}{8}{section.3.1}
-\contentsline {paragraph}{Restrict data leakage}{8}{section.3.1}
-\contentsline {paragraph}{Detect hijacks of unused prefixes}{8}{section.3.1}
-\contentsline {paragraph}{Handle legitimate MOAS conflicts}{8}{section.3.1}
-\contentsline {paragraph}{Restrict information sources to public available resources}{8}{section.3.1}
-\contentsline {paragraph}{BGP hijacks must be detected near real-time}{9}{section.3.1}
-\contentsline {section}{\numberline {3.2}Research question}{9}{section.3.2}
-\contentsline {chapter}{\numberline {4}Proposed system}{10}{chapter.4}
-\contentsline {section}{\numberline {4.1}Design considerations}{10}{section.4.1}
-\contentsline {subsection}{\numberline {4.1.1}BGP hijack types}{11}{subsection.4.1.1}
-\contentsline {subsection}{\numberline {4.1.2}Utilized information sources}{11}{subsection.4.1.2}
-\contentsline {paragraph}{BGP feed}{11}{subsection.4.1.2}
-\contentsline {paragraph}{RIPEstat API}{12}{equation.4.1.1}
-\contentsline {paragraph}{Internet Routing Registry (IRR)}{12}{table.caption.5}
-\contentsline {paragraph}{CIDR report}{13}{table.caption.5}
-\contentsline {subsection}{\numberline {4.1.3}Excluded information sources}{13}{subsection.4.1.3}
-\contentsline {paragraph}{Looking glasses}{13}{subsection.4.1.3}
-\contentsline {paragraph}{RouteViews}{13}{subsection.4.1.3}
-\contentsline {section}{\numberline {4.2}Architecture}{13}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Software router}{13}{subsection.4.2.1}
-\contentsline {subsection}{\numberline {4.2.2}Storage}{14}{subsection.4.2.2}
-\contentsline {subsection}{\numberline {4.2.3}Initialization}{15}{subsection.4.2.3}
-\contentsline {subsection}{\numberline {4.2.4}Bootstrap}{15}{subsection.4.2.4}
-\contentsline {subsection}{\numberline {4.2.5}Multiprocessing}{15}{subsection.4.2.5}
-\contentsline {subsection}{\numberline {4.2.6}Event processor}{15}{subsection.4.2.6}
-\contentsline {section}{\numberline {4.3}Algorithm}{16}{section.4.3}
-\contentsline {paragraph}{Announcements}{16}{algorithm.caption.9}
-\contentsline {paragraph}{Withdrawals}{17}{algorithm.caption.9}
-\contentsline {paragraph}{Check hijack}{18}{algorithm.caption.9}
-\contentsline {chapter}{\numberline {5}Experimentation}{19}{chapter.5}
-\contentsline {section}{\numberline {5.1}Experimentation environment}{19}{section.5.1}
-\contentsline {subsection}{\numberline {5.1.1}Topology}{19}{subsection.5.1.1}
-\contentsline {subsection}{\numberline {5.1.2}Technical details}{19}{subsection.5.1.2}
-\contentsline {subsection}{\numberline {5.1.3}Test procedure \& hypothesis}{20}{subsection.5.1.3}
-\contentsline {paragraph}{Type 1 - prefix hijack}{20}{subsection.5.1.3}
-\contentsline {paragraph}{Type 2 - subnet hijack}{21}{subsection.5.1.3}
-\contentsline {paragraph}{Type 3 - AS \& prefix hijack}{21}{subsection.5.1.3}
-\contentsline {paragraph}{Type 4 - AS \& prefix hijack}{21}{subsection.5.1.3}
-\contentsline {paragraph}{Type 5 - less specific hijack}{21}{subsection.5.1.3}
-\contentsline {section}{\numberline {5.2}Real-world environment}{22}{section.5.2}
-\contentsline {section}{\numberline {5.3}Results}{22}{section.5.3}
-\contentsline {subsection}{\numberline {5.3.1}IRR coverage}{22}{subsection.5.3.1}
-\contentsline {subsection}{\numberline {5.3.2}Experimentation environment simulations}{23}{subsection.5.3.2}
-\contentsline {paragraph}{Type 1 - prefix hijack}{23}{table.caption.12}
-\contentsline {paragraph}{Type 2 - subnet hijack}{24}{table.caption.12}
-\contentsline {paragraph}{Type 3 - AS \& prefix hijack}{24}{table.caption.12}
-\contentsline {paragraph}{Type 4 - AS \& subnet hijack}{24}{table.caption.12}
-\contentsline {paragraph}{Type 5 - supernet hijack}{24}{table.caption.12}
-\contentsline {subsection}{\numberline {5.3.3}Real-world tests}{24}{subsection.5.3.3}
-\contentsline {section}{\numberline {5.4}Discussion}{26}{section.5.4}
-\contentsline {subsection}{\numberline {5.4.1}IRR coverage}{26}{subsection.5.4.1}
-\contentsline {subsection}{\numberline {5.4.2}Experimentation environment simulations}{27}{subsection.5.4.2}
-\contentsline {subsection}{\numberline {5.4.3}Real-world tests}{28}{subsection.5.4.3}
-\contentsline {chapter}{\numberline {6}Conclusion}{29}{chapter.6}
-\contentsline {section}{\numberline {6.1}Discussion}{29}{section.6.1}
-\contentsline {subsection}{\numberline {6.1.1}Strengths}{29}{subsection.6.1.1}
-\contentsline {paragraph}{Hijack types}{29}{subsection.6.1.1}
-\contentsline {paragraph}{Registered updates}{30}{subsection.6.1.1}
-\contentsline {paragraph}{MOAS support}{30}{subsection.6.1.1}
-\contentsline {paragraph}{Multi-home support}{30}{subsection.6.1.1}
-\contentsline {paragraph}{IPv4 and IPv6 support}{30}{subsection.6.1.1}
-\contentsline {subsection}{\numberline {6.1.2}Limitations}{31}{subsection.6.1.2}
-\contentsline {section}{\numberline {6.2}Future work}{31}{section.6.2}
-\contentsline {paragraph}{Validate hijack alerts}{31}{section.6.2}
-\contentsline {paragraph}{Compare to other solutions}{31}{section.6.2}
-\contentsline {paragraph}{Other sources of information}{31}{section.6.2}
-\contentsline {chapter}{Appendix \numberline {A}}{38}{appendix.A}
-\contentsline {chapter}{Appendix \numberline {B}}{40}{appendix.B}
+\contentsline {chapter}{\numberline {2}Problem statement}{4}{chapter.2}
+\contentsline {section}{\numberline {2.1}Specifications}{4}{section.2.1}
+\contentsline {paragraph}{Throughput}{4}{section.2.1}
+\contentsline {paragraph}{Packets per second}{4}{section.2.1}
+\contentsline {paragraph}{Sessions}{4}{section.2.1}
+\contentsline {paragraph}{Application specific traffic}{4}{section*.4}
+\contentsline {section}{\numberline {2.2}Research question}{5}{section.2.2}
+\contentsline {chapter}{\numberline {3}Related Work}{6}{chapter.3}
+\contentsline {section}{\numberline {3.1}transport layer protocols}{6}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}UDP}{6}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}TCP}{6}{subsection.3.1.2}
+\contentsline {subsection}{\numberline {3.1.3}application specific}{6}{subsection.3.1.3}
+\contentsline {section}{\numberline {3.2}Tools}{6}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}iPerf3}{6}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}PKTgen(kernel module}{6}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}DPDK toolkit}{7}{subsection.3.2.3}
+\contentsline {subsubsection}{PKTGEN}{7}{subsection.3.2.3}
+\contentsline {subsubsection}{WARP17}{7}{subsection.3.2.3}
+\contentsline {subsubsection}{..}{7}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Harpoon}{7}{subsection.3.2.4}
+\contentsline {subsection}{\numberline {3.2.5}Bonesi}{7}{subsection.3.2.5}
+\contentsline {subsection}{\numberline {3.2.6}HING}{7}{subsection.3.2.6}
+\contentsline {chapter}{\numberline {4}Methodology}{8}{chapter.4}
+\contentsline {subsection}{\numberline {4.0.1}Use cases}{8}{subsection.4.0.1}
+\contentsline {subsection}{\numberline {4.0.2}Test environment}{8}{subsection.4.0.2}
+\contentsline {chapter}{\numberline {5}Experimentation}{10}{chapter.5}
+\contentsline {chapter}{\numberline {6}Conclusion}{11}{chapter.6}

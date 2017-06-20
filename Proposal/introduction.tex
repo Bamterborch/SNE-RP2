@@ -1,16 +1,11 @@
 \section{Introduction}
-In the world we live in today a link speed of 100Gb/s  is a link speed you can get from your Internet Service Provider (ISP) to connect to the Internet. 
-When using Dense Wave Devision Multiplexing (DWDM) techniques, the ability to bundle multiple colors to create aggregated links with a capacity of 900Gb/s or more exist and are used. 
-Businesses like Nikhef (a teer 1 location for CERN) need to transfer large amounts of data and have to make calculations on the data.
-A hardware supplier like Juniper is a offering line card with enormous specifications, like a bandwidth of 40Gb/s and a maximum of 2 Billion packets per second. \\
+Internet Service Providers (ISPs) offer high bandwidth links to customers to connect to the Internet. Dutch Universities and research facilities are able to connected with redundant 100Gb/s links to there ISP. 
 
-\say{The QFX10000 line of Ethernet switches provides cloud builders and data center operator switch scalable solutions for both core and spine data center deployments. QFX10002-36Q provides 2.88 terabytes of throughput and up to 2 billion pps of forwarding capacity. In native mode, QFX10002-36Q offers 36 ports of 40 gigabit QSFP+.
-Twelve ports are designed to be 100-gigabit capable using QSFP28. Each 40-gigabit QSFP+ port can be configured either as a native 40-gigabit port or as four 10-gigabit ports using a breakout cable. With the breakout cable, the switch supports a maximum
-of 144 logical 10-Gigabit Ethernet ports.} \\
+Institutes like Nikhef (a tier 1 location for CERN) need to transfer large datasets and have to make calculations on the data. High uplink speeds are critical for research purposes. 
 
-When using 40Gb/s ports the maximum amount of pps (including Vlan tags) equals 56.8 Million. 
-\begin{equation}
-40.000.000.000/8/88=56.818.181
-\end{equation}
+A hardware supplier like Juniper is offering hardware with high specifications for data center connectivity. Like a bandwidth of 40Gb/s per port and a maximum of 2 Billion packets per second. An example from Juniper for a QFX10k is given in the quoted part. \\ 
 
-Before buying hardware a business has some demands for the system according to the role the hardware is going to fulfil. In high performance environments it matters if the system really lives up to its specifications. So this must be tested before the systems go into production.  
+\say{The QFX10000 line of Ethernet switches provides cloud builders and data center operator switch scalable solutions for both core and spine data center deployments. QFX10002-36Q provides 2.88 terabytes of throughput and up to 2 billion pps of forwarding capacity. In native mode, QFX10002-36Q offers 36 ports of 40 gigabit QSFP+.} \\
+
+Before buying hardware with these specifications a business has requirements for the system according to the role the hardware is going to fulfill. 
+In high performance environments it matters if the system really lives up to its specifications. So this must be tested before the system goes into production. The goal of the research is a framework that allows for session based throughput device testing. 

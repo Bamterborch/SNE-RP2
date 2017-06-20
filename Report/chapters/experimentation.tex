@@ -1,177 +1,34 @@
-\chapter{Experimentation}\label{ch:experimentation}
-The first section will gain insight in to the experimental environment used for this research, a hypothesis per test is given for which the results are briefly examined in section \ref{sec:results}. The next part discusses the real-world environment for BHAS. The results chapter shows the actual coverage of IRR records for Dutch Autonomous Systems and their prefixes. The last part sums up the outcome of all tests performed and the results of the real BGP feed.  
+\chapter{experiments}\label{ch:experiments}
+All experiments described in this chapter are executed in a test environment at NIKHEF. The test environment is displayed in image \ref{fig:testenv}.
 
-\section{Experimentation environment}\label{sec:experimentalenvironment}
-\subsection{Topology}\label{subsec:topology}
-The BGP Hijack Alerting System will be tested in a virtual environment which is completely isolated from the Internet. A real-world representative scenario is simulated using a real-world AS topology and corresponding prefixes. This way, various hijacking scenarios can be simulated. Since a real-world topology is used, this environment also fully complies with the RIPEstat API, which would not be the case when creating a testbed using a random topology with RFC1918 networks.\par
-As to be seen in figure \ref{fig:testenvironmentrealplain}, the testing environment corresponds to a real world peering topology. However, router A101 was added to the topology which contains ExaBGP feeding its received announcements to BHAS.
+\todo[inline]{insert image of test environment}
 
-\subsection{Technical details}\label{subsec:technicaldetails}
-All of the ten routers in the simulation environment use the Quagga router engine. Although ExaBGP has been selected as the preferred router to trigger BHAS execution, Quagga is more router-like and is comparable to Cisco routers in terms of configuration syntax (table \ref{table:softwarerouter}).\par
-These routers were distributed over two physical machines installed with Ubuntu 15.04, both simulating five LXC instances on which Quagga was installed. As to be seen in figure \ref{fig:testenvironmentrealplain}, the A[*] routers were simulated on machine A, while the B[*] routers were simulated on machine B.\par
+Three identical servers (A, B and C)  are used to perform the tests. Table \ref{tab:testmachines} contains the specifics of the three servers. 
+These servers are all connected to a Juniper QFX10k2 (device S). This switch has 32 40Gb/s QFSP ports. 
+Some of these ports are configured as a 100Gb/s interface. 
+During the experiments 2 extra machines are introduced into the network. Both containing 100Gb/s Mellanox cards.
+Table \ref{tab:ppc-intel} contains the information about the extra machines.   
 
-\begin{figure}[h]
-\centering
-\hspace*{-2.5cm}
-\includegraphics[scale=0.6]{images/BGP-testenv-real-pres.pdf}
-\vspace*{-1cm}
-\caption{BHAS test environment, artificial testbed}
-\label{fig:testenvironmentrealplain}
-\end{figure}
+Device A is always the receiving end of the test. Depending on the tests the source can be machine B, C or B and C.
+For possible +40Gb/s tests, one of the 100Gb/s machines (D or E) can be used.
 
-\subsection{Test procedure \& hypothesis}\label{subsec:testprocedure}
-All test scenarios described in this section will be conducted in the test environment shown in \ref{fig:testenvironmentrealplain}. All of the subnets displayed in this figure are being monitored by BHAS. In chapter \ref{subsec:modelbgphijacktypes}, five types of hijacks are presented. All of these hijacks were tested. An hypothesis is also described for every test scenario.
+Machine M is a Simple Network Management Protocol (SNMP) server. This SNMP server query's the machines every second for status. As seen in the image of the test environment \ref{fig:testenv}. SNMP is active on a different interface of the devices.  
 
-\paragraph{Type 1 - prefix hijack}\label{par:prefix}\mbox{}\\
-For a type one hijack a router needs to announce a prefix owned by a different AS. Router with AS 3257 will announce the prefix of AS 16559 which is 66.63.0.0/18. In this case the path to the hijacked network is shorter so the announcement will be forwarded to Router A101. BHAS needs to create a prefix hijack notification (type 1).\par
+\sebsection{Iperf3}
+When Using Iperf3, packets can be generated with a simple one liner.
+To make it to 40Gb/s, eight separate threads have to be started when MTU size is set to default.
+When an MTU size of 9000 (jumbo packets) is used, 2 threads where needed to generate 40Gb/s. 
+So this is useful inside company networks that are under control of the person using iPerf3. 
 
-After the hijack notification the test proceeds with cancelling the hijack. AS 3257 will stop announcing the hijacked network and a withdrawal of this prefix will be sent to AS 1103. The router with AS 1103 shall look into its BGP table to check if has an alternative route to 66.63.0.0/18. This route is available following AS-path (6939, 16559). This new route will be inserted into the routers routing table and will also be announced to its neighbors. BHAS will receive this new announcement and will consider the hijack to be cancelled as it received a legitimate route. The database should contain one hijack record with the corresponding announce and withdrawal timestamps.
+\todo[inline]{insert images of client, server and network load) 
+\todo [inline] {insert image of test}
 
-\paragraph{Type 2 - subnet hijack}\label{par:subnet}\mbox{}\\
-In this scenario a router needs to announce subnet of a prefix owned by another AS. AS 16559 will announce network 145.2.0.0/16 which is a subnet of a prefix owned by AS 1103. This is known as a more specific route so it will be advertised over the complete topology. When BHAS receives the announcement it needs to register a prefix hijack for the monitored prefix. When AS 16559 stops announcing the hijacked network a withdrawal is sent for this subnet. The saved alert should now be updated with an added withdrawal timestamp.
+\subsection{Hping}
 
-\paragraph{Type 3 - AS \& prefix hijack}\label{par:asprefix}\mbox{}\\
-Autonomous System 4589 changes its ASN to 16559 and therby starts announcing prefix 66.63.0.0/18. AS 1103 will notice the shorter path to AS 16559 and will prefer the malicious route. Upon receiving the new route, BHAS will notice the new AS path differentiates from the legitimate one. The upstream AS also changed. As the country code of the new upstream should not match the geolocation of the origin AS, BHAS should create a type 3 hijack alert for prefix 66.63.0.0/18. When the hijack is cancelled, BHAS receives the original route and shall set the withdrawal timestamp for the related hijack for this prefix.
+\todo[inline]{insert images of client, server and network load)
+\subsection{Bonesi}
 
-\paragraph{Type 4 - AS \& prefix hijack}\label{par:assubnet}\mbox{}\\
-Like the type 3 hijack, AS 4589 is still mimicking AS 16559. In this scenario it solely propagates a more specific prefix, namely 66.63.59.0/24. As this route propagates among all peers, BHAS needs to raise a type 4 hijack for prefix 66.63.0.0/18. Upon withdrawing the more specific prefix, the monitoring system sets the withdrawal date for the hijack.
+\todo[inline]{insert images of client, server and network load)
+\subsection{DPDK}
 
-\paragraph{Type 5 - less specific hijack}\label{par:lessspecific}\mbox{}\\
-AS 10026 owns and advertises 66.216.41.0/24, while AS 16559 owns and advertises 66.63.0.0/18. In this scenario, AS 16559 withdraws its entire prefix and starts announcing subnets of this prefix. So they now announce 66.63.59.0/28 and 66.63.59.128/25, leaving some IP space assigned to this AS unannouned. AS 10026 now starts advertising 66.0.0.0/8. All traffic destined for a destination in 66.0.0.0/8 will go to AS 10026 except traffic destined for the subnets advertised by AS 16559 since the more specific will be preferred for those destinations. The subnets owned by 16559 from 66.63.0.0 until 66.63.63.255 are now available for AS 10026 and could be used for malicious activities. When this less specific reaches the monitoring system it needs to save a type 5 hijack alert into the database for the monitored prefix, which is 66.63.0.0/18. As soon as AS 10026 withdraws the 66.0.0.0/8, BHAS needs to update the hijack entry in the database and set the withdrawal timestamp.
-
-\section{Real-world environment}\label{sec:realworldenvironment}
-BHAS will be connected to a full BGP feed from a Dutch IPS called SURFnet. Thereby it monitors all prefixes registered by Dutch ASes. Information collected for the IRR registration test already contains such a list. In total this concerns 5379 prefixes, both IPv4 and IPv6. We expect BHAS to fill the prefix table from the input during the initialization process. When the initialization is done, the BGP peer should be brought up and the origins table will be enriched with data, like AS county code,  origin upstream AS and AS path. When the full feed is received, updated must be processed by BHAS to detect hijacks. In the event of a hijack BHAS needs to register a BGP hijack in the hijack table using the correct type like the model in chapter \ref{ch:model} describes. \par
-
-\section{Results}\label{sec:results}
-Results regarding the current Dutch IRR coverage will be discussed first, whereafter the experimentations of the simulated hijack and the real-world detection results shall be examined.
-
-\subsection{IRR coverage}\label{subsec:irrcoverage}
-As discussed in chapter \ref{subsec:utilizedinformationsources}, the issued ASNs of all Dutch ASes were collected, whereafter all currently announced prefixes by those ASes were queried from RIPEstat. This resulted in a total of 4664 IPv4 and 715 IPv6 prefixes. In total, 98\% of all Dutch IPv4 prefixes are covered by at least one IRR record, whereas 96\% of currently announced Dutch IPv6 prefixes have at least one IRR record containing an authorized origin AS (figure \ref{fig:dutchirrcoverage}). As to be seen in table \ref{table:dutchirrcoverage}, this comes down to a total of 118 networks in a total set of 5379 prefixes.
-
-\begin{figure}
-\begin{floatrow}
-\ffigbox{%
-  \includegraphics[scale=0.5]{images/irrregistration.pdf}%
-}{%
-  \caption{Dutch AS IRR coverage}
-  \label{fig:dutchirrcoverage}
-}
-\capbtabbox{%
-    \begin{tabular}{|p{3cm}|p{1cm}|p{1cm}|}\hline
-    \textbf{No. of origins} & \textbf{IPv4} & \textbf{IPv6} \\ \hline
-    0 & 87 & 31 \\ \hline
-    1 & 2408 & 475 \\ \hline
-    2 & 1054 & 161 \\ \hline
-    3 & 476 & 30 \\ \hline
-    4 & 212 & 2\\ \hline
-    5+ & 428 & 17 \\ \hline
-    \end{tabular}
-}{%
-    \vspace*{8mm}
-    \caption{Dutch AS IRR Coverage}%
-    \label{table:dutchirrcoverage}
-}
-\end{floatrow}
-\end{figure}
-
-\subsection{Experimentation environment simulations}\label{subsec:hijacksimulations}
-The test results are displayed in figure \ref{table:testresultshijacktable}. Every simulated hijack was detected by BHAS. As soon as a hijack was cancelled and its withdrawal reached the monitoring system, the \emph{withdrawn\_at} attribute for that hijack was set. For hijack type three and four it should be noted that BHAS detected the invalid change regarding the upstream provider, which was AS 1103 instead of AS 6939. 
-
-\begin{table}[h]
-        \centering
-        \begin{tabular}{|p{2cm}|p{1.5cm}|p{0.5cm}|p{1cm}|p{1cm}|p{2.5cm}|p{0.5cm}|p{2cm}|}\hline
-                \rot{\textbf{prefix\_id}} & \rot{\textbf{subnet}} & \rot{\textbf{mask}} & \rot{\textbf{origin\_as}} & \rot{\textbf{origin\_upstream\_as}} & \rot{\textbf{as\_path}} & \rot{\textbf{hijack\_type}} & \rot{\textbf{withdrawn\_at}} \\ \hline
-        66.63.0.0/18 & 66.63.0.0 & 18 & 3257 & 1103 & 1103,3257 & 1 & 2016-01-22 13:41:09 \\ \hline
-        145.2.0.0/15 & 145.2.0.0 & 16 & 16559 & 6939 & 1103,6939,16559 & 2 & 2016-01-22 13:58:14 \\ \hline
-        66.63.0.0/18 & 66.63.0.0 & 18 & 16659 & 1103 & 1103,16659 & 3 & 2016-01-22 13:43:35 \\ \hline
-        66.63.0.0/18 & 66.63.59.0 & 24 & 16659 & 1103 & 1103,16659 & 4 & 2016-01-22 13:48:11 \\ \hline
-        66.63.0.0/18 & 66.0.0.0 & 8 & 10026 & 286 & 1103,286,10026 & 5 & 2016-01-22 14:48:40 \\ \hline
-        \end{tabular}
-        \caption{Experimentation environment simulations, reported hijacks}
-        \label{table:testresultshijacktable}
-\end{table}
-
-\paragraph{Type 1 - prefix hijack}\mbox{}\\
-The router of AS 1103 picked up the update of AS3267 annoucing AS16559 his prefix, and noticed the shorter AS-path to the prefix. The new route was inserted into the routers routing table and a new announcement was send to all peers except the origin. BHAS is a peer for AS1103 and receives the update. The prefix is matched and the originating AS is compared. As expected BHAS recognized the different announcing AS. AS3257 is not allowed to announce this subnet. So the MOAS check also fails. Therefore, an entry was made in the database for a prefix hijack. When AS3257 stopped announcing the hijacked prefix is sent a withdrawal which was received by the router in AS1103. The router checks the BGP table for a backup route to the prefix. It will find one (the original announcer) and inserts that route into the routing table. AS1103 sends an update to all it peers except on the interface it received the announcement. BHAS received the update, the origin AS matches the one in the database and the hijack entry in the database is marked as withdrawn.
-
-\paragraph{Type 2 - subnet hijack}\mbox{}\\
-Autonomous System 16559 announces a more specific of a prefix owned by AS 1103. This announcement was forwarded by all routers because they do not have a route to this specific subnet. Since a router will always prefer a more specific route over a less specific, the is propagated until all peers have received it. BHAS matches this subnet to a prefix of interest. The announcing AS is not in the database as an origin AS. The RIPEstat IRR check also fails because AS 16559 is not registered as an authorized origin AS for 145.2.0.0/15. BHAS adds this event as a type 2 hijack to the database. When AS 16559 withdraws the hijack, it's propagated to all peers as no router has an alternative route to this subnet. BHAS received the withdrawal and the hijack entry in the database is marked as ended.  
-
-\paragraph{Type 3 - AS \& prefix hijack}\mbox{}\\
-When former AS 4589 start mimicking AS 16559 and also announces its prefixes, AS 1103 receives a shorter path to 66.63.0.0/18 and updates it routing table. It sends an update for the prefix to all his peers. BHAS will notice the originating AS equals an authorized AS. It compares both paths and notices a change as the upstream AS is different. A geolocation comparison is performed between the new upstream and the announcing AS. Since none of AS 4589 his country codes matches an origin CC of 66.63.0.0/18, the upstream is considered invalid thus a type 3 hijack is created. When only advertising a subnet it will be registered as a type 4. When the hijack stops all prefixes are withdrawn and AS 1103 will act the same way it did as in the prefix hijack part. An update is send to BHAS and the hijack entry is updated.
-
-\paragraph{Type 4 - AS \& subnet hijack}\mbox{}\\
-The observed behavior for this hijack is similiar to a type 3 hijack. The only exception is that BHAS observed a type 4 hijack instead of a type 3 since it evaluated the announcement to be a more specific prefix of a monitored network.
-
-\paragraph{Type 5 - supernet hijack}\mbox{}\\
-As soon as AS 10026 advertises 66.0.0.0/8, AS 1103 will forward it in the same way as a more specific. BHAS marks it as a supernet of a monitored prefix. Since the announcing AS does not equal an authorized origin of the monitored prefix the IRR records are queried. This still doesn't result in an IRR record allowing AS 10026 to authorize this prefix so the event is registered as a type 5 hijack. As soon as BHAS notices the supernet is withdrawn is succesfully sets the withdrawn timestamp indicating the hijack has run its course.
-
-\subsection{Real-world tests}\label{subsec:realworld}
-During the five days that BHAS was connected to a full BGP feed it processed a total of 10.5 million prefix either getting announced or being withdrawn. BHAS monitored all Dutch prefixes as discussed in section \ref{subsec:irrcoverage}. As for the first hour BHAS received the full BGP table and processed all updates to fill the AS path column in the Origins table for all 5379 prefixes. After the first hour the average load drops from 682500 updates to an average of 85000 updates per hour. 62\% of these updates concerned IPv4 routing information while the remaining 38\% were IPv6 updates. Figure \ref{fig:realworldupdates} shows the amount of prefixes getting either announced or withdrawn during the first day that BHAS was online.\par
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.45]{images/realworldupdates.pdf}
-    \caption{Amount of updates per hour processed by BHAS on a full BGP feed}
-    \label{fig:realworldupdates}
-\end{figure}
-
-\begin{table}[]
-\centering
-\label{table:prefixinformation}
-\begin{tabular}{l|l|l|}
-    \cline{2-3}
-                                                       & \textbf{IPv4} & \textbf{IPv6} \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Number of ASes}}      & 52814         & 10581         \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Total prefixes}}      & 589566        & 26456         \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Largest AS}}          & AS4538        & AS3651        \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Prefixes largest AS}} & 5594          & 454           \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Updates per hour}}    & 44824         & 23676         \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Announcements}}       & 43070         & 17103         \\ \hline
-    \multicolumn{1}{|l|}{\textbf{Withdrawals}}         & 1754          & 6573          \\ \hline
-\end{tabular}
-\caption{Prefix information}
-\end{table}
-
-Figure \ref{fig:realworldinterestingannouncements} shows the total amount of network announcements that were considered interesting, i.e. the announced prefixes were related to monitored prefixes. During the first hour the peak is so high it flattens the entire graph, therefore it is left out. A total of 6494 Dutch prefix announcements and 49 Dutch prefix withdrawals were processed during the first 24 hours. Figure \ref{fig:realworldinterestingwithdrawals} shows the amount of interesting withdrawals for the first 23 hour.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.45]{images/realworldinterestingannouncements2.pdf}
-    \caption{Amount of announcements for Dutch prefixes per hour processed by BHAS on a full BGP feed}
-    \label{fig:realworldinterestingannouncements}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.45]{images/realworldinterestingwithdrawals2.pdf}
-    \caption{Amount of withdrawals for Dutch prefixes per hour processed by BHAS on a full BGP feed}
-    \label{fig:realworldinterestingwithdrawals}
-\end{figure}
-
-As displayed in figure \ref{fig:registeredhijacks}, during a period of five days 1460 hijacks have been reported by BHAS with an average hijack rate of 9 per hour. Within this period 62\% of all hijacks have been marked as withdrawn. Prefix hijacks of type 1 and 3 are the most dominant type of hijack which make up 75\% of all hijacks. A significant difference is notable between these dominant hijack types. While 93\% of all AS \& prefix hijacks (type 3) have been witdrawn, only 22\% of the prefix hijacks (type 1) have done so. Furthermore, the supernet hijack was not frequently observed and only covers 3\% of all reported hijacks.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.9]{images/registeredhijacksbw.pdf}
-    \caption{Amount of hijacks reported by BHAS after running 124 hours}
-    \label{fig:registeredhijacks}
-\end{figure}
-
-\section{Discussion}\label{sec:discussion}
-\subsection{IRR coverage}\label{subsec:irrcoverage}
-Where previous research has shown the IRR coverage of Dutch prefixes was approximately 70\%, it can be concluded this has significantly improved to an overall coverage of 96\% for both IPv4 and IPv6. However, this does not tell us anything regarding the accuracy, which will be discussed later in this section. Notable is the almost 10\% of prefixes using at least five IRR records which are often very fragmented. An extreme outlier is ING (AS15625) who assigned 816 IRR records to different subnets within their 16 bit prefix. A reason for doing so might be that such Autonomous Systems acquired a lot of relatively small prefixes over the past years. This growth is a likely explanation for ING as they started off with a 145.221.24/22 prefix back in 2000\cite{ripestats}, for which the 145.221.0.0/16 they possess now is a supernet.\par
-
-The proper IRR coverage of Dutch ASes does not guarantee an accurate registration of their prefixes and origin ASes. The 52\% of prefixes with only one origin AS registered in IRR might only be connected to a single ISP, but they could just as well not have updated their registration. Judging from this data, 47\% of all currently announced Dutch prefixes are connected to the Internet in a redundant fashion.\par
-
-\subsection{Experimentation environment simulations}\label{subsec:hijacksimulations}
-BHAS is capable of detecting all types of hijacks described by \emph{Hu et al} as well as the supernet defined by this paper in chapter \ref{ch:model}. When subnets are sold and advertised by a different AS BHAS is capable of detecting this by checking authorized origins in the IRR-records.\par
-
-Although BHAS passed all test scenarios it is not clear from these tests how it would handle real-world behavior. First, hijacks that don't reach the upstream provider which BHAS is connected to won't be detected. This is caused by the nature of BGP which instructs routers to only advertise preferred routes to their neighbors. However, the detection rate of BHAS will certainly improve when connected to multiple BGP feeds, especially when they reside in different continents.\par
-
-Also note that performing an AS, type 3/4 hijack in the real-world is not viable in controlled environments. Since BGP peering needs to be configured on both sides of the peering session. Therefore, the neighbor or upstream provider must agree on the configured AS numbers. On the other hand this could be argued since the majority of all BGP hijacks are non-malicious, but caused by configuration errors instead \cite{vervier2015mind}.
-
-\subsection{Real-world tests}\label{subsec:realworlddiscussion}
-The large number of prefix hijacks could be caused by lacking IRR accuracy. Since the majority of the type 1 hijacks have a permanent nature it's likely they are false-positives due to lacking IRR accuracy, since another AS is announcing a prefix for which they're not registered to do so. For example, BHAS registered a hijack for the University of Amsterdam their 145.109.0.0/17 because it is announced by AS1124 while, according to the IRR registration, it should be announced by AS1103. This point us to the conclusion that BHAS only works in a proper way when the prefixes of interest all have the correct IRR registration. Most of the type 3 hijacks are probably caused by failovers to ISP's residing in a different country than the origin AS. Since failovers are usually short-term, this explains the high number of hijack withdrawals for AS and prefix hijacks. \par
-
-Performance characteristics of BHAS indicate that the architecture can scale to monitoring a large number of prefixes. Upon receiving the initial BGP feed when the peering with SURFnet is established, the CPU has an average load of 30\% (Intel(R) Xeon(R) CPU E3-1220L V2 @ 2.30GHz) while the memory consumption peaks at point around one Gigabyte. Utilizing the CIDR datatype of PostgreSQL is crucial, since the proof of concept could only process around three announcements per second when filtering monitored prefixes manually for every incoming announcement.\par
+\todo[inline]{insert images of client, server and network load)

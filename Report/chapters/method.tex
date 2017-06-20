@@ -1,0 +1,82 @@
+\chapter{Methodology}\label{ch:method}
+
+
+In order to create the framework, use cases need to be formulated.
+After this, the correct software can be selected. Only when the use cases are clear and there is an insight in the expected outcome, the correct tools can be selected for the framework. 
+
+\subsection{Use cases}\label{sub:usecase}
+
+\begin{table}[]
+\centering
+\caption{Use cases}
+\label{tab:usecases}
+\begin{tabular}{|l|l|l|l|}
+\hline
+NR & Usecase             & \begin{tabular}[c]{@{}l@{}}Device \\ under Test\end{tabular} & Explenation                                                                                             \\ \hline
+1  & UDP throughput      & \begin{tabular}[c]{@{}l@{}}Client\\ Server\end{tabular}      & The goal is to fill up the link with the maximum amount of data using the UDP protocol                  \\ \hline
+2  & TCP throughput      & \begin{tabular}[c]{@{}l@{}}Client\\ Server\end{tabular}      & The goal is to fill up the link with the maximum amount of data using the TCP protocol                  \\ \hline
+3  & Packets per second  & \begin{tabular}[c]{@{}l@{}}Client\\ Switch\end{tabular}      & The goal is to get the maximum amount of packets per second according to interface link speed           \\ \hline
+4  & Intermediate device & Switch/router                                                & Generate the maximum amount of data in 2 ways to make sure the hardware is able to forward at line rate \\ \hline
+5  & Application test    & Server                                                       & The clients will overload the server with requests                                                      \\ \hline
+6  & Combined test       & \begin{tabular}[c]{@{}l@{}}Client\\ Server\end{tabular}      & A mix of UDP, TCP and application traffic will be send over the links form multiple Clients             \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Test environment}\label{sub:envi}
+
+The test environment is build up out of 4 servers connected to 2 different switches.
+See table \ref{table:systems} for the system specifications and figure \ref{fig:testenv} displays the test environment setup.
+System 1 and 2 are connected using there 40Gb/s NIC and systems 3 and 4 are connected to the test environment using there 100Gb/s interfaces. 
+ 
+
+
+
+%What will be tested?
+
+%Describe the test environment and the upcoming tests
+%Why are these test useful? 
+%What results are we looking for?
+%What are the values/specific settings for these tests?
+%What will be monitored on the receiver or sender side.
+%Why am I monitoring this.
+%What conclusion would I like to draw out of the test results.
+ 
+
+%TEST environment. 
+%2 identical machines running different operating systems at first.
+%After preliminary tests the OS might be changed to one OS for final tests.
+%In the middle sits a Juniper QFX10k2 as a router/switch.
+
+%Limitations known inside the PCI buss connecting the card. Limited to 40 million packets per second.
+
+%Research from Jelte is useful, it mentions results about about IPERF3 and other specific build tools. 
+%I might have to pick up on some of those tools.
+
+%Tools tested.
+
+%PKTgen kernel module. UDP only. 
+%Capable of reaching 40Mpps and capable of hitting 40Gb/s
+
+%Ubuntu:
+%./pktgen_sample03_burst_single_flow.sh -i eth2 -m 3c:8a:b0:34:2f:f0 -d 10.10.10.10 -s 9000
+%-i = interface
+%-m = destination mac
+%-d = destination address
+%-s = size
+%-t = threads
+
+%FreeBSD:
+%./pkt-gen -i ixl0 -f tx -d 10.10.10.20 -s 10.10.10.10 -S 68:05:ca:32:17:e0 -l 9000
+%-i = interface
+%-f = function
+%-d = destination ip addres
+%-s = source ip address
+%-S = source mac address
+%-l = length
+%-R = Rate (amount of packets per second)
+
+
+%IPERF3.
+%capable of hitting 40Gb/s TCP 
+
+
