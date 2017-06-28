@@ -1,22 +1,18 @@
 \chapter{Results}\label{ch:results}
 
-From the tests described in chapter \ref{ch:method} a framework can be created. 
-The easy to use tools like iPerf3, Hping and Bonesi are usefull for quick tests. But when it comes to representative session based testing these tools do not perform on high speed networks. 
-As these easy to use tools all require a kernel to work on, they are depending on the kernel to work. As described in section \ref{sec:dpdk}, DPDK is able to bypass the kernel and talk to the interface directly. Cores and memory needs to be allocated to generate traffic. By doing this, amounts of 40Gb/s and higher are easy to accomplish.  
+From the experiments described in chapter \ref{ch:experiments} a framework was created and tested in chapter \ref{ch:method}. 
+The easy to use tools like iPerf3, Hping and Bonesi are usefull for quick tests. But when it comes to representative session basedi application testing these tools do not offer a solution for high speed network. 
+As these 'easy to use' tools all require the kernel to talk to the hardware. As described in section \ref{sub:dpdk}, DPDK is able to bypass the kernel and talk to the interface directly. Cores and memory needs to be allocated to generate traffic. By doing this, amounts of 40Gb/s and higher are easy to accomplish.  
 
-\sebsection{Iperf3}
-When Using Iperf3, packets can be generated with a simple one liner.
-To make it to 40Gb/s, eight separate threads have to be started when MTU size is set to default.
-When an MTU size of 9000 (jumbo packets) is used, 2 threads where needed to generate 40Gb/s. So this is useful inside company networks that are under control of the person using Iperf3. 
+\section{DPDK based}
+Since none of the use cases requires the kernel based applications, the results of the DPDK based applications are mentioned during the use case perfomance tests on the real world scenario.  
 
-\todo[inline]{insert images of client, server and network load) 
+\subsection{PKTGEN}
 
-\subsection{Hping}
+\todo[inline]{insert images of client, server and network load}
 
-\todo[inline]{insert images of client, server and network load)
-\subsection{Bonesi}
+\subsection{WARP}
 
-\todo[inline]{insert images of client, server and network load)
-\subsection{DPDK}
+\todo[inline]{insert images of client, server and network load}
 
-\todo[inline]{insert images of client, server and network load)
+

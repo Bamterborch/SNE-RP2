@@ -1,5 +1,5 @@
 \chapter{Introduction}\label{ch:intro}
-Internet Service Providers (ISPs) offer high bandwidth links to customers to connect to the Internet. Dutch Universities and research facilities are able to connected with redundant 100Gb/s links to there ISP.
+Internet Service Providers (ISPs) offer high bandwidth links to customers to connect to the Internet. Dutch Universities and institutes are able to connected with redundant 100Gb/s links to there ISP.
 
 Institutes like Nikhef (a tier 1 location for CERN) need to transfer large datasets and have to make calculations on the data. High uplink speeds are critical for research purposes.
 
@@ -12,19 +12,74 @@ Before buying hardware with these specifications a business has requirements for
 \section{Scope}\label{sec:scope}
 Distributed Denial of Service (DDoS) attacks happen on a daily base. The websites \url{http://www.digitalattackmap.com} and \url{http://map.norsecorp.com} offer nice maps of current and passed attacks. 
 
-Generating high amounts of throughput is easy to accomplish, the Data Plan Development Kit (DPDK) introduced by Intel offers users the ability to generate traffic without using kernel driver. 
-Linux "Userland" applications are able to bypass the kernel and communicate to the network hardware directly.
-Applications are being build, utilizing DPDK's functionality to bypass the kernel to reach different goals. Moongen, PKTGEN, and WARP17 are designed with different goals. \\
+
+Generating high amounts of throughput is easy to accomplish. Simple tools with a view options can create a data stream to a server. For link testing, these tools have sufficient power to fill up lines up to 100Gb/s. 
+The older trusted application like Iperf, Kernel module PKTGEN, HPING and Bonesi have there own use cases and there own limitations, for simple layer 2 and 3 testing these tools are fine.
+With increasing bandwidth more and more power is needed for the simple tools to work. Kernels need to be tweaked to reach maximum results from the tooling. 
+
+The Data Plan Development Kit (DPDK) introduced by Intel offers users the ability to generate traffic without using the kernel.  
+Linux "Userland" applications are able to bypass the kernel and communicate to the hardware directly. Memory, processors and interfaces are reserved while the tools are used.
+Applications are being build on top of DPDK, utilizing DPDK's functionality to bypass the kernel to reach different goals. Moongen, PKTGEN, and WARP17 are designed with different goals. Most of the tools offer the ability to test beyond Layer 2 and 3 of the Open Systems Interconnection (OSI) model. The purpose of this research is to look at the needs for throughput testing at higher layers of the OSI model. \\ 
 \todo[inline]{insert references to different tools} 
-Even tough these new applications are the way to go, the older trusted application like Iperf, Kernel module PKTGEN, HPING and Bonesi have there own usecases and there own limitations, they are still useful in lot of the tests performed by administrators. 
-This reports describes interesting aspects of the mentioned older and newly created tools.
+
 
 \section{Document layout}\label{sec:layout}
 
-The layout of this document is straight forward, The problem is described in chapter \ref{ch:problem} which is followed by the research question at hand for this report . To explain what research has been performed in this area chapter \ref{ch:related} goes deeper into some of the useful parts of different applications.
-Chapter \ref{ch:method} describes the usecases and the performed tests that are performed to get the results in this report. These results can be found in chapter \ref{ch:conclusion} 
+The layout of this document is as follows: The problem is described in chapter \ref{ch:problem} which is followed by the research question that started this report. To explain what research has been performed in this area chapter \ref{ch:related} shows the researched fields separated per protocol. A tests setup is described in chapter \ref{ch:experiments}, this setup is used to see what all the tools had to offer and where they hit their limits.
+Chapter \ref{ch:method} will explain some of the use cases and the tools that need to be used to accomplish the goals of the use cases. The method is testes on an environment that was planned to go into production soon after the tests. All tests where performed during a scheduled event with approval of the owner of the environment. The results of the test can be found in chapter \ref{ch:conclusion}. 
  
 
-\section{Terminology}\label{sec:terminology}
-Some terms need to be explained here.......
-\todo[inline]{fill in the terms used in the report}
+\section{Terminology and Acronyms}\label{sec:terminology}
+RFC1242 \cite{rfc1242} explains most of the terminology used in this paper. For your convenience the most useful ones are summed up in table \ref{table:terms}
+
+\begin{table}[]
+\centering
+\caption{Useful terminology}
+\label{table:terms}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Term}                  & \textbf{Explenation}                                                                                                                                                                                 \\ \hline
+Constant Load         & Fixed length frames at a fixed interval time.                                                                                                                                                                    \\ \hline
+Data link frame size  & \begin{tabular}[c]{@{}l@{}}The number of octets in the frame from the first octet \\ following the preamble to the end of the FCS, if present, or \\ to the last octet of the data if there is no FCS.\end{tabular} \\ \hline
+Inter Frame Gap       & \begin{tabular}[c]{@{}l@{}}The delay from the end of a data link frame, \\ to the start of the preamble of the next data link frame.\end{tabular}                                                                \\ \hline
+MTU-mismatch behavior & \begin{tabular}[c]{@{}l@{}}The network MTU (Maximum Transmission Unit) of the output \\ network is smaller than the MTU of the input network, this \\ results in fragmentation.\end{tabular}                        \\ \hline
+Overloaded behavior   & When demand exceeds available system resources.                                                                                                                                                                  \\ \hline
+Throughput            & \begin{tabular}[c]{@{}l@{}}The maximum rate at which none of the offered frames,are \\ dropped by the device. \end{tabular}                                                                                                                                  \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[]
+\centering
+\caption{Used Acronyms}
+\label{table:acronyms}
+\begin{tabular}{l|l}
+\hline
+\textbf{Acronym}                  & \textbf{Definition}  \\ \hline
+pps & packets per second \\ \hline 
+Gb/s & Gigabit per second \\ \hline
+DPDK & Data Plane Development Kit \\ \hline
+ISP & Internet service provider \\ \hline
+QSFP & Quad Small Form-factor Pluggable \\ \hline
+DOS & Denial Of Service \\ \hline
+DDOS & Distributed Denial Of Dervice \\ \hline
+FCS & Frame check sequence \\ \hline
+MTU & Maximum Transmission Unit \\ \hline
+OSI & Open System Interconnection \\ \hline
+NIC & Network Interface Card \\ \hline
+TCP & Transport Control Protocol \\ \hline
+UDP & User Datagram Protocol \\ \hline
+ICMP & Internet Control Message Protocol \\ \hline
+OS & Operating System \\ \hline
+LAN & Local Area Network \\ \hline
+VLAN & Virtual LAN \\ \hline
+IP & Internet Protocol \\ \hline
+HTTP & Hyper Text Transport Protocol \\ \hline
+MTU & Maximum Transmission Unit \\ \hline
+SNMP & Simple Network management Protocol \\ \hline
+RFC & Request For Comment \\ \hline
+DUT & Device Under Tests \\ \hline
+CPU & Central Processing Unit \\ \hline
+UC & Use Case \\ \hline
+\end{tabular}
+\end{table}
+

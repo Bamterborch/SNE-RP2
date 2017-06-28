@@ -52,6 +52,10 @@ Schommel -
 cd /usr/src/linux-headers-4.4.0-59/samples/pktgen/
 
 
+PKTgen DPDK:
+pktgen-3.2.11/app/app/x86_64-native-linuxapp-gcc/pktgen -c 0xFF -n 2 -- -P -m "[1:2-7].0
+pktgen-3.2.11/app/app/x86_64-native-linuxapp-gcc/pktgen -c 0x7 -n 3 -- -p 0x1 -P -m "[1-7].0"
+
 Kroonsteentje: 
 
 set interfaces et-0/0/2 unit 0 family ethernet-switching vlan members Bram

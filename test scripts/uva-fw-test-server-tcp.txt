@@ -1,0 +1,22 @@
+#SERVER
+#Set client IP on interface
+add tests l3_intf port 0 ip 145.18.40.36 mask 255.255.255.248
+add tests l3_gw port 0 gw 145.18.40.33 
+
+add tests server tcp port 0 test-case-id 0 src 145.18.40.36 145.18.40.36 sport 80 180
+set tests server raw port 0 test-case-id 0 data-req-plen 64 data-resp-plen 64
+
+add tests server tcp port 0 test-case-id 1 src 145.18.40.36 145.18.40.36 sport 80 180
+set tests server raw port 0 test-case-id 1 data-req-plen 256 data-resp-plen 256
+
+add tests server tcp port 0 test-case-id 2 src 145.18.40.36 145.18.40.36 sport 80 180
+set tests server raw port 0 test-case-id 2 data-req-plen 512 data-resp-plen 512
+
+add tests server tcp port 0 test-case-id 3 src 145.18.40.36 145.18.40.36 sport 80 180
+set tests server raw port 0 test-case-id 3 data-req-plen 1024 data-resp-plen 1024
+
+add tests server tcp port 0 test-case-id 4 src 145.18.40.36 145.18.40.36 sport 80 180
+set tests server raw port 0 test-case-id 4 data-req-plen 2048 data-resp-plen 2048
+
+start tests port 0
+show tests ui

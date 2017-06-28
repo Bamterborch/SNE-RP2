@@ -1,0 +1,236 @@
+WARP17 not up yet. Sleeping for a bit...
+WARP17 not up yet. Sleeping for a bit...
+WARP17 not up yet. Sleeping for a bit...
+WARP17 (warp17 v0.13 @13:22:08, Jun  9 2017) started!
+Clients configured successfully!
+
+Servers configured successfully!
+
+Servers started successfully!
+
+Clients started successfully!
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 0
+tccs_estab: 0
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 0
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 0
+tcrs_start_time: 0
+tcrs_end_time: 0
+
+HTTP Client stats:
+hsts_req_cnt: 0
+hsts_resp_cnt: 0
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 1054116
+tccs_estab: 1054088
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 1197117
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1197113
+tcrs_start_time: 1294718920709
+tcrs_end_time: 1294719420709
+
+HTTP Client stats:
+hsts_req_cnt: 150562
+hsts_resp_cnt: 150546
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 2204801
+tccs_estab: 2204776
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 1138858
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1138860
+tcrs_start_time: 1294719920707
+tcrs_end_time: 1294720420707
+
+HTTP Client stats:
+hsts_req_cnt: 314909
+hsts_resp_cnt: 314894
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 3302021
+tccs_estab: 3301999
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 1068160
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1157178
+tcrs_start_time: 1294720920707
+tcrs_end_time: 1294721420708
+
+HTTP Client stats:
+hsts_req_cnt: 478031
+hsts_resp_cnt: 475867
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 3940118
+tccs_estab: 3940103
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 639676
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1433443
+tcrs_start_time: 1294721920709
+tcrs_end_time: 1294722420707
+
+HTTP Client stats:
+hsts_req_cnt: 682761
+hsts_resp_cnt: 664418
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 4000000
+tccs_estab: 4000000
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 0
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1824735
+tcrs_start_time: 1294722920709
+tcrs_end_time: 1294723420707
+
+HTTP Client stats:
+hsts_req_cnt: 982025
+hsts_resp_cnt: 927265
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 4000000
+tccs_estab: 4000000
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 0
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1796547
+tcrs_start_time: 1294723920708
+tcrs_end_time: 1294724420710
+
+HTTP Client stats:
+hsts_req_cnt: 1326739
+hsts_resp_cnt: 1221887
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 4000000
+tccs_estab: 4000000
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 0
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1627364
+tcrs_start_time: 1294724920707
+tcrs_end_time: 1294725420711
+
+HTTP Client stats:
+hsts_req_cnt: 1808994
+hsts_resp_cnt: 1501086
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 4000000
+tccs_estab: 4000000
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 0
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1627030
+tcrs_start_time: 1294725920708
+tcrs_end_time: 1294726420711
+
+HTTP Client stats:
+hsts_req_cnt: 2451930
+hsts_resp_cnt: 1727423
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Client test case state: 1
+
+Global stats:
+tccs_up: 4000000
+tccs_estab: 4000000
+tccs_down: 0
+tccs_failed: 0
+
+Rate stats:
+tcrs_estab_per_s: 0
+tcrs_closed_per_s: 0
+tcrs_data_per_s: 1670977
+tcrs_start_time: 1294726920708
+tcrs_end_time: 1294727420707
+
+HTTP Client stats:
+hsts_req_cnt: 3175586
+hsts_resp_cnt: 1953678
+hsts_invalid_msg_cnt: 0
+hsts_no_content_len_cnt: 0
+hsts_transfer_enc_cnt: 0
+
+Clients stopped successfully!
+
+Servers stopped successfully!
+

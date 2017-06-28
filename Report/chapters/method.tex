@@ -1,10 +1,15 @@
 \chapter{Methodology}\label{ch:method}
 
-
-In order to create the framework, use cases need to be formulated.
+In order to create a framework, use cases are formulated.
 After this, the correct software can be selected. Only when the use cases are clear and there is an insight in the expected outcome, the correct tools can be selected for the framework. 
 
-\subsection{Use cases}\label{sub:usecase}
+\section{Use cases}\label{sec:usecase}
+
+Table \ref{tab:usecases} displays 4 different use cases. All serving a different purpose.
+Use case 1 is designed to get the hardware limits of a host. Use case 2 is to get the limits of the  switching and routing hardware.
+Use case 3 will get the client and server resources limits. To handle TCP sessions, resources need to be allocated at client and server. 
+Use case 4 is designed to get the limits of an application running on top of a kernel. 
+When performing these test from a client to a server over a corporate network, using a state full firewall, load balancers, aggregated links and active-standby machines, will show the weakest link in the chain towards the server.  
 
 \begin{table}[]
 \centering
@@ -12,24 +17,57 @@ After this, the correct software can be selected. Only when the use cases are cl
 \label{tab:usecases}
 \begin{tabular}{|l|l|l|l|}
 \hline
-NR & Usecase             & \begin{tabular}[c]{@{}l@{}}Device \\ under Test\end{tabular} & Explenation                                                                                             \\ \hline
-1  & UDP throughput      & \begin{tabular}[c]{@{}l@{}}Client\\ Server\end{tabular}      & The goal is to fill up the link with the maximum amount of data using the UDP protocol                  \\ \hline
-2  & TCP throughput      & \begin{tabular}[c]{@{}l@{}}Client\\ Server\end{tabular}      & The goal is to fill up the link with the maximum amount of data using the TCP protocol                  \\ \hline
-3  & Packets per second  & \begin{tabular}[c]{@{}l@{}}Client\\ Switch\end{tabular}      & The goal is to get the maximum amount of packets per second according to interface link speed           \\ \hline
-4  & Intermediate device & Switch/router                                                & Generate the maximum amount of data in 2 ways to make sure the hardware is able to forward at line rate \\ \hline
-5  & Application test    & Server                                                       & The clients will overload the server with requests                                                      \\ \hline
-6  & Combined test       & \begin{tabular}[c]{@{}l@{}}Client\\ Server\end{tabular}      & A mix of UDP, TCP and application traffic will be send over the links form multiple Clients             \\ \hline
+NR & Use case                        & DUT            & Explanation                                                                                             \\ \hline
+UC1  & \begin{tabular}[c]{@{}l@{}}Bandwidth \\ generation\end{tabular}       & Client         & \begin{tabular}[c]{@{}l@{}}The goal is to see if the client is capable \\ of filling up the link and to reach the \\ maximum amount of pps \end{tabular} \\ \hline
+UC2  & Throughput                    & Switch/router  & \begin{tabular}[c]{@{}l@{}}Generate the maximum amount of data in 2 ways \\ to make sure the hardware is able to forward\\ at line rate\end{tabular} \\ \hline
+UC3  & TCP based                     & Client/Server  & Get the hardware limitations of the systems  \\ \hline
+UC4  & Application             & \begin{tabular}[c]{@{}l@{}}Server and \\intermediate devices\end{tabular}         & \begin{tabular}[c]{@{}l@{}}The clients will overload the server with \\ requests at application level\end{tabular}  \\ \hline
 \end{tabular}
 \end{table}
 
-\subsection{Test environment}\label{sub:envi}
+\subsection{UC1}
+In paragraph \ref{par:pps} from chapter \ref{problem} it is stated that a 40Gb/s card needs to be able to handle 58 million packets with a size of 88 byte to handle a unidirectional stream of 40Gb/s.
+Using PKTGEN, a tool on top of DPDK, packets with a minimum size of 88 bytes can be created. This should generate 58 Mpps. To reach the 40Gb/s, large packets have to be create. When the packet size is set to 1500 bytes, there have to 3.3 Mpps to fill up the link. When Jumbo frames are used only 555 thousand packets per second are needed to fill up the link. When using PKTGEN on top of DPDK numbers like these can be reached for TCP traffic. When DPDK is used, the kernel cannot communicate to the devices anymore. So traffic statics cannot be read from the kernel. Monitoring on the switch where the machine is connected to is needed. 
 
-The test environment is build up out of 4 servers connected to 2 different switches.
-See table \ref{table:systems} for the system specifications and figure \ref{fig:testenv} displays the test environment setup.
-System 1 and 2 are connected using there 40Gb/s NIC and systems 3 and 4 are connected to the test environment using there 100Gb/s interfaces. 
- 
+\subsection{UC2}
+The backplane of a switch should be able to forward traffic from one port to another at line-speed. This should also be possible when the traffic is routed from one VLAN to the other. Routers should be able to rewrite packets at line rate. Using a client and a server connected to two different ports of the switch and a high load is generated on the ports, preferably the maximum link speed. Monitoring the ports of the switch using SNMP should show the same input and output rate.    
+
+\subsection{UC3}
+To get the limitations of the hardware when TCP sessions are used, the kernel has to be bypassed. Using DPDK and WARP17 will show the limits of the hardware under load. As seen in the experimentation chapter \ref{chap:experiments}. The benchmark that was ran on a single machine running as client and server is able to open 1 million session per second, generating 40Gb/s of RAW TCP traffic. 2 tests need to be ran. A RAW TCP test between two different machines, and a test between client and server using HTTP. WARP17 is capable of talking HTTP, a layer 7 protocol. This should be the second test. Monitoring of the amount of successful and failed session has to be done on the clients and server. When the API is used, detailed results can be retrieved.   
+
+\subsection{UC4}
+WARP17 is capable of talking HTTP. This use case requires a web server running on one of the machines. The client will use WARP17 to generate traffic towards the web server. The web server has to provide some files of different sizes. Warp can send a request for a certain file with a specified size. Resources of the server will be claimed, By sending a million requests per second the machines will be experiencing a Denial of Service (DOS) like attack.
 
 
+\section{real world scenario}
+The use cases mentioned in section \ref{sec:usecase} need to be tested in a real world scenario. Therefore the infrastructure of a company was used to test this method.
+Figure, \ref{fig:nikhefuva} shows the infrastructure of the test between client and server. All tests performed generated traffic for 90 seconds with a gap of 30 seconds before the next tests started from the same category. According to RFC2544 \cite{rfc2544} throughput tests need to take at least 60 seconds. The clients always initiated the sessions to the server.
+
+\begin{figure}
+  \includegraphics[scale=0.6]{images/nikhefuva.pdf}
+  \caption{Infrastructure of real world scenario.}
+  \label{fig:nikhefuva}
+\end{figure}
+
+\subsection{UC1}
+Using PKTGEN on top of DPDK with a packet size of 64bytes generated a maximum of 42 Mpps towards the server. PKTGEN only sends from one source to one destination, using one sources and destination port. The link from the switch to the router is an aggregated link build from 4x 10Gb/s interfaces. Hashing algorithms decide what interface is used per string. Since the combination is always the same. The packets followed the same path, what ended up in a 10Gb/s stream over one link towards the destination. The packet size was increased after 2 minutes to 400bytes. This is the sweet spot for the amount of packets and bits traveling over the line towards the destination. At 11Mpps and 39Gb/s of traffic onto the line. This ended up in 9Gb/s at the client after hashing over the aggregated lines.  
+
+\todo[inline]{insert images of all the test}
+
+\subsection{UC2}
+Due to the hashing problem that was encountered during the first use case. Use case 2 was not performed. Hardware limits cannot be reached by using PKTgen since the limitations of one set of addresses and ports. Therefore, one of the 'easy to use' applications was used. IPerf was stared running in 8 threads. These threads all started to the same port and all coming from an equal port number. The same maximum of 10Gb/s was reached. This new limitation caused by hashing was taken into account. This test failed for this situation
+
+\subsection{UC3}
+Sending RAW TCP sessions between 2 servers using WARP17 with different packet sizes should provide a good representation of the capabilities of the device in the path. 
+The server ran WARP17 playing a TCP RAW server sending responses of a specified size when requests come in. The client was configured to use 40 thousand ports for the requests targeting 100 ports at the server. This makes a total of 4 Million possible flows between client and server. Request and response sizes are the same at every run. The packet sizes used are, 64, 256, 512, 1024 and 2048 bytes.
+During this tests request and reply bitrate should be the same unless one of the devices in between starts failing. As seen in figure \ref{fig:firewallfailure} the amount of traffic coming out of the firewall is not equal to the traffic that goes into the firewall. Failovers to redundant machines happened, BGP sessions died and error where registered in the environment. 
+These tests where repeated using the HTTP capabilities of WARP. A good tests to get tests to find the limits of the hardware when HTTP is used as a leyer 7 protocol. Packet size request and response where set to 64, 256, 512, 1024 and 2048 bytes. The same issues where the result of this HTTP test. During the tests the firewalls failed to send there logging information to the management servers. management sessions got cut of. When the tests stopped, everything went back to normal. 
+
+\subsection{UC4}
+An NginX server was setup offering a couple of files from a RAMdisk, this is done to make sure disk IO would not become the bottleneck for this test. Using WARP17 at the client side the files where requested from the server. NGINX was capable of delivering 11Gb/s inside test environments.
+\todo[inline]{find out what the numbers where during the tests} 
+
+\
 
 %What will be tested?
 

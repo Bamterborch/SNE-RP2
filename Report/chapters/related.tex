@@ -1,61 +1,72 @@
 \chapter{Related Work}\label{ch:related}
-As seen in the previous chapter \ref{ch:problem} the goal of this research is a framework for high bandwidth session based throughput testing.
-The term "session based" refers to TCP sessions being build to transfer packets from client to server. 
-The term "high bandwidth" refers to links of 40Gb/s and more.
+As written in chapter \ref{ch:problem} the goal of this research is a framework for high bandwidth session based throughput testing.
+Where the term "session based" refers to TCP sessions and the term "high bandwidth" refers to links of 40Gb/s and more.
 
 Filling up a link with data is easy, Running IPERF3 in multiple sessions can fill up a link of 100Gb/s with UDP traffic. 
 There is some effort made to rewrite IPERF3 to work on top of DPDK. But this did not provide the outcome that was hoped for according to the author of the research paper. \ref{jelte}
 
 \section{transport layer protocols}
 The differences in throughput can be found inside the transport layer protocols.
-\subsection{UDP}
+This projects goal is session based high throughput testing, the UDP tools of functionality is out of scope of this project. 
 
+\subsection{UDP}
+When UDP traffic is generated, data is being dumped on the line without keeping state nor resources need to be claimed for sessions on end hosts. 
+PKTgen from the linux kernel is an 'easy to use" application that is able to generate UDP only traffic towards a destination. The destination does not need to run an application to receive the data.
+The report written by Turrul et all. \cite{turull2016pktgen} about PKTgen is an updated report from his work in 2005 and looks at high speed networks.  
+IPerf3 is very powerful when it comes to sending UDP traffic towards a destination. Efforts have made to make it available for DPDK \cite{jelte} 
 
 \subsection{TCP}
-
+When TCP is used to transfer data, sessions states need to be kept by all hardware in the path from client to server. Congestion control starts to play a big role at the senders end. The bandwith is depending on the congestion control mechanism used by the sender.   
+Emmerich et all. \cite{emmerich_gallenm¸ller_raumer_wohlfart_carle_2015} published a paper about Moongen in 2015. Moongen is capable of generating 120Gb/s and 178.5 Mpps.
+Numbers like these are the numbers this research is looking for. Therefore, Moongen looks like a good candidate for OSI layer 2, 3 and 4 testing. 
 
 \subsection{application specific}
-
+In 2016 a research was performed by Malaksmi et all. \cite{mahalakshmi2016study} about different DPDK applications with the purpose of creating a tool for L4 to L7 application testing. 
+The result of this research is a tool called T-REX. The projects goal is to generate statefull traffic up to 10Gb/s. Next to this, the freeware version of T-REX is a limited version of the Cisco proprietary version.
 
 \section{Tools}\label{sec:tools}
 A lot of simple tools are available for bandwidth testing. These tools fulfill some purposes that are required within this research.
-This research has taken the tools from table \ref{table:tools} to see if there is any use for session bases bandwidth testing on high volumes. 
+This research has taken the tools from table \ref{table:tools} to see if there is any use for session bases bandwidth testing on high volumes.
+PKTgen kernel is only capable of generating UDP packets, it is used to determine differences in operating system specifics. The biggest differences based on kernel specifics came from tests with PKTgen kernel module.
+Two different operating systems where used to see if the different kernels provide different results. FreeBSD and Ubuntu supported all of the 'easy to use' kernel tools.
 
 \begin{table*}[ht]
 \centering
-\begin{tabular}{|c|c|} \hline
-\textbf{Tool} & \textbf{Protocol} \\ \hline
-iPerf3 & TCP\& UDP \\ \hline
-HPING  & TCP \& UDP\\ \hline
-Bonesi & TCP \& UDP\\ \hline
-PKTgen Kernel & UDP \\ \hline
-PKTGEN DPDK & TCP \& UDP \\ \hline
-WARP17 & TCP \& UDP \& HTTP \\ \hline
+\begin{tabular}{|c|c|c|} \hline
+\textbf{Tool} & \textbf{Session based} & \textbf{depends on} \\ \hline
+iPerf3\cite{iperf} & Yes & Kernel  \\ \hline
+HPING\cite{hping}  & Yes & Kernel \\ \hline
+BoNeSi\cite{bonesi} & Yes & Kernel \\ \hline
+PKTgen Kernel\cite{pktgen-kernel} & No & Kernel \\ \hline
+Pktgen DPDK\cite{pktgen-dpdk} & Yes & DPDK \\ \hline
+WARP17\cite{warp} & Yes & DPDK \\ \hline
+Moongen\cite{moongen} & Yes & DPDK \\ \hline
 \end{tabular}
 \caption{available tools}
 \label{table:tools}
 \end{table*} 
 
 \subsection{iPerf3}\label{sub:iperf3}
-Iperf3 is an improved version of Iperf that makes it possible the send traffic at higher rates than its predecessors. Since it needs a client and server to generate traffic and the fact that it is hard to generate traffic over 40Gb/s. A small test is performed to see if Iperf3 can be used to generate high bandwidth session based traffic streams. The test and the results can be found in chapter \ref{ch:method}. 
+Iperf3 is an improved version of Iperf that makes it possible the send traffic at higher rates than its predecessors. Since it needs a client and server to generate traffic and the fact that it is hard to generate traffic over 40Gb/s. A small test is performed to see if Iperf3 can be used to generate high bandwidth session based traffic streams. The test and the results can be found in chapter \ref{ch:method}.
 
-\subsection{PKTgen(kernel module}\label{sub:pktgen}
+\subsection{HPING}\label{sub:hping}
+HPING was started in 2006, it is a command-line oriented TCP/IP packet assembler. HPING is capable of sending crafted packets to a destination using spoofed IP addresses if necessary. ICMP, UDP, TCP and RAW IP modes are supported. Random source addresses can be used to send requests to simulate a DDOS attack.    
+
+\subsection{BoNeSi}\label{sub:bonesi}
+BoNeSi, 'the DDOS botnet simulator' according to the developers. BoNeSi supports ICMP, UDP and TCP (HTTP) flooding attacks from a defined botnet size. Source addresses can be specified in a text file which is used as input.  
+
+\subsection{PKTgen(kernel module)}\label{sub:pktgen}
 To generate a single flow of UDP traffic without the need of an application at the other side, PKTGEN from the linux kernel is the way to go. During the test phase preceding this paper, PKTGEN was tested on an Ubuntu machine and on a FreeBSD machine. 
 This was done to see if there are any major differences at the kernel level that offer more bandwidth or more packets per second. As it turned out, FreeBSD has the ability to generate 40 million packets per second (pps) from one single thread. Ubuntu needs 6 threads to reach the maximum amount of pps on a 40 Gb link. Other major differences are not found during this research between the different kernels. Therefore the FreeBSD kernel was abandoned after one week. 
 
-\subsection{Bonesi}\label{sub:bonesi}
-Bonesi is marketed as a DDOS test tool. It offers the ability to use random sources for TCP syn messages at a high rate. Possibly depleting resources at the targeted device, or Device Under Test (DUT). Resources that can be depleted are memory, since every session needs memory allocation, or session table limits.  
-
-\subsection{HING}\label{sub:hping}
-
-
 \subsection{DPDK toolkit}\label{sub:dpdk}
-The Data Plane Development Kit (DPDK) offers the availability to generate traffic from userland, bypassing the kernel, and directly talking to the hardware. In order to make DPDK run, supported hardware needs to be used. Tools can be created to run on top of DPDK. PKTGEN and WARP17 are two tools that are written on top of DPDK and should provided the ability to generate traffic in high volumes both UDP and TCP based.  
+The Data Plane Development Kit\cite{dpdk} (DPDK) offers the availability to generate traffic from userland, bypassing the kernel, and directly talking to the hardware. In order to make DPDK run, supported hardware needs to be used. Tools can be created to run on top of DPDK. Pktgen, Moongen and WARP17 are three tools that are written on top of DPDK and should provided the ability to generate traffic in high volumes both UDP and TCP based. DPDK cannot be run on BSD kernels. For the DPDK tests all machines where running Ubuntu 16.04 LTS. 
 
-\subsubsection{PKTGEN}\label{subsub:dpdk-pktgen}
+\subsubsection{Pktgen}\label{subsub:dpdk-pktgen}
+Pktgen for DPDK is available since May 2013. It is build to provide the generation of packets. The developers from DPDK provide Pktgen from the DPDK download page. This makes it a good option for a test. 
 
 \subsubsection{WARP17}\label{subsub:dpdk-WARP17}
+Juniper WARP17 is available since May 2016. It allows users to execute performance testing up to layer 7, currently only HTTP is supported. IPv6 is not supported at this moment. A simple server supposed to be able to generate around 2 million sessions per second between client and server.  
 
-\subsubsection{..}\label{}
-
-
+\subsubsection{Moongen}\label{}
+Moongen is available since October 2014. It is build to generate packets at high speed using a minimum amount of resources from the source. According to the developers it is more efficient than Pktgen.

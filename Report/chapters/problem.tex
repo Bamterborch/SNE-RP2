@@ -5,20 +5,47 @@ A wide variety of tools is available to generate traffic. Some of them offer an 
 Others are able to setup TCP sessions to transfer the traffic, but what tool to use for specific scenario's?   
 Nikhef wants the ability to test the hardware they might buy up to OSI level 7, the application level . Until now they where not be able to go beyond layer 4. The purpose of this research is to find out what is needed to generated high volume session based traffic generation.
 
+\section{Session based}\label{sec:sessionbased}
+When sending traffic over UDP, data gets dumped onto the link and is transferred to the destination. If the destination is waiting for the data it will be processed.
+When the destination does not know what to do with the data is will be discarded. TCP guarantees the delivery of the data as long as the session is alive between the end nodes.
+Techniques like Congestion control, receive window, congestion window and fast restransmission of packets make sure that data is delivered. These techniques all cost resources. 
+When a TCP session is created, memory is reserved by the client and server. In high speeds networks, the amount of reserved memory should be relatively high. 
+Ubuntu 16.04 sets the resources reservation as follows.
+
+\begin{verbatim}
+# maximum amount of read memory space in bytes
+net.core.rmem_max = 8388608
+# maximum amount of write memory space in bytes
+net.core.wmem_max = 8388608
+# amount of TCP read memory space in bytes (min, default, max)
+net.ipv4.tcp_rmem = 131072 1048576 8388608
+# amount of TCP write memory space in bytes (min, default, max)
+net.ipv4.tcp_wmem = 131072 1048576 8388608
+\end{verbatim}  
+
+The default TCP memory allocation is chosen when the machine is not handling much TCP sessions. But when more sessions are opened up the amount of allocated memory drops to the minimum amount. 
+Unfinished sessions keep this memory allocated. To deplete the servers resources, more requests should be send in the time frame the server keeps the sessions open.
+
 \section{Specifications}\label{sec:specifications}
+Some technical specifications are important and leading values for the measurements during this project. 
+
 \paragraph{Throughput}\mbox{}\\
 Throughput is the most significant value for generating load. How to fill up the total capacity of the link. When using TCP there is some overhead.
 
 \paragraph{Packets per second}\label{par:requnused}\mbox{}\\
-When a link has a speed of 40Gb/s and packets have a size of 88bytes. This includes the interframe gap, the preamble and a VLAN tag. A maximum of 56.8 Million packets per second (Mpps) can be transferred over the link in one direction. When using a 100Gb/s line the theoretical maximum of packets per second (pps) is 142 Million.  
+When a link has a speed of 40Gb/s and packets have a size of 88bytes. This includes the inter frame gap, the preamble and a VLAN tag. A maximum of 56.8 Million packets per second (Mpps) can be transferred over the link in one direction. When using a 100Gb/s line the theoretical maximum is 142 Mpps.   
 
 \paragraph{Sessions}\label{par:legitmoas}\mbox{}\\
-\todo[inline]{Find out something about sessions}
+A session is a unique set of source IP, destination IP, source port and destination port. An established session may involve more than one message in each direction.
+The amount of session per second is deterministic for the availability services behind firewalls. A Firewall needs to keep states of the sessions from source to destination. 
+When new sessions come in the firewall has to process them according to the rule base. When a session is approved, most vendors move it to fast-path processing. This is a table with accepted sessions and new traffic in the same session is handled in hardware.
 
 \paragraph{Application specific traffic}\mbox{}\\
-Different applications can be hosted, this research will focus on web applications. 
-The average packet size of web traffic is around ....
-\todo[inline]{fill in the size of average http traffic size}
+Sandvine provides communication solutions to service providers all over the world. In bi-annual reports they show the traffic baseline. Around 70\% of the traffic is streaming audio and video. At the second place is web browsing and third are marketplace solutions. A lot of on-line services are offered over a web page. 
+Therefore it is interesting to look at http traffic.
+
+\paragraph{Packetsize}\label{par:packetsize}
+According to Murray et all. \cite{murray2012state}  in 2012, 99\% of the traffic inside a company has an MTU size of 1500. Using Jumbo packets (MTU of 9000) the amount of overhead is less. Jumbo packets can help when large amounts of data need to be transfered. Jumbo frames are not enabled by default on high speed links.  
 
 \section{Research question}\label{sec:researchquestion}
 

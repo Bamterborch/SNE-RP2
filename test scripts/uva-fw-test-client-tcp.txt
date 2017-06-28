@@ -1,0 +1,48 @@
+
+# client
+
+add tests l3_intf port 0 ip 192.87.92.0 mask 255.255.255.254
+add tests l3_gw port 0 gw 192.87.92.1 
+
+add tests client tcp port 0 test-case-id 0 src 192.87.92.0 192.87.92.0 sport 10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
+set tests client raw port 0 test-case-id 0 data-req-plen 64 data-resp-plen 64
+
+set tests timeouts port 0 test-case-id 0 init 30
+set tests timeouts port 0 test-case-id 0 uptime 1
+set tests timeouts port 0 test-case-id 0 downtime 0
+set tests criteria port 0 test-case-id 0 run-time 120
+
+add tests client tcp port 0 test-case-id 1 src 192.87.92.0 192.87.92.0 sport 10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
+set tests client raw port 0 test-case-id 1 data-req-plen 256 data-resp-plen 256
+
+set tests timeouts port 0 test-case-id 1 init 30
+set tests timeouts port 0 test-case-id 1 uptime 1
+set tests timeouts port 0 test-case-id 1 downtime 0
+set tests criteria port 0 test-case-id 1 run-time 120
+
+add tests client tcp port 0 test-case-id 2 src 192.87.92.0 192.87.92.0 sport 10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
+set tests client raw port 0 test-case-id 2 data-req-plen 512 data-resp-plen 512
+
+set tests timeouts port 0 test-case-id 2 init 30
+set tests timeouts port 0 test-case-id 2 uptime 1
+set tests timeouts port 0 test-case-id 2 downtime 0
+set tests criteria port 0 test-case-id 2 run-time 120
+
+add tests client tcp port 0 test-case-id 3 src 192.87.92.0 192.87.92.0 sport 10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
+set tests client raw port 0 test-case-id 3 data-req-plen 1024 data-resp-plen 1024
+
+set tests timeouts port 0 test-case-id 3 init 30
+set tests timeouts port 0 test-case-id 3 uptime 1
+set tests timeouts port 0 test-case-id 3 downtime 0
+set tests criteria port 0 test-case-id 3 run-time 120
+
+add tests client tcp port 0 test-case-id 4 src 192.87.92.0 192.87.92.0 sport 10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
+set tests client raw port 0 test-case-id 4 data-req-plen 2048 data-resp-plen 2048
+
+set tests timeouts port 0 test-case-id 4 init 30
+set tests timeouts port 0 test-case-id 4 uptime 1
+set tests timeouts port 0 test-case-id 4 downtime 0
+set tests criteria port 0 test-case-id 4 run-time 120
+
+start tests port 0
+show tests ui
