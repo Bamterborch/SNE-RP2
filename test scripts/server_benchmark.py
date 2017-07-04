@@ -243,7 +243,7 @@ def run():
     print 'Description, req_size, resp_size, rate, tx pps, rx pps, tx usage, rx usage'
 
     # TCP RAW
-    tcp_raw_cfg = [(0, 0), (64, 64), (256, 256), (512, 512), (1024, 1024), (4096, 4096)]
+    tcp_raw_cfg = [(64, 64), (256, 256), (512, 512), (1024, 1024), (4096, 4096)]
 
     for (req_size, resp_size) in tcp_raw_cfg:
         run_test_averaged('TCP request={req!s}b response={resp!s}b'.format(req=req_size,
@@ -251,7 +251,7 @@ def run():
                           TCP, RAW, req_size, resp_size, run_cnt)
 
     # HTTP
-    http_cfg = [(0, 0), (64, 64), (256, 256), (512, 512), (1024, 1024), (4096, 4096)]
+    http_cfg = [(64, 64), (256, 256), (512, 512), (1024, 1024), (4096, 4096)]
 
     for (req_size, resp_size) in http_cfg:
         run_test_averaged('HTTP request={req!s}b response={resp!s}b'.format(req=req_size,
@@ -259,7 +259,7 @@ def run():
                           TCP, HTTP, req_size, resp_size, run_cnt)
 
     # UDP RAW
-    udp_raw_cfg = [(0, 0), (64, 64), (256, 256), (512, 512), (1024, 1024), (4096, 4096)]
+    udp_raw_cfg = [(64, 64), (256, 256), (512, 512), (1024, 1024), (4096, 4096)]
     
     for (req_size, resp_size) in udp_raw_cfg:
         run_test_averaged('UDP request={req!s}b response={resp!s}b'.format(req=req_size,

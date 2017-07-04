@@ -52,81 +52,12 @@ def init_test():
     warp17_wait(env)
     return warp17_pid
 
-def configure_client_port():
-    # Configure 2 client IP interfaces and no default gateway on port 0.
-    # First the default gw
-    pcfg = b2b_port_add(eth_port=0, def_gw =Ip(ip_version=IPV4, ip_v4=0))
-
-    intf1 = (Ip(ip_version=IPV4, ip_v4=b2b_ipv4(eth_port=0, intf_idx=0)),
-             Ip(ip_version=IPV4, ip_v4=b2b_mask(eth_port=0, intf_idx=0)),
-             b2b_count(eth_port=0, intf_idx=0))
-#    intf2 = (Ip(ip_version=IPV4, ip_v4=b2b_ipv4(eth_port=0, intf_idx=1)),
-#             Ip(ip_version=IPV4, ip_v4=b2b_mask(eth_port=0, intf_idx=1)),
-#             b2b_count(eth_port=0, intf_idx=1))
-    b2b_port_add_intfs(pcfg, [intf1])
-
-    # Ask WARP17 to add them to the config.
-    err = warp17_method_call(warp17_host, warp17_port, Warp17_Stub, 'ConfigurePort', pcfg)
-    if err.e_code != 0:
-        die('Error configuring port 0.')
-
-    # Prepare the L4 Client config (eth_port 0)
-    # source ports in the range: [10001, 30000]
-    # destination ports in the range: [101, 200]
-    # In total (per client IP): 2M sessions.
-    # In total: 4M sessions
-    sport_range=L4PortRange(l4pr_start=10001, l4pr_end=30000)
-    dport_range=L4PortRange(l4pr_start=101, l4pr_end=200)
-    l4_ccfg = L4Client(l4c_proto=TCP,
-                       l4c_tcp_udp=TcpUdpClient(tuc_sports=sport_range,
-                                                tuc_dports=dport_range))
-
-    rate_ccfg = RateClient(rc_open_rate=Rate(),  # no rate limiting
-                           rc_close_rate=Rate(), # no rate limiting
-                           rc_send_rate=Rate())  # no rate limiting
-
-    delay_ccfg = DelayClient(dc_init_delay=Delay(d_value=5),
-                             dc_uptime=Delay(d_value=10),   # clients stay up for 40s
-                             dc_downtime=Delay(d_value=1)) # clients reconnect after 10s
-
-    # Prepare the HTTP Client config
-    http_ccfg = AppClient(ac_app_proto=HTTP,
-                          ac_http=HttpClient(hc_req_method=GET,
-                                             hc_req_object_name='/index.html',
-                                             hc_req_host_name='10.10.10.10',
-                                             hc_req_size=2048)) # configure HTTP requests of size 2K
-
-    # Prepare the Client test case criteria.
-    # Let the test case run for 5 minutes.
-    ccrit = TestCriteria(tc_crit_type=RUN_TIME, tc_run_time_s=300)
-
-    # Put the whole test case config together.
-    ccfg = TestCase(tc_type=CLIENT, tc_eth_port=0,
-                    tc_id=0,
-                    tc_client=Client(cl_src_ips=b2b_sips(eth_port=0, ip_count=2),
-                                     cl_dst_ips=b2b_dips(eth_port=0, ip_count=1),
-                                     cl_l4=l4_ccfg,
-                                     cl_rates=rate_ccfg,
-                                     cl_delays=delay_ccfg,
-                                     cl_app=http_ccfg),
-                    tc_criteria=ccrit,
-                    tc_async=True)
-
-    # Ask WARP17 to add the test case config
-    err = warp17_method_call(warp17_host, warp17_port, Warp17_Stub, 'ConfigureTestCase', ccfg)
-    if err.e_code != 0:
-        die('Error configuring client test case.')
-
-    print 'Clients configured successfully!\n'
-
-# --------------------------------
-
 def configure_server_port():
     # Configure 1 server IP interface and no default gateway on port 1.
     # First the default gw
-    pcfg = b2b_port_add(eth_port=1, def_gw=Ip(ip_version=IPV4, ip_v4=0))
+    pcfg = b2b_port_add(eth_port=0, def_gw=Ip(ip_version=IPV4, ip_v4=0))
 
-    intf1 = (Ip(ip_version=IPV4, ip_v4=b2b_ipv4(eth_port=1, intf_idx=0)),
+    intf1 = (Ip(ip_version=IPV4, ip_v4=b2b_mask(eth_port=0, intf_idx=0)),
              Ip(ip_version=IPV4, ip_v4=b2b_mask(eth_port=1, intf_idx=0)),
              b2b_count(eth_port=0, intf_idx=0))
     b2b_port_add_intfs(pcfg, [intf1])
@@ -167,14 +98,6 @@ def configure_server_port():
 
     print 'Servers configured successfully!\n'
 
-def start_client_port():
-    err = warp17_method_call(warp17_host, warp17_port, Warp17_Stub, 'PortStart',
-                             PortArg(pa_eth_port=0))
-    if err.e_code != 0:
-        die('Error starting client test cases.')
-
-    print 'Clients started successfully!\n'
-
 def start_server_port():
     err = warp17_method_call(warp17_host, warp17_port, Warp17_Stub, 'PortStart',
                              PortArg(pa_eth_port=1))
@@ -183,34 +106,6 @@ def start_server_port():
 
     print 'Servers started successfully!\n'
 
-def check_stats():
-    # Just check client stats a couple of times (once a second and stop
-    # afterwards)..
-    for i in range(0, 10):
-        client_result = warp17_method_call(warp17_host, warp17_port, Warp17_Stub,
-                                           'GetTestStatus',
-                                           TestCaseArg(tca_eth_port=0,
-                                                       tca_test_case_id=0))
-        if client_result.tsr_error.e_code != 0:
-            die('Error fetching client test case stats.')
-
-        print 'Client test case state: ' + str(client_result.tsr_state) + '\n'
-        print 'Global stats:'
-        print client_result.tsr_stats.tcs_client
-        print 'Rate stats:'
-        print client_result.tsr_rate_stats
-        print 'HTTP Client stats:'
-        print client_result.tsr_app_stats.tcas_http
-
-        time.sleep(1)
-
-def stop_client_port():
-    err = warp17_method_call(warp17_host, warp17_port, Warp17_Stub, 'PortStop',
-                             PortArg(pa_eth_port=0))
-    if err.e_code != 0:
-        die('Error stopping client test cases.')
-
-    print 'Clients stopped successfully!\n'
 
 def stop_server_port():
     err = warp17_method_call(warp17_host, warp17_port, Warp17_Stub, 'PortStop',
@@ -221,19 +116,15 @@ def stop_server_port():
     print 'Servers stopped successfully!\n'
 
 def run_test():
-    ''' Assumes a back to back topology with two 40G ports. '''
-    ''' Port 0 emulates clients and port 1 emulates servers. '''
+    ''' Assumes client and server seperated '''
 
     warp17_pid = init_test()
-    configure_client_port()
     configure_server_port()
 
     start_server_port()
-    start_client_port()
 
-    check_stats()
+    time.sleep(400)
 
-    stop_client_port()
     stop_server_port()
 
     # Cleanup: Ask WARP17 to stop

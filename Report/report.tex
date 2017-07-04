@@ -75,7 +75,8 @@ Bram ter Borch\\
 \includegraphics[scale=0.07]{images/uva_logo.png}
 \vspace*{2.5cm}
 \begin{abstract}
-This will become the abstract.
+Pushing packets over a link does not seem hard to accomplish. This is true for UDP traffic since it doesn't do session synchronization nor congestion control and does not offer retransmission of data. 
+TCP is a session oriented reliable protocol, it assures that data send by the Data transfer Node (DTN) is received by the client. When it comes to generating session based traffic the techniques implemented in the TCP stack make it harder to overload a device in terms of bandwidth without making changes to the protocol. The amount of packets per second and the amount of sessions are the possible limitations this research is focusing on. Using the Data Plane Development Kit, use cases are created to test all the hardware in the path from client to DTN. The weakest link in the path will present itself when the use cases from this report are being executed.      
 \end{abstract}
 \end{center}
 \end{titlingpage}
@@ -95,11 +96,11 @@ This will become the abstract.
 \input{chapters/conclusion.tex}
 % UNCOMMENT THIS TO PRINT ONLY CITED REFERENCES
 \nocite{*}
-\bibliographystyle{unsrt}
+\bibliographystyle{plainnat}
 \bibliography{report}
-%\begin{appendices}
-%\appendix
-%\input{appendices/comparison.tex}
+\begin{appendices}
+\appendix
+\input{appendices/acronym.tex}
 %\input{appendices/flowchart.tex}
-%\end{appendices}
+\end{appendices}
 \end{document}
