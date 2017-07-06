@@ -1,0 +1,100 @@
+1.
+Hello, 
+
+My name is Bram, 
+I have been walking around at Nikhef for the past 5 weeks with an assignment for my master thesis.
+The toppic is session based high bandwidth throughput testing.
+
+Before I tell you what the goal of this project is, I want to tell you about an event that is the main reason this
+toppic is interesting for me.
+
+2.
+Almost 4 years ago, October 31st 2013 I just started as a network administrator for the 
+university of applied sciences in Amsterdam. When a DDOS attack was launched towards a Server.
+Significant detail is that the firewall allowed this traffic. Traffic came in at a rate of 6Gb/s
+3.5K sessions and 600 thousand packets per second came in. It was a DNS reflection attack. 
+
+The firewall started to break down, OSPF failed, management sessies broke down. 
+The firewall is the router for the datacenter. So the datacenter went down.
+
+Service delivery stopped and we couldn't do anything about this. The machine was bought 
+to handle 10Gb/s in and 10Gb/s out. We had to contact surfnet to have them analyse the traffic and block it.
+
+3. 
+This was a simple UDP based attack. When TCP is used a lot more mechanism are in place to keep
+data flowing towards the destination. these mechanisms also take resources from the hosts.
+This brings us to the research question
+
+4.
+What is needed to perform high bandwidth session based throughput testing and how to go beyond 
+pure network infrastructure testing. 
+
+So basically the goal is to test up to and included the application layer. 
+
+Explain terms high bandwidth and session based. 
+
+5. 
+The goals of this project is te reach 40Gb/s of TCP traffic.
+56Mpps Explain this number.
+Possibly make it session based. 
+
+6.
+Explain test environment using 3 equal servers as source and destination
+Intel Xeon CPU with 8 cores. 64GB RAM and a 40Gb/s nic
+
+7.
+During a first test to see what tools are available for throughput testing I came across 
+some easy to use tools and some DPDK based tools. Lets try them all. 
+ 
+8. 
+With the information about up and downsides of the tools and the options the tools have some use cases are created.
+When you buy new interface cards you want them to reach the limits. 
+
+9.
+Use case 1 is intended to get the limits of the NIC.
+Now almost 40Gb/s is reached using TCP. The overhead makes it get stuck at 38. something.
+
+10 + 11. 
+The maximum amount of 42 Mpps was reached using small packets of 64 bytes. 
+This number is the limit because of limitations in the PCI Express bus of the nic.
+It only supports up to 70 Mpps bidirectional, and around 40 Mpps unidirectional.
+
+12.
+UC3 was executed using 1 server connected with 2 nics to a switch running Warp. 
+The benchmark script of warp displayed a bandwith usage of 10 % of the lins capacity for packets with a size of...
+And up to 45 % of line capacity for packets of 512 bytes.
+
+13. 
+A almost constant value of 1 million session per second are reached using WARP. 
+This benchmark executes the tests 3 times and calculates the average. 
+
+14.
+Now it is time for a real world test. I found a company that just placed a new firewall and 
+a new datacenter interconnect layer. These where not tested yet. 
+Everything is redundant. explain the image
+
+15.
+Some tests are executed on the real world environment from the client to the server.
+First a WARP to NGINX test was executed. increasing the request file size every 90 seconds.
+A RAW TCP test was performed between the machines using WARP. It created so many flows the firewalls
+stopped functioning. 
+After this test that lasted for 10 minutes an HTTP test was started. Again the firewall failed working.
+
+
+16.
+After a failover the TCP test was overloading the 2nd firewall. Explain the graphs.
+
+17.
+Conclusion: explain why DPDK is the way to proceed.
+Due to the results the usecases are valid use cases.
+Weakest link can be found
+Monitoring is important
+
+18.
+Future work
+explain
+
+19. questions?
+
+
+

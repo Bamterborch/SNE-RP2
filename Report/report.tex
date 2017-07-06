@@ -76,7 +76,10 @@ Bram ter Borch\\
 \vspace*{2.5cm}
 \begin{abstract}
 Pushing packets over a link does not seem hard to accomplish. This is true for UDP traffic since it doesn't do session synchronization nor congestion control and does not offer retransmission of data. 
-TCP is a session oriented reliable protocol, it assures that data send by the Data transfer Node (DTN) is received by the client. When it comes to generating session based traffic the techniques implemented in the TCP stack make it harder to overload a device in terms of bandwidth without making changes to the protocol. The amount of packets per second and the amount of sessions are the possible limitations this research is focusing on. Using the Data Plane Development Kit, use cases are created to test all the hardware in the path from client to DTN. The weakest link in the path will present itself when the use cases from this report are being executed.      
+But for a session oriented reliable protocol such as TCP - which ensures that the data sent is actually received by the target like a Data Transfer Node (DTN), it is much more complex to achieve. For this session-based traffic the techniques implemented in a standards-compliant TCP stack make it harder to overload a device in terms of bandwidth.
+Thus, both the amount of packets per second and the number of concurrent sessions are the possible limitations this research is focusing on.
+Based on a set of use cases, this research investigates the suitability of various load testing tools - with and without the use of the Data Plane Development Kit - and apply these tools to various end-to-end network topologies and hardware systems between a client and a target DTN. 
+The report demonstrates that the weakest links in the path can be identified and its load tolerance limits can be reached through these use cases.
 \end{abstract}
 \end{center}
 \end{titlingpage}
@@ -101,6 +104,6 @@ TCP is a session oriented reliable protocol, it assures that data send by the Da
 \begin{appendices}
 \appendix
 \input{appendices/acronym.tex}
-%\input{appendices/flowchart.tex}
+\input{appendices/software.tex}
 \end{appendices}
 \end{document}

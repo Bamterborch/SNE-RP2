@@ -1,34 +1,43 @@
 \chapter{Conclusion}\label{ch:conclusion}
-From the preliminary tests started in chapter \ref{ch:experiments} and the use cases in chapter \ref{ch:method}, results are acquired and described in chapter \ref{ch:results}.
-Conclusion can be drawn from the results. \\
-%Flow control and icongestion control used by TCP make sure that links and devices in the path between client and server cannot be overloaded. To get the limitations of hardware, the focus on getting the limitations should be pointing towards packets per second and sessions per second. 
-When it comes to generating session based high bandwidth throughput testing, the 'easy to use' tools are not powerful enough. IPerf makes it to 40Gb/s, but does so over only one TCP session per thread. 
-Kernel based pktgen was able to generate 40Gb/s and 40Mpps. But it only capable of sending UDP traffic. 
-The 'easy to use' tools are useful for quick tests.
-DPDK's capability offer much more potential when it comes to session based and application based throughput testing. \\ 
+From the tool assessment performed in chapter \ref{ch:experiments} and the use cases in chapter \ref{ch:method}, results are gathered and described in chapter \ref{ch:results}.
+The results, executed according to current standards and best practices and reproduced as a matter of course, allow to draw firm conclusions on tool suitability and the necessary characteristics of high-bandwidth session based throughput tests in a real-world environment. \\
+When it comes to generating session based high bandwidth throughput testing, the 'easy to use' tools are not powerful enough. IPerf achieves 40Gb/s, but does so over only one TCP session per thread. 
+Kernel based pktgen was able to generate 40Gb/s and 40Mpps, but it is only capable of sending UDP traffic. 
+Yes, the 'easy to use' tools can be useful for quick tests of per-device limits and as a comparison baseline.
+DPDK's capabilities offer much more potential when it comes to session based and application based throughput testing. \\ 
 
-A design conclusion can be drawn from the results as well. A machine that needs to handle a large amount of sessions and sending session based data should not be placed behind a firewall.
-The statefull firewalls are not build to handle the amount of sessions per second needed in some cases.  
+Design conclusions can be drawn from the results as well. A machine that needs to handle a large amount of sessions and sending session based data should not be placed behind a firewall.
+The stateful firewalls are not build to handle the amount of sessions per second needed in many real-world data transfer scenarios, such as those with many parallel streams and concurrent sessions.  
 
-%The use cases from this report offer a method to tests the infrastructure of a path towards an application.
-%When there is a weak link in the path, it will present itself.
+During this research the limitations of the hardware used during the tests was found. For example the limitation of the PCI express bus, the hashing algorithms used by the switching hardware caused a maximum throughput of 10Gb/s over one physical link, the limitations of the server hardware (the maximum link performance reached was 40\% of the total available bandwidth using WARP as a server). Therefore one could discuss if it is useful to equip a web server with a 40Gb/s interface when the maximum HTTP performance using WARP is below 20Gb/s.
+Next to this, NGINX reached a maximum of 11Gb/s of HTTP traffic. So when running NGINX a 40Gb/s card is not economically viable. 
 
+To perform session based throughput tests up to layer 4, pktgen on top of DPDK is capable of reaching hardware limits.
+For application layer link testing, WARP is the framework to use. Applications need to be added to the framework but the start looks promising.
 
-\section{Potential}
-The Potential of DPDK is still a work in progress. New tools that use the power of DPDK are introduces every year.
-Pktgen (2013), MoonGen(2014), T-rex (2015), WARP17(2016).
-The possibilities to test up to layer 7 of the OSI model are offered to system and network administrators. 
+\section{Suitability of the Data Plane Development Kit}
+The Data Plane Development Kit is still a work in progress, and today we see only the beginning of its potential being harnessed for network load testing. New tools that use the power of DPDK are introduced every year:
+Pktgen (2013), MoonGen(2014), T-rex (2015), WARP(2016).
+The possibilities to test up to layer 7 in the OSI model are now becoming available to system and network administrators. 
 Current tooling is capable of generating a million session per second using simple server hardware. 
 What can be done when powerful servers attached to the Internet with 100Gb/s are used for 'performance testing'?  
 
 \section{Future Work}
-During this project an attempt is made to use an IBM Power8 machine to generate traffic at 100Gb/s. Due to problems and time restrictions this attempt was abandoned.
-Testing on powerful server hardware in order to reach a 100Gb/s is the next step. 
+During this project an attempt was also made to use an IBM Power8 machine to generate traffic at 100Gb/s. Because of problems during compilation and memory allocation this attempt had to be abandoned due to time constraints.
+An IBM power machine in a different network seems capable of sending traffic. An attempt needs to be made to get benchmark results from this machine.
 
 During this project, HTTP was used for application testing. Support for more protocols need to be added to applications like WARP. 
 
 Currently WARP supports IPv4 only. When IPv6 is supported, the performance should be tested using IPv6. 
 
-DPDK supports multiple NIC's. During the project a small effort is made to start generating traffic over 100Gb/s Mellanox cards.
-This was successful up to 60Gb/s TCP traffic, until the system crashed. Real tests need to be run using the tooling discussed in this paper. 
-Support and limitations for different 100Gb/s cards need to be researched.   
+DPDK supports multiple NIC's. During the project an effort was made to start generating traffic over 100Gb/s Mellanox cards.
+This was successful up to 60Gb/s TCP traffic, until the system crashed for reasons that could not be determined within the scope of this project. Real tests need to be run using the tooling discussed in this paper. 
+Support and limitations for different 100Gb/s cards need to be researched.
+
+Monitoring in WARP should be improved, currently the API provides the only way of getting detailed results.
+Performance of the NGINX server can be tuned to handle more requests. 
+Ramping up the session per second to find the limitations of the hardware in the real-life environment should be done. 
+
+The Generation 3, 8 lane PCI express cards are limited as shown in this paper. What are the limitations for PCI express cards using 16 lanes, does it scale linearly or not?
+
+

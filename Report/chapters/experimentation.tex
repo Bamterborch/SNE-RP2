@@ -7,39 +7,35 @@ All experiments described in this chapter are executed in a test environment at 
   \label{fig:testenv}
 \end{figure}
 
-Three identical servers (A, B and C)  are used to perform the tests. Table \ref{tab:testmachines} contains the specifics of all the servers. 
-These servers are all connected to a Juniper QFX10k2 (device S). This switch has 32 40Gb/s QSFP ports. 
-Some of these ports are configured as a 100Gb/s interface. 
-During the experiments 2 extra machines are introduced into the network. Both containing 100Gb/s Mellanox cards. 
-These are machines D and E in table \ref{tab:testmachines} \\
+The figure shows five server systems, of which three identical servers (A, B and C in table \ref{tab:testmachines}) are used to perform the tests whose results are described in this paper.
+During the experiments 2 extra machines (D and E in table 4.1), both containing 100Gb/s Mellanox cards, have been introduced in the network. All servers were connected to a Juniper QFX10k2 (device S in Fig. \ref{fig:testenv}), which provides 32 40Gb/s QSFP ports, of which some can be and are reconfigured as a single 100Gb/s interface.
 
 \begin{table}[H]
 \centering
-\caption{Machines used for experiments}
+\caption{Specifications from the machines used for experiments}
 \label{tab:testmachines}
 \begin{tabular}{|l|l|l|l|}
 \hline
 \textbf{Machine} & \textbf{A \& B \& C}                                                                          & \textbf{D}                                                                                    &\textbf{E}                                                                     \\ \hline \hline
-Cores   & 8                                                                                    & 56                                                                                   & 128                                                                   \\ \hline
+Threads & 8                                                                                    & 56                                                                                   & 128                                                                   \\ \hline
 CPU     & \begin{tabular}[c]{@{}l@{}}Intel(R) Xeon(R) CPU \\ E3-1230 v5 @ 3.40GHz\end{tabular} & \begin{tabular}[c]{@{}l@{}}Intel(R) Xeon(R) CPU \\ E5-2697 v3 @ 2.60GHz\end{tabular} & POWER8E                                                               \\ \hline
 Memory  & 4x 16GB @ 2133 Mhz                                                                   & 24x 8GB @ 1067Mhz                                                                    & 2x 64GB                                                          \\ \hline
 NIC     & \begin{tabular}[c]{@{}l@{}}Intel XL710 \\ 40Gb/s\end{tabular}                        & \begin{tabular}[c]{@{}l@{}}Mellanox ConnectX-4\\ 100Gb/s\end{tabular}                & \begin{tabular}[c]{@{}l@{}}Mellanox ConnectX-4\\ 100Gb/s\end{tabular} \\ \hline
 \end{tabular}
 \end{table}
 
-Device A is always acting as the DTN. Depending on the tests the source can be machine B, C or B and C.
+Device A is always acting as the target. Depending on the tests the source can be machine B, C or B and C together.
 For testing beyond 40Gb/s, one of the 100Gb/s machines (D or E) can be used.
-Machine M is a Simple Network Management Protocol (SNMP) server. This SNMP server query's the test servers every 10 seconds for status. 
+Machine M is a Simple Network Management Protocol (SNMP) collector. This SNMP collector query's the test servers every 10 seconds for status. 
 Packets per second and bits per second are retrieved from the device along with CPU and Memory statistics.
-Switch S is also added to Server M as a client. 
+Switch S is also added to the collector as a data source. 
 SNMP is active on the management interface of the devices.
-The high bandwidth interfaces are able to connect to each other over a non-routed VLAN. This makes sure the test traffic cannot interfere with SNMP reads from server M. 
+The high bandwidth interfaces are able to connect to each other over a non-routed VLAN. This makes sure the test traffic cannot interfere with SNMP reads from collector M. 
 
-\section{RFC}\label{sub:rfc}
-Multiple RFC's are written that provide guidelines for throughput testing.
-Terms from RFC1242 \cite{rfc1242} will be used during this research and techniques from RFC2544 \cite{rfc2544} are taken into account during this research.
-RFC6349 \cite{rfc6349} describes a framework for TCP throughput testing. The framework is using iPerf to perform the tests.
-RFC6815 \cite{rfc6815} describes why RFC2544 should not be followed in production environments. 
+\section{Standards and best practices}\label{sub:rfc}
+Multiple RFC's have been written that provide guidelines for throughput testing.
+The terminology from RFC 1242\cite{rfc1242} will be used throughout this paper and techniques from RFC 2544 \cite{rfc2544} have been taken into account during this research.
+However, the aforementioned practices and benchmarks of RFC 2522 (and 6349\cite{rfc6349}) are centered on traffic generation that overloads network devices, which is detrimental to user network experience in production (shared) networks, as was discussed in RFC 6815\cite{rfc6815}.
 
 A quick list with guidelines from these RFC's is as follows:
 
@@ -47,92 +43,87 @@ A quick list with guidelines from these RFC's is as follows:
 \item{Throughput tests should have a minimum runtime of 60 seconds}
 \item{The environment cannot be a production environment}
 \item{Devices under test (DUT) will possibly be overloaded}
-\item{Tests should be done 3 times and averages have to be taken from the results.}
+\item{Tests should be done 3 times and averages taken from the results.}
 \end{itemize} 
 
 \section{'Easy to use' tools}
-Some of the 'easy to use' tools are used to find the usability of the tools for this report. All the 'easy to use' tools are tested on Ubuntu and FreeBSD. This is done since preliminary tests showed significant differences in the amount of packets send per second. The results of these experiments are all coming from machines running Ubuntu 16.04 LTS.  
+Some of the 'easy to use' tools are used to guage the usability of the tools for this report. All the 'easy to use' tools are tested on Ubuntu and FreeBSD. This is done since preliminary tests showed significant differences in the amount of packets sent per second between these operating systems. The results of the experiments are all coming from machines running Ubuntu 16.04 LTS.  
 
 \subsection{iPerf3}
-IPerf3 is a client server based tool that allows packet generation. Machine A is setup as a server running on default TCP port 5201, machine B is setup as a client connecting to the server. 
-First sending 64 bytes of traffic in each packet. The maximum amount of packets was not reached until 6 threads where used to generate traffic (the maximum amount of pps is explained in section \ref{sub:pktgen}. 40Gb/s was reached when 16 threads ran with packets of 1500bytes. When using packets of 9000 bytes, only 2 threads needed to run at the same time to reach 40Gb/s. The fact that iPerf3 is sending traffic over one single TCP session per thread makes it less useful for this project.
+Machine A is set up as a server running on default TCP port 5201, machine B is setup as a client connecting to the server. 
+The initial tests were performed sending 64 bytes of traffic in each packet. The maximum amount of packets was not reached until 6 threads where used to generate traffic (more on the maximum amount of pps is explained in section \ref{sub:pktgen}). 40Gb/s was reached when 16 threads ran with packets of 1500 bytes. When using packets of 9000 bytes, yet as explained in section \ref{par:packetsize} this packet size is not representative of real-world network usage, only 2 threads needed to run at the same time to reach 40Gb/s. The fact that iPerf3 is sending traffic over one single TCP session per thread makes it less useful for this project.
 
 \subsection{Hping}
-Hping is used to send spoofed traffic to a server. It was capable of sending a maximum of 13Gb/s of syn packets towards a server when packets of 9000bytes are being transferred. Although it has some nice features and probably has the capacity to bring down certain environments, the bandwidth usage  is to less for this project. It is very useful for testing open ports in firewalls.  
+Hping is used to send spoofed traffic to a server. It was capable of sending a maximum of 13Gb/s of SYN packets towards a server when packets of 9000 bytes are being transferred. Although it has nice features to craft packets and probably has the capacity to overload certain environments, the maximum bandwidth is sub-par for this project.  
 
 \subsection{Bonesi}
-The maximum output that was produced with BoNeSi was 300Mb/s and 500Kpps. This is not sufficient for this project and therefore BoNeSi will not be used during further testing. A source IP list can be created, so it can be used to simulate traffic from different locations inside the network to check if firewall rules are setup correctly and traffic is allowed to flow from different sources inside the network. For this scenario, high bandwidth is not necessary and BoNeSi is a solid solution. Although the maximum bandwidth is insufficient, 500Kpps is enough to overload a small firewall.  
+The maximum output that was produced with BoNeSi was 300Mb/s and 500Kpps. This is not sufficient for this project and therefore BoNeSi will not be used during further testing. A source IP list can be created, so it can be used to simulate traffic from different locations inside the network to check if firewall rules are setup correctly and traffic is allowed to flow from different sources inside the network. For such a scenario, high bandwidth is not necessary and BoNeSi is a solid solution. Although the maximum bandwidth is insufficient, 500Kpps is enough to overload a small firewall.  
 
-\section{DPDK}
-The Data Plane Development Kit (DPDK) offers the possibility of bypassing the kernel. CPU, memory and interfaces need to be reserved to do one task. The hardware is capable of talking directly to each other without kernel interrupts. Fast packet generation and transportation inside a system is needed in order to reach 40Gb/s of session based data at layer 4 and op to layer 7. 
+\section{Tools using the Data Plane Development Kit}
+The Data Plane Development Kit (DPDK) offers the possibility of bypassing the kernel. CPU, memory and interfaces need to be dedicated to do one task. The hardware is capable of talking directly to the testing software without kernel interrupts or memory copies. This enables the fast packet generation and transportation inside a system that are needed in order to reach 40Gb/s of session based data at layer 4 and up to layer 7. 
 
 \subsection{pktgen}\label{sub:pktgen}
 For this experiment, like all others, server A is the destination, source is server B. Both machines are identical as seen in table \ref{tab:testmachines}. Pktgen is not a client server based application. System A is idle, B will generate traffic. Performance testing between UDP and TCP did not show significant differences between the two protocols. To get some hardware specifics Pktgen was set to send 64 byte packet at the maximum possible rate.\\ 
-This ended up in 42Mpps where the expected amount of packets is 56Mpps unidirectional. The Intel card seems to be the bottleneck here. The DPDK website offers a guide to setup the system in order to get the maximum performance out of the Intel XL710 40Gb/s card. Flashing a new firmware version into the card was a first step. After following the guide the result remained the same. According to conclusions drawn out of a report from Chelsio \cite{chelsio} the PCI express bus is capable of transferring 70Mpps bidirectional. Unidirectional it can reach a maximum of 42Mpps. Scaling up the packet size from 64 bytes to 1024 bytes resulted in a sweet spot of a bandwidth usage of 39.8Gb/s and a total of 11Mpps. Figures \ref{fig:pktgenlink} and \ref{fig:pktgenpps} display the amount of bandwidth transferred and the amount of pps transferred during the tests using 400 byte packets (which is the sweet spot). 
+This ended up in 42Mpps where the expected amount of packets is 56Mpps unidirectional. This limitation appears to originate from the (Intel XL710) network card and its connection to the main system, since the observed number of packets per second is lower than the advertised switch capability. Additional configuration was therefore carried out in order to ascertain the cause of this 42Mpps limit. The DPDK website offers a guide to setup the system in order to get the maximum performance out of the Intel XL710 40Gb/s card. Flashing a new firmware version into the card was a first step. After following the DPDK guide the result remained the same. According to conclusions drawn out of a report from Chelsio \cite{chelsio} the PCI express bus is capable of transferring 70Mpps bidirectional. Unidirectional it can reach a maximum of 42Mpps. Ramping up the packet size from 64 bytes to 1024 bytes resulted in finding a sweet spot with a bandwidth usage of 39.8Gb/s and a total of 11Mpps. Figures \ref{fig:pktgenlink} and \ref{fig:pktgenpps} display the amount of bandwidth transferred and the amount of pps transferred during the tests using 400 byte packets. 
 
 \begin{figure}
   \includegraphics[scale=0.35]{images/pktgen_link_usage.png}
-  \caption{Pktgen link usage}
+  \caption{Pktgen link usage (generated bandwidth at time x, graph displays an average of used bandwidth over 5 minutes}
   \label{fig:pktgenlink}
 \end{figure}
 
 \begin{figure}
   \includegraphics[scale=0.35]{images/pktgen_pps.png}
-  \caption{Pktgen packets per second}
+  \caption{Pktgen packets per second (generated packets per second at time x, graph displays the average transported pps over 5 minutes}
   \label{fig:pktgenpps}
 \end{figure}
 
 \newpage
 
-\subsection{WARP17}
-A WARP client needs a server to respond to syn packets, otherwise sessions are not opened up and there will be no traffic on the line. 
+\subsection{WARP}
+A WARP client needs a server to respond to SYN packets, otherwise sessions are not opened up and there will be no traffic flowing. 
 WARP has to be tested against a WARP server or against an application server. 
-Servers A and B both needed to run WARP, one as a server and one as a client generating requests. RAW TCP communication is chosen for a first test. Sending a request of 64 bytes and responding with 64 bytes did not generate the maximum amount of pps. WARP should not be used to create a large amount of pps. 
+Thus in a setup as the one used for the other tests, servers A and B both needed to run WARP, one as a server and one as a client generating requests. RAW TCP communication is chosen for a first test. 
+Sending a request of 64 bytes and responding with 64 bytes did not generate the maximum amount of pps expected, setting up the session using a three way handshake and transferring the data takes more CPU cycles, WARP seems to be limited regarding to the amount of packets per second it can send. WARP is capable of testing throughput up to the application level which makes it interesting for application layer testing.
 To execute a benchmark for WARP, server B was connected to the network using two 40Gb/s interfaces. 
-The benchmark increases the request and response sizes for every test. 4 million sessions are opened per test and the time it took to open them, transfer the data and close all 4 million sessions was registered. Tests are ran 3 times and the average is written to a csv file. 
-The results of this test for raw TCP traffic is visible in figures \ref{fig:rawtcplink} and \ref{fig:rawtcpsession}. 
+The benchmark increases the request and response sizes for every test. 4 million sessions are opened per test. The time it took to open the sessions, transfer the data and then close all 4 million sessions was registered. Tests were ran 3 times and the average value was written to a csv file. 
+The results of this test for raw TCP traffic is shown in figures \ref{fig:rawtcplink} and \ref{fig:rawtcpsession}. 
 WARP is also capable of testing HTTP session setup. The results of the benchmark for HTTP is visible in figures \ref{fig:httplink} and \ref{fig:httpsession}.
-These figures show us the packet sizes from the request and response along with the amount of session or the link usage.
+These figures show the packet sizes from the request and response along with the amount of sessions or the link usage.
 
 \begin{figure}[H]
   \includegraphics[scale=0.6]{images/raw_link_usage.png}
-  \caption{Link usage for raw tcp}
+  \caption{Link usage for raw tcp (percentage of link usage versus the request(Rx) and response(Tx) size)}
   \label{fig:rawtcplink}
 \end{figure}
 
 \begin{figure}[H]
   \includegraphics[scale=0.6]{images/raw_setup.png}
-  \caption{Amount of session per second for raw tcp.}
+  \caption{Amount of session per second for raw tcp (amount of sessions (2-way) versus the request(Rx) and respond(Tx) size)}
   \label{fig:rawtcpsession}
 \end{figure}
 
 \begin{figure}[H]
   \includegraphics[scale=0.6]{images/http_link_usage.png}
-  \caption{link usage for http}
+  \caption{link usage for HTTP  (percentage of link usage versus the request(Rx) and response(Tx) size)}
   \label{fig:httplink}
 \end{figure}
 
 \begin{figure}[H]
   \includegraphics[scale=0.6]{images/http_setup.png}
-  \caption{Amount of sessions per second for http}
+  \caption{Amount of sessions per second for HTTP (amount of sessions (2-way) versus the request(Rx) and respond(Tx) size)}
   \label{fig:httpsession}
 \end{figure}
 
 
 \subsection{MoonGen}
-MoonGen offers some benchmark scripts to find the machines capabilities. The machine is connected to the switch using two 40Gb/s ports. Sending UDP traffic with a size of 1500 bytes resulted in a maximum of 24 Gb/s. When the smallest possible packets of 64 bytes are send over the line a maximum of 15Mpps is reached. When TCP is used on the same machine connected to the switch using two interfaces. A maximum of 10Gb/s was reached. These low values did not make MoonGen interesting enough since Pktgen is capable of reaching hardware limits. Figure \ref{fig:moongenlink} display the maximum reached bandwidth while running different tests to get the maximum performance. 
+MoonGen offers benchmark scripts to determine the machines capabilities. A single machine is connected to the switch using two 40Gb/s ports. Sending UDP traffic with a size of 1500 bytes resulted in a maximum of 24 Gb/s. When the smallest possible packets of 64 bytes are send over the line a maximum of 15Mpps is reached. When TCP is used on the same machine connected to the switch using two interfaces, a maximum of 10Gb/s was reached. These low values did not make MoonGen interesting enough since Pktgen is capable of reaching hardware limits. Figure \ref{fig:moongenlink} displays the maximum bandwidth reached while running different tests to get the maximum performance. 
 
 \begin{figure}[H]
   \includegraphics[scale=0.35]{images/moongen_link_usage.png}
-  \caption{MoonGen link usage}
+  \caption{MoonGen link usage (changing packet sizes trying to find the limitations of MoonGen)}
   \label{fig:moongenlink}
 \end{figure}
-
-%\begin{figure}
-%  \includegraphics[scale=0.35]{images/moongen_pps.png}
-%  \caption{MoonGen packets per second}
-%  \label{fig:moongenpps}
-%\end{figure}
 
 
 
