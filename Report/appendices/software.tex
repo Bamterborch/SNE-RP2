@@ -18,22 +18,22 @@
 \textbf{Server responding to requests from client using WARP}:
 \begin{verbatim}
 #Set client IP on interface
-add tests l3_intf port 0 ip 145.18.40.36 mask 255.255.255.248
-add tests l3_gw port 0 gw 145.18.40.33 
+add tests l3_intf port 0 ip 1.2.3.4 mask 255.255.255.0
+add tests l3_gw port 0 gw 1.2.3.1 
 
-add tests server tcp port 0 test-case-id 0 src 145.18.40.36 145.18.40.36 sport 80 180
+add tests server tcp port 0 test-case-id 0 src 1.2.3.4 1.2.3.4 sport 80 180
 set tests server http port 0 test-case-id 0 200-OK resp-size 64
 
-add tests server tcp port 0 test-case-id 1 src 145.18.40.36 145.18.40.36 sport 80 180
+add tests server tcp port 0 test-case-id 1 src 1.2.3.4 1.2.3.4 sport 80 180
 set tests server http port 0 test-case-id 1 200-OK resp-size 256
 
-add tests server tcp port 0 test-case-id 2 src 145.18.40.36 145.18.40.36 sport 80 180
+add tests server tcp port 0 test-case-id 2 src 1.2.3.4 1.2.3.4 sport 80 180
 set tests server http port 0 test-case-id 2 200-OK resp-size 512
 
-add tests server tcp port 0 test-case-id 3 src 145.18.40.36 145.18.40.36 sport 80 180
+add tests server tcp port 0 test-case-id 3 src 1.2.3.4 1.2.3.4 sport 80 180
 set tests server http port 0 test-case-id 3 200-OK resp-size 1024
 
-add tests server tcp port 0 test-case-id 4 src 145.18.40.36 145.18.40.36 sport 80 180
+add tests server tcp port 0 test-case-id 4 src 1.2.3.4 1.2.3.4 sport 80 180
 set tests server http port 0 test-case-id 4 200-OK resp-size 2048
 
 start tests port 0
@@ -41,12 +41,12 @@ show tests ui
 \end{verbatim}
 \textbf{Client requesting a file from a server (can be run to an NGINX server or to a WARP server)}:
 \begin{verbatim}
-add tests l3_intf port 0 ip 192.87.92.0 mask 255.255.255.254
-add tests l3_gw port 0 gw 192.87.92.1
+add tests l3_intf port 0 ip 4.3.2.1 mask 255.255.255.0
+add tests l3_gw port 0 gw 4.3.2.254
 
-add tests client tcp port 0 test-case-id 0 src 192.87.92.0 192.87.92.0 sport \ 
-10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
-set tests client http port 0 test-case-id 0 GET "145.18.40.36" \
+add tests client tcp port 0 test-case-id 0 src 4.3.2.1 4.3.2.1 sport \ 
+10000 50000 dest 1.2.3.4 1.2.3.4 dport 80 180
+set tests client http port 0 test-case-id 0 GET "1.2.3.4" \
 /files/500K.img req-size 64
 
 set tests timeouts port 0 test-case-id 0 init 30
@@ -54,9 +54,9 @@ set tests timeouts port 0 test-case-id 0 uptime 1
 set tests timeouts port 0 test-case-id 0 downtime 0
 set tests criteria port 0 test-case-id 0 run-time 90
 
-add tests client tcp port 0 test-case-id 1 src 192.87.92.0 192.87.92.0 sport \ 
-10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
-set tests client http port 0 test-case-id 1 GET "145.18.40.36" \
+add tests client tcp port 0 test-case-id 0 src 4.3.2.1 4.3.2.1 sport \ 
+10000 50000 dest 1.2.3.4 1.2.3.4 dport 80 180
+set tests client http port 0 test-case-id 0 GET "1.2.3.4" \
 /files/500K.img req-size 256
 
 set tests timeouts port 0 test-case-id 1 init 30
@@ -64,9 +64,9 @@ set tests timeouts port 0 test-case-id 1 uptime 1
 set tests timeouts port 0 test-case-id 1 downtime 0
 set tests criteria port 0 test-case-id 1 run-time 90
 
-add tests client tcp port 0 test-case-id 2 src 192.87.92.0 192.87.92.0 sport \ 
-10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
-set tests client http port 0 test-case-id 2 GET "145.18.40.36" \
+add tests client tcp port 0 test-case-id 0 src 4.3.2.1 4.3.2.1 sport \ 
+10000 50000 dest 1.2.3.4 1.2.3.4 dport 80 180
+set tests client http port 0 test-case-id 0 GET "1.2.3.4" \
 /files/500K.img req-size 512
 
 set tests timeouts port 0 test-case-id 2 init 30
@@ -74,9 +74,9 @@ set tests timeouts port 0 test-case-id 2 uptime 1
 set tests timeouts port 0 test-case-id 2 downtime 0
 set tests criteria port 0 test-case-id 2 run-time 90
 
-add tests client tcp port 0 test-case-id 3 src 192.87.92.0 192.87.92.0 sport \ 
-10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
-set tests client http port 0 test-case-id 3 GET "145.18.40.36" \
+add tests client tcp port 0 test-case-id 0 src 4.3.2.1 4.3.2.1 sport \ 
+10000 50000 dest 1.2.3.4 1.2.3.4 dport 80 180
+set tests client http port 0 test-case-id 0 GET "1.2.3.4" \
 /files/500K.img req-size 1024
 
 set tests timeouts port 0 test-case-id 3 init 30
@@ -84,9 +84,9 @@ set tests timeouts port 0 test-case-id 3 uptime 1
 set tests timeouts port 0 test-case-id 3 downtime 0
 set tests criteria port 0 test-case-id 3 run-time 90
 
-add tests client tcp port 0 test-case-id 4 src 192.87.92.0 192.87.92.0 sport \ 
-10000 50000 dest 145.18.40.36 145.18.40.36 dport 80 180
-set tests client http port 0 test-case-id 4 GET "145.18.40.36" \
+add tests client tcp port 0 test-case-id 0 src 4.3.2.1 4.3.2.1 sport \ 
+10000 50000 dest 1.2.3.4 1.2.3.4 dport 80 180
+set tests client http port 0 test-case-id 0 GET "1.2.3.4" \
 /files/500K.img req-size 2048
 
 set tests timeouts port 0 test-case-id 4 init 30
@@ -99,9 +99,9 @@ show tests ui
 \end{verbatim}
 \textbf{Script to perform pktgen test:}
 \begin{verbatim}
-set ip src 0 192.87.92.2/30
-set ip dst 0 145.18.40.36
-set mac 0 3c:8a:b0:34:2f:f0
+set ip src 0 1.2.3.4/24
+set ip dst 0 4.3.2.1
+set mac 0 ff:ff:ff:ff:ff:ff
 proto tcp 0
 set 0 size 64
 sleep 30

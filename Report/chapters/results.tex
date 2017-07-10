@@ -69,7 +69,7 @@ Therefore, WARP was used to retrieve a 500 Kbyte file from an NGINX web server r
 The file was placed on a RAM disk to make sure disk IO would not be the bottleneck during the performance tests. 
 This test is executed starting at 20:50 and it ran until 21:00. The request size is increased every 90 seconds with an interval of 30 seconds between the tests.
 During this test the following request sizes where used: 64, 256, 512, 1024 and 2048 bytes. 
-Figure \ref{fig:realnginx} shows that the amount of traffic leaving the server goes above 4Gb while only 0.6 Gb of requests are coming in on the receiving end. 
+Figure \ref{fig:realnginx} shows that the amount of traffic leaving the server goes above 4Gb/s while only 0.6 Gb/s of requests are coming in on the receiving end. 
 This matches the values shown in figure \ref{fig:testrealusageae112}. \\
 Rate limiting at the NGINX server on the receiving end (allowing the server to accept a maximum of 40 thousand concurrent sessions) made sure nothing broke. The services got depleted at the machine, this made the service unavailable for other users.
 The graphs show us that traffic was not lost during this test.
@@ -97,7 +97,7 @@ Only 10\% of the link is utilized at the starting point of the benchmark test as
 The graph in figure \ref{fig:testrealusageae112} doesn't display any traffic at 21:20. This is the moment the RAW TCP test was started while figure \ref{fig:surftest} displays traffic towards the tested network. 
 The graph in figure \ref{fig:testrealusageae113} displays the load. When the test started, the active firewall crashed and a failover to the passive machine is the result. Log messages retrieved from connected routers also display BGP session failures from the formerly-active firewall. 
 This graph also displays the difference between traffic send from the router to the firewall and the traffic received by the downstream switch. 
-Input is 3Gb and output is in the range of 200 - 300 Mb. The firewall had a rule accepting all the traffic from the source range of the test machines.
+Input is 3Gb/s and output is in the range of 200 - 300 Mb/s. The firewall had a rule accepting all the traffic from the source range of the test machines.
 The firewalls are not capable of handling this amount of sessions per second. Due to time limitations this test could not be performed again to figure out the limitations.  
 When the test was finished, the firewalls started to recover. \\ 
 

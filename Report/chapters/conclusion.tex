@@ -7,7 +7,7 @@ Yes, the 'easy to use' tools can be useful for quick tests of per-device limits 
 DPDK's capabilities offer much more potential when it comes to session based and application based throughput testing. \\ 
 
 Design conclusions can be drawn from the results as well. A machine that needs to handle a large amount of sessions and sending session based data should not be placed behind a firewall.
-The stateful firewalls are not build to handle the amount of sessions per second needed in many real-world data transfer scenarios, such as those with many parallel streams and concurrent sessions.  
+The stateful firewalls are not build to handle the amount of sessions per second needed in many real-world data transfer scenarios, such as those with many parallel streams and concurrent sessions. \\ 
 
 During this research the limitations of the hardware used during the tests was found. For example the limitation of the PCI express bus, the hashing algorithms used by the switching hardware caused a maximum throughput of 10Gb/s over one physical link, the limitations of the server hardware (the maximum link performance reached was 40\% of the total available bandwidth using WARP as a server). Therefore one could discuss if it is useful to equip a web server with a 40Gb/s interface when the maximum HTTP performance using WARP is below 20Gb/s.
 Next to this, NGINX reached a maximum of 11Gb/s of HTTP traffic. So when running NGINX a 40Gb/s card is not economically viable. 

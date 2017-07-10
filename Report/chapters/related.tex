@@ -35,8 +35,8 @@ Two different operating systems where used to see if the different kernels provi
 iPerf3\cite{iperf} & Yes & Kernel  \\ \hline
 hping\cite{hping}  & Yes & Kernel \\ \hline
 BoNeSi\cite{bonesi} & Yes & Kernel \\ \hline
-Pktgen Kernel\cite{pktgen-kernel} & No & Kernel \\ \hline
-Pktgen DPDK\cite{pktgen-dpdk} & Yes & DPDK \\ \hline
+pktgen kernel\cite{pktgen-kernel} & No & Kernel \\ \hline
+pktgen DPDK\cite{pktgen-dpdk} & Yes & DPDK \\ \hline
 MoonGen\cite{moongen} & Yes & DPDK \\ \hline
 WARP\cite{warp} & Yes & DPDK \\ \hline
 \end{tabular}
@@ -66,7 +66,7 @@ The Data Plane Development Kit\cite{dpdk} (DPDK) offers the ability to generate 
 Pktgen for DPDK is available since May 2013. The developers from DPDK provide Pktgen from the DPDK download page. This makes it a good option for a reference experiment to assess the difference of DPDK compared to kernel-based tests. 
 
 \subsubsection{MoonGen}\label{}
-MoonGen was initially released October 2014. It is designed to generate packets at high speed using a minimum amount of resources from the source. According to the developers it is more efficient than Pktgen. A 10Gb/s link can be filled using only one core. MoonGen builds on libmoon \cite{libmoon} by extending it with features for packet generators such as software rate control and software timestamping. MoonGen offers a report displaying test results \cite{moongenreport}.
+MoonGen was initially released in October 2014. It is designed to generate packets at high speed using a minimum amount of resources from the source. According to the developers it is more efficient than Pktgen. A 10Gb/s link can be filled using only one core. MoonGen builds on libmoon \cite{libmoon} by extending it with features for packet generators such as software rate control and software timestamping. MoonGen offers a report displaying test results \cite{moongenreport}.
 
 \subsubsection{WARP}\label{subsub:dpdk-WARP17}
 Juniper WARP was released in May 2016. It allows users to execute performance testing up to layer 7, where however currently only HTTP is supported. IPv6 is not supported at this moment. A simple server is supposed to be able to generate around 2 million sessions per second between client and server.  

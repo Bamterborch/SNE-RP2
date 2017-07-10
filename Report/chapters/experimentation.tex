@@ -27,7 +27,7 @@ NIC     & \begin{tabular}[c]{@{}l@{}}Intel XL710 \\ 40Gb/s\end{tabular}         
 Device A is always acting as the target. Depending on the tests the source can be machine B, C or B and C together.
 For testing beyond 40Gb/s, one of the 100Gb/s machines (D or E) can be used.
 Machine M is a Simple Network Management Protocol (SNMP) collector. This SNMP collector query's the test servers every 10 seconds for status. 
-Packets per second and bits per second are retrieved from the device along with CPU and Memory statistics.
+Packets per second and bits per second are retrieved from the device along with CPU and memory statistics.
 Switch S is also added to the collector as a data source. 
 SNMP is active on the management interface of the devices.
 The high bandwidth interfaces are able to connect to each other over a non-routed VLAN. This makes sure the test traffic cannot interfere with SNMP reads from collector M. 

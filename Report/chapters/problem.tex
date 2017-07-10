@@ -35,7 +35,7 @@ net.ipv4.tcp_wmem = 131072 1048576 8388608
 The default TCP memory allocation is chosen for the first sessions. But when more sessions are opened up the amount of allocated memory per session drops to the minimum amount to save possibly unused resources. 
 Unfinished sessions keep this memory allocated. When the amount of new sessions is higher than the amount of sessions that get closed due to a time-out, server resources are depleted.
 
-When it comes to Layer 7 protocols like HTTP, more resources need to be reserved. HTTP sessions, HTTP state and application state need to be saved, HTTP daemon logging has to be written on events.  Get requests need to be processed, a response needs to be generated and sent over the session to the user. Normally a web server will cache files that are requested for a specific time using up valuable memory. Hosting a dynamic web page requires the web server to generate the page on request which makes the CPU utilization higher than just hosting a static web site. 
+When it comes to layer 7 protocols like HTTP, more resources need to be reserved. HTTP sessions, HTTP state and application state need to be saved. Get requests need to be processed, a response needs to be generated and sent over the session to the user. Normally a web server will cache files that are requested for a specific time using up valuable memory. Hosting a dynamic web page requires the web server to generate the page on request which makes the CPU utilization higher than just hosting a static web site. 
 
 \section{Specifications}\label{sec:specifications}
 For the design of the tests and the interpretation of the results, specific technical constraints in the 'real world' operating environment and several key implementation parameters are important for this project.
@@ -53,8 +53,8 @@ When new sessions to a server are opened, the firewall has to process them accor
 This is a table with accepted sessions, allowing traffic in the same session to be handled in hardware. This means that only the first packet of a new session is handled in the slow-path.
 
 \paragraph{Application specific traffic}\mbox{} \\
-According to Sandvine,(a global communications solutions service provider that published bi-annual traffic baseline reports), around 70\% of the traffic is streaming audio and video. in second place is web browsing and third are marketplace solutions. A lot of on-line services are accessed through a web page. 
-Therefore it is interesting to look at HTTP traffic as a Layer 7 protocol.
+According to Sandvine,(a global communications solutions service provider that published bi-annual traffic baseline reports), around 70\% of the traffic is streaming audio and video. In second place is web browsing and third are marketplace solutions. A lot of on-line services are accessed through a web page. 
+Therefore it is interesting to look at HTTP traffic as a layer 7 protocol.
 
 \paragraph{Packetsize}\label{par:packetsize}\mbox{}\\
 According to Murray et all. \cite{murray2012state}  in 2012, 99\% of the traffic inside a corporate network has an MTU size of maximum 1500. When using Jumbo packets (MTU of 9000) the amount of overhead is less because more data can go into on packet. More data inside a packet results in less packets. Therefore, less overhead during the transfer of data. 
