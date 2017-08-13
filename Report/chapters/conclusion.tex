@@ -1,29 +1,21 @@
 \chapter{Conclusion}\label{ch:conclusion}
-From the tool assessment performed in chapter \ref{ch:experiments} and the use cases in chapter \ref{ch:method}, results are gathered and described in chapter \ref{ch:results}.
+From the tool assessment performed in chapter \ref{ch:experiments} and the tests described in chapter \ref{ch:method}, results are gathered and described in chapter \ref{ch:results}.
 The results, executed according to current standards and best practices and reproduced as a matter of course, allow to draw firm conclusions on tool suitability and the necessary characteristics of high-bandwidth session based throughput tests in a real-world environment. \\
-When it comes to generating session based high bandwidth throughput testing, the 'easy to use' tools are not powerful enough. IPerf achieves 40Gb/s, but does so over only one TCP session per thread. 
-Kernel based pktgen was able to generate 40Gb/s and 40Mpps, but it is only capable of sending UDP traffic. 
-Yes, the 'easy to use' tools can be useful for quick tests of per-device limits and as a comparison baseline.
+When it comes to generating session based high bandwidth throughput testing, the 'easy to use' tools are not powerful enough. 
 DPDK's capabilities offer much more potential when it comes to session based and application based throughput testing. \\ 
 
-Design conclusions can be drawn from the results as well. A machine that needs to handle a large amount of sessions and sending session based data should not be placed behind a firewall.
-The stateful firewalls are not build to handle the amount of sessions per second needed in many real-world data transfer scenarios, such as those with many parallel streams and concurrent sessions. \\ 
+During this research, the limitations of the hardware used in the experimental setup was found by executing the tests. 
+The tests can be used as guideline to find the hardware limits in the path from client to server. 
+T1 revealed  a limitation for the amount of packets per second in the PCI Express bus. 
+T2 was used to get the maximum possible bandwidth from client to server, the hashing settings where shown to be a limitation in the setup.
+T3 revealed the hardware limits for client and server with regards to the amount of sessions and bandwidth usage.
+T4 stressed an application to get the performance limits for this specific application. \\ 
 
-During this research, the limitations of the hardware used during the tests was found by executing the tests from the use cases. 
-The use cases form a model to find the hardware limits in the path from client to server. 
-UC1 revealed  a limitation for the amount of packets per second in the PCI Express bus. 
-UC2 was used to get the maximum possible bandwidth from client to server, the hashing issue was found during the execution of UC2.
-UC3 revealed the hardware limits for client and server with regards to the amount of sessions and bandwidth usage.
-UC4 stressed an application to get the performance limits for this specific application. \\ 
+These tests should be used to get a better insight in performance requirements for high bandwidth infrastructure predictability.
+Combining DPDK with pktgen and WARP can reveal the limits of an infrastructure. \\
 
-This model should be used to get a better insight in performance requirements for high bandwidth infrastructure predictability.
-Combining DPDK with pktgen and WARP will reveal the limits of an infrastructure. \\
+The exact limitation of the firewall was not found, it is only known now that one server using WARP can generate the amount of sessions per second to make the system fail.
 
-Pktgen is used in UC1 and UC2 to get the limits for layer 2 and 3 hardware.
-WARP is used for UC3 and UC4 to get limits for layer 4 and up. 
-Results from the framework offer the opportunity to identify the shortcomings in the path from client to server.
-This proves the model works. \\
- 
 When looking at the results of the real world test one could argue if it is useful to equip a web server with a 40Gb/s interface when the maximum HTTP performance using WARP is below 20Gb/s.
 When running NGINX as a web server, a 40Gb/s NIC is not economically viable for the hardware used during this research. 
 
@@ -38,25 +30,25 @@ Current tooling is capable of generating a million session per second using simp
 What can be done when more powerful servers attached to the Internet with 100Gb/s are used for 'performance testing'?  
 
 \section{Future Work}
+The Hashing algorithm used at Nikhef's core network should prevented us to reach more than 10Gb/s. Using 4 clients of changing the hashing settings should result in more bandwidth. By doing this, the other limitation this research was looking for (the amount of packets per second being a bottleneck) can be reached. Further analysis on the Data Center Infrastructure layer at company X can be performed. A close collaboration with the engineers of company  x should help them to overcome the problems before the network goes into production. 
+
 During this project an attempt was  made to use an IBM Power8 machine to generate traffic at 100Gb/s. Because of problems during compilation and memory allocation this attempt had to be abandoned due to time constraints.
-An IBM power machine in a different network seems capable of sending traffic. An attempt needs to be made to get benchmark results from this machine.\\
 
 During this project, HTTP version 1.1 was used for application testing. Support for more protocols need to be added to applications like WARP.  \\
 
 Currently WARP supports IPv4 only. When IPv6 is supported, the performance should be tested using IPv6.  \\
 
 DPDK supports multiple NIC's. During the project an effort was made to start generating traffic over 100Gb/s Mellanox cards.
-This was successful up to 60Gb/s TCP traffic, until the system crashed for reasons that could not be determined within the scope of this project. Real tests need to be run using the tooling discussed in this paper. 
+This was successful up to 60Gb/s TCP traffic, until the system crashed for reasons that could not be determined within the scope of this project. 
+Real tests need to be run using the tooling discussed in this paper. 
 Support and limitations for different 100Gb/s cards need to be researched.\\
 
 Monitoring in WARP should be improved, currently the API provides the only way of getting detailed results.
-Performance of the NGINX server can be tuned to handle more requests. 
-Ramping up the session per second to find the limitations of the hardware in the real-life environment should be done. \\ 
+NGINX is made available for DPDK recently. Running WARP towards a DPDK NGINX server should provide the capabilities of NGINX when it does not rely on kernel interrupts.
 
 The Generation 3, 8 lane PCI express cards are limited as shown in this paper. What are the limitations for PCI express cards using 16 lanes, does it scale linearly or not? \\
 
 Intel offers a guideline to improve the throughput for the XL710 40Gb/s card. This guideline provides kernel settings that might improve the results for the 'easy to use' tools.
-During this research the guideline was not used. A guideline for the XL710 card in combination with DPDK was used to improve the results for DPDK tests as stated in section \ref{sub:pktgen}. 
-This guideline mentions the fact that the XL710 NIC was not designed to be connected back to back. Therefore, the test executed during the experiments for DPDK tools MoonGen and WARP are not optimal.
-These tests have to be executed using different cards on separate PCI express busses. \\
+During this research the guideline was not used to improve the kernel settings, the reason for this is that the settings are depending on the application that is ran on top of the kernel. 
+This research, due to time constraints focused on the DPDK tooling after 2 weeks. Which made it impossible to find and tweak the kernel for all the tools in table \ref{table:tools}. 
 

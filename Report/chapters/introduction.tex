@@ -1,34 +1,42 @@
 \chapter{Introduction}\label{ch:intro}
 Internet Service Providers (ISPs) offer high bandwidth links to customers to connect to the Internet. Dutch Universities and institutes are able to connect with redundant 100Gb/s links to their ISP.
-Institutes like Nikhef (a tier 1 location for the large Hadron Collider (LHC) Computing Grid) need to transfer large datasets from CERN. CERN produces around 30 petabytes annually\cite{cerndata}, which makes high-speed links critical for Nikhef's research purposes.
-The Nikhef network is designed around a high-speed core that contains only stateless switching and routing devices. Distributed storage systems are directly connected thereto (akin to Data Transfer Nodes (DTN) in a ScienceDMZ\cite{sciencedmz}).
-Besides transfer speed, data integrity is important, and therefore preferably TCP should be used instead of UDP. TCP offers a reliable connection oriented transfer of the data. 
+Institutes like Nikhef (a tier 1 location for the large Hadron Collider (LHC) Computing Grid) need to transfer large datasets from CERN. CERN produces around 30 petabytes annually\cite{cerndata}, which makes high-capacity links critical for Nikhef's research purposes.
+The Nikhef network is designed around a high-capacity core that contains only stateless switching and routing devices. Distributed storage systems are directly connected thereto (akin to Data Transfer Nodes (DTN) in a ScienceDMZ\cite{sciencedmz}).
+Besides capacity, data integrity is important, and therefore preferably TCP should be used instead of UDP. TCP offers a reliable connection oriented transfer of the data. 
 Mechanisms like flow and congestion control in TCP try to ensure links will not be overloaded in order to best utilize the available bandwidth, clients need to acknowledge received datagrams to the server in order to keep packets flowing. 
 The negotiated window size between client and server determines the amount of data that can be in flight.  
 All these techniques make it nearly impossible to saturate a service using high bandwidth traffic, even when - like in the case of Nikhef's data transfers - a large number of parallel streams is employed to improve throughput over long-latency links.
 
 \section{Scope}\label{sec:scope}
 
-Generating high volumes of bandwidth is easy to accomplish. 'Easy to use' tools with simple Command Line Interface (CLI) options and using standard operating system (kernel) mechanisms can create a data stream to a server. For link testing, these tools have sufficient power to saturate links well beyond 100Gb/s using UDP traffic. 
-The 'easy to use' tools like iPerf\cite{iperf}, Kernel module pktgen\cite{pktgen-kernel}, hping\cite{hping} and BoNeSi\cite{bonesi} have their own use cases and limitations, for simple layer 2 and 3 link testing these tools are adequate.
+Before new systems and services become accessible for the users, system and network administrators need to know the limitations of the hardware in the path towards the service in order to set thresholds for monitoring alerts.
+Where routers and switches are capable of forwarding packets at line rate, making sure the server running an applications receives all the data destined for the application without unnecessary delays, 
+the application might not be able to process the data at line rate.
+The network should not be the bottleneck in the path towards an application. But the network administrator needs to know what the limitations are for the application running on the server. 
+This should be tested before a system is moved into production. 
+
+Command line based tools are available to generate packets towards a destination. 
+Generating UDP and TCP packets to test the capacity of a link on Open Systems Interconnection (OSI) layer 2 and 3 can be done using command line based tools. 
+For link testing, these tools have sufficient power to saturate links well beyond 100Gb/s using UDP traffic. 
+The 'easy to use' tools like iPerf\cite{iperf}, Kernel module pktgen\cite{pktgen-kernel}, hping\cite{hping} and BoNeSi\cite{bonesi} have their own use cases and limitations.
 The increasing demand for bandwidth requires a more efficient approach for traffic generation and application based testing over network paths.
 
 The Data Plane Development Kit\cite{dpdk} (DPDK) introduced by Intel offers users the ability to generate traffic without using the kernel TCP/IP and network stack.  
 Through DPDK, Linux userland applications are able to bypass the kernel and communicate with the network hardware directly. Memory, processors and interfaces have to be dedicated to DPDK  when DPDK applications are used.
-Applications are then build on top of DPDK, utilizing DPDK's functionality to bypass the kernel (and the copying of memory regions inherent in such use). MoonGen\cite{moongen}, pktgen\cite{pktgen-dpdk}, and WARP\cite{warp} each designed based on different ideas offering the ability to test beyond Layer 2 and 3 of the Open Systems Interconnection (OSI) model.
-Some going up to application layer protocols.\\ 
+Applications are then build on top of DPDK, utilizing DPDK's functionality to bypass the kernel (and the copying of memory regions inherent in such use). MoonGen\cite{moongen}, pktgen\cite{pktgen-dpdk}, and WARP\cite{warp} each designed based on different ideas offering the ability to test beyond layer 2 and 3 of the OSI model.
+Some going up to application layer protocols. Which is needed to determine the limits of an application.
 
 The needs for utilizing TCP to transfer data reliably and the increasing demand for bandwidth can result in problems for both network infrastructures and applications. 
-Stateful devices between client and DTN can become a bottleneck for data transfers.\\ 
+Stateful devices between client and destination can become a bottleneck for data transfers.\\ 
 To have a network or a path behave predictably the limits of the hardware in the path need to be known.
-How can one get to know the limits of the hardware in the path?
-This will be addressed in this paper.  
+How can one get to know the limits of the hardware in the path towards and including a service?
+This will be addressed in this paper.
 
 \section{Document layout}\label{sec:layout}
 
-The structure of this document is as follows: The problem is described in chapter \ref{ch:problem} which is followed by the research question that started this research project. To explain what research has been performed in this area chapter \ref{ch:related} shows the researched fields split by protocol. The experimental setup is described in chapter \ref{ch:experiments}, this setup was used to evaluate what a selected set of tools had to offer as well as their limitations.
-Chapter \ref{ch:method} explains the representative use cases and the tools that where used to accomplish the goals of these use cases. The method was put to test on an environment that was planned to go into production - provided the tests described here demonstrated stable and scalable operation. All tests where performed during a scheduled maintenance windows with approval of the owner of the environment. The results of the real world test can be found in chapter \ref{ch:results}. 
-From the results, conclusions are drawn in chapter \ref{ch:conclusion}. Appendix \ref{appendix:software} shows the test scripts used for the real world tests. 
+The structure of this document is as follows: The problem is described in chapter \ref{ch:problem} which is followed by the research question that started this research project. To explain what research has been performed in this area chapter \ref{ch:related} shows the researched fields. The experimental setup is described in chapter \ref{ch:experiments}, this setup was used to evaluate what a selected set of tools had to offer as well as their limitations.
+Chapter \ref{ch:method} explains the usability of the tools and describes some tests that could be performed using the tools. The tests where performed on an environment that was planned to go into production - provided the tests described here demonstrated stable and scalable operation. All tests where performed during a scheduled maintenance windows with approval of the owner of the environment. The results of the real world test can be found in chapter \ref{ch:results}. 
+From the results, conclusions are drawn in chapter \ref{ch:conclusion}. Appendix \ref{appendix:software} shows the test scripts used during tests on production infrastructures.
 
 \section{Terminology and Acronyms}\label{sec:terminology}
 The terminology used in this paper is based on RFC1242 \cite{rfc1242}, with the most relevant terms listed in table \ref{table:terms} for convenience.

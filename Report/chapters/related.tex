@@ -1,14 +1,14 @@
 \chapter{Related Work}\label{ch:related}
-As described in chapter \ref{ch:problem}, the goal of this research is the study of a reference model and an implementation for high bandwidth session and application based throughput testing.
-Where the term "session based" refers to TCP sessions and the term "high bandwidth" refers to links of at least 40Gb/s.
+As described in chapter \ref{ch:problem}, the goal of this research is the study of a reference model that can be used for high bandwidth session and application based throughput testing.
+Tests will be described, which can be used to find the limits of hardware between client and server. 
 
 \section{Transport layer protocols}
-The project goal is to evaluate session-based high-throughput testing, which naturally leads to a focus on the session-oriented transport layer protocols. Similarly, UDP-based testing will not be used for the reference use cases and during the actual experiments.
+The projects goal is to evaluate session-based high-throughput testing, which naturally leads to a focus on the session-oriented transport layer protocol TCP.
 
-\subsection{UDP}
-When UDP traffic is generated, data is being dumped on the wire without keeping state nor resources need to be claimed for sessions on end hosts, except for the UDP send and receive buffers. 
-Pktgen from the Linux kernel is an 'easy to use' application that is able to generate UDP-only traffic towards a destination. The destination does not need to run an application to receive the data.
-The report written by Turull et al. \cite{turull2016pktgen} about pktgen is an updated report from their work in 2005 and looks at high speed networks. Where high speed for that report is everything over 10Gb/s.  
+%\subsection{UDP}
+%When UDP traffic is generated, data is being dumped on the wire without keeping state nor resources need to be claimed for sessions on end hosts, except for the UDP send and receive buffers. 
+%Pktgen from the Linux kernel is an 'easy to use' application that is able to generate UDP-only traffic towards a destination. The destination does not need to run an application to receive the data.
+%The report written by Turull et al. \cite{turull2016pktgen} about pktgen is an updated report from their work in 2005 and looks at high speed networks. Where high speed for that report is everything over 10Gb/s.  
 
 \subsection{TCP}
 When TCP is used to transfer data, session states need to be kept by all the stateful hardware in the path from client to server. 
@@ -23,11 +23,10 @@ In 2016 research was performed by Malakshmi et al. \cite{mahalakshmi2016study} o
 The result of Malakshmi's research is a tool called T-REX. Their projects goal is to generate stateful traffic up to 10Gb/s. 
 However, the main T-REX functionality is Cisco-proprietary and requires a Cisco device to run. The public (free) version is limited in functionality to an extent that it is not interesting for this report.
 \section{Tools}\label{sec:tools}
-A lot of 'easy to use' tools are available for bandwidth testing. These tools each address one or more of the requirements for this study.
+A lot of 'easy to use' tools are available for bandwidth testing. 
+These tools each address one or more of the requirements for this study.
 Specifically, we consider the tools listed in table \ref{table:tools} in order to assess the suitability of these tools for session based bandwidth testing at high volumes.
-Pktgen kernel is capable of generating UDP packets only, it is used to determine differences in operating system characteristics for traffic generation. 
-The biggest differences based on kernel behavior became evident based on tests with Pktgen kernel module.
-Two different operating systems where used to see if different kernels provided different results. FreeBSD and Ubuntu supported all of the 'easy to use' kernel tools.
+iPerf3, hping and BoNeSi are considered 'easy to use' tools.
 
 \begin{table*}[ht]
 \centering
@@ -36,12 +35,12 @@ Two different operating systems where used to see if different kernels provided 
 iPerf3\cite{iperf} & Yes & Kernel  \\ \hline
 hping\cite{hping}  & Yes & Kernel \\ \hline
 BoNeSi\cite{bonesi} & Yes & Kernel \\ \hline
-pktgen kernel\cite{pktgen-kernel} & No & Kernel \\ \hline
+%pktgen kernel\cite{pktgen-kernel} & No & Kernel \\ \hline
 pktgen DPDK\cite{pktgen-dpdk} & Yes & DPDK \\ \hline
 MoonGen\cite{moongen} & Yes & DPDK \\ \hline
 WARP\cite{warp} & Yes & DPDK \\ \hline
 \end{tabular}
-\caption{Tested tools}
+\caption{Packet generation tools}
 \label{table:tools}
 \end{table*} 
 
@@ -56,15 +55,16 @@ Hping was started in 2006. It is a command-line oriented TCP/IP packet assembler
 \subsection{BoNeSi}\label{sub:bonesi}
 BoNeSi is 'the DDOS botnet simulator' according to its developers. BoNeSi supports ICMP, UDP and TCP (HTTP) flooding attacks from a defined botnet size. Source addresses can be specified in a text file which is used as input. By doing this, one becomes capable of sending crafted packets from different source addresses.  
 
-\subsection{pktgen(kernel module)}\label{sub:pktgenkernel}
-To generate a single flow of UDP traffic without the need of an application at the other side, pktgen from the Linux kernel is the way to go. During the test phase preceding this paper, pktgen was tested on an Ubuntu machine and on a FreeBSD machine. 
-This was done to see if there where any major differences at the kernel level that offer more bandwidth or more packets per second. 
-As it turned out, FreeBSD has the ability to generate 40 million packets per second (pps) from one single thread. Ubuntu needs 6 threads to reach the maximum pps on a 40 Gb link. 
-Other major differences where not found during this research between the different kernels. Therefore the FreeBSD kernel was abandoned after one week. 
-Pktgen (kernel module) is only capable of generating UDP traffic and therefore, not usable for this research. 
+%\subsection{pktgen(kernel module)}\label{sub:pktgenkernel}
+%To generate a single flow of UDP traffic without the need of an application at the other side, pktgen from the Linux kernel is the way to go. During the test phase preceding this paper, pktgen was tested on an Ubuntu machine and on a FreeBSD machine. 
+%This was done to see if there where any major differences at the kernel level that offer more bandwidth or more packets per second. 
+%As it turned out, FreeBSD has the ability to generate 40 million packets per second (pps) from one single thread. Ubuntu needs 6 threads to reach the maximum pps on a 40 Gb link. 
+%Other major differences where not found during this research between the different kernels. Therefore the FreeBSD kernel was abandoned after one week. 
+%Pktgen (kernel module) is only capable of generating UDP traffic and therefore, not usable for this research. 
 
 \subsection{Data Plane Development Kit}\label{sub:dpdk}
-The Data Plane Development Kit\cite{dpdk} (DPDK) offers the ability to generate traffic from user space, bypassing the kernel and directly talking to the network hardware. In order to make DPDK run, supported NIC's \cite{dpdknic} needs to be used. Applications can be created to run on top of DPDK. Pktgen, MoonGen and WARP are three applications that are written on top of DPDK and should thus to be able to generate traffic in high volumes, both UDP and TCP based. DPDK cannot be run on BSD kernels. For the DPDK experiments all machines where running Ubuntu 16.04 LTS. 
+The Data Plane Development Kit\cite{dpdk} (DPDK) offers the ability to generate traffic from user space, bypassing the kernel and directly talking to the network hardware. In order to make DPDK run, supported NIC's \cite{dpdknic} needs to be used. Applications can be created to run on top of DPDK. Pktgen, MoonGen and WARP are three applications that are written on top of DPDK and should thus to be able to generate traffic in high volumes, both UDP and TCP based. 
+%DPDK cannot be run on BSD kernels. For the DPDK experiments all machines where running Ubuntu 16.04 LTS. 
 
 \subsubsection{Pktgen}\label{subsub:dpdk-pktgen}
 Pktgen for DPDK is available since May 2013. The developers from DPDK provide Pktgen from the DPDK download page. This makes it a good option for a reference experiment to assess the difference of DPDK compared to kernel-based tests. 

@@ -1,51 +1,48 @@
 \chapter{Problem statement}\label{ch:problem}
+
 Currently there is no way of testing the full chain of devices towards and including an application to their limits without spending a lot of money on dedicated commercial load testing products.
-Since today servers can be equipped with 40 and 100Gb/s Network Interface Cards (NICs), the OS and the application behind the NIC should be able to process the amount of traffic that comes in from the NIC.
-Thus, with a commodity off-the-shelf server, it should be possible to test the infrastructure from client to server to see if it is able to handle the traffic to and from the server.
-  
-A wide variety of tools is available to generate traffic. Some of them offer an easy way of generating packets to be output by the interface and consume bandwidth. 
-Others are able to setup TCP sessions to transfer data. But what tool is best used for specific application testing?   
+Since today servers can be equipped with 40 and 100Gb/s Network Interface Cards (NICs), the OS and the application that is running on top of the OS should be able to process the amount of traffic that comes in from the NIC.
+
+Testing the entire infrastructure using dedicated commercial equipment for every new service is costly and unpractical.
+Nikhef is constantly upgrading infrastructure devices to provide the increasing demands of bandwidth. Currently they rely on the hardware specification from the vendors. 
+Engineers at Nikhef have a need to find the limitations of the hardware before they put it into production without spending a lot of money and without depending on special commercial hardware.
+ 
+A wide variety of tools is available to generate traffic. Nikhef is interested in TCP traffic specifically.  
+Some of the tools are able to setup TCP sessions to transfer data. But what tool is best used for specific application testing?   
 Nikhef wants the ability to test hardware they might buy up to the OSI application layer (layer 7) if applicable. 
-Until now they are not able to go beyond the transport layer (layer 4). 
+Until now they are not able to go beyond the transport layer (layer 4).
 
 \section{Session based}\label{sec:sessionbased}
-When sending traffic over UDP, data gets dumped onto the link and is transported to the destination. If the destination is expecting data it will be processed.
-When the destination does not know what to do with the data it will be discarded. 
-TCP guarantees the delivery of the data as long as the session is alive between the end nodes. 
-This is done by acknowledging received data and resending unacknowledged data. These acknowledgments need to be processed by the operating system. 
-%When all the CPU's of a machine are busy generating packets the overhead of processing ACK messages will impact the maximum throughput of generating traffic. 
-Other techniques like Flow control, Congestion control, and fast retransmission of packets ensure that data is delivered and offered to the higher layer protocol in the correct order. 
+When sending data over UDP, data gets generated and is transported to the destination. 
+If the destination IP port is open the data will be forwarded to the application listening on that specific port.
+When the destination does not listen on that specific IP port the data will be discarded. 
+ 
+TCP guarantees the delivery of the data as long as the session is alive between the end nodes.
+The session needs to be created before data can be exchanged, a three way handshake between source and destination is performed in order to synchronize settings. 
+Guaranteed delivery is done by acknowledging received data and resending unacknowledged data. 
+Other techniques like Flow control, Congestion control, and fast retransmission of packets ensure that data is delivered in time and offered to the higher layer protocol in the correct order. 
 These techniques all require resource reservation at the client and the server, but also at stateful devices along the path between client and server. 
-When a TCP session is created, memory is reserved by both the client and the server. In high speeds networks, the amount of reserved memory has to be relatively high in order to account for the unacknowledged packets in transit. 
-Ubuntu 16.04 sets the resources reservation by default as follows:
 
-\newpage
-
-\begin{verbatim}
-# maximum amount of read memory space in bytes
-net.core.rmem_max = 8388608
-# maximum amount of write memory space in bytes
-net.core.wmem_max = 8388608
-# amount of TCP read memory space in bytes (min, default, max)
-net.ipv4.tcp_rmem = 131072 1048576 8388608
-# amount of TCP write memory space in bytes (min, default, max)
-net.ipv4.tcp_wmem = 131072 1048576 8388608
-\end{verbatim}  
-
-The default TCP memory allocation is chosen for the first sessions. But when more sessions are opened up the amount of allocated memory per session drops to the minimum amount to save possibly unused resources. 
-Unfinished sessions keep this memory allocated. 
-When the amount of new sessions is higher than the amount of sessions that get closed due to a time-out, server resources are depleted.
-These memory usage settings are applicable for kernel based applications and can be tuned if one wishes to do so. 
-The memory settings are not changed during this research since the correct settings for reaching the best performance depends on the application.
-The kernel settings are default for every tool discussed in chapter \ref{sec:tools}.  
+The technique's implemented in TCP all require buffers to store data until the data is acknowledged by the receiving end.
+The buffer sizes are reserved by the OS per sessions and negotiated during the three way handshake.  
+When the amount of new sessions is higher than the amount of sessions that get closed due to a time-out or a finish statement, server resources are depleted.
 
 When it comes to layer 7 protocols like HTTP, more resources need to be reserved. HTTP sessions, HTTP state and application state need to be saved. Get requests need to be processed, a response needs to be generated and sent over the session to the user. Normally a web server will cache files that are requested for a specific time using up valuable memory. Hosting a dynamic web page requires the web server to generate the page on request which makes the CPU utilization higher than just hosting a static web site. 
 
 \section{Specifications}\label{sec:specifications}
-For the design of the tests and the interpretation of the results, specific technical constraints in the 'real world' operating environment and several key implementation parameters are important for this project.
+For the design of tests and the interpretation of the results, specific technical constraints in the 'real world' operating environment and several key implementation parameters are important for this project.
+
+\paragraph{Overloading}\label{par:overload}\mbox{}\\
+All the techniques used by TCP make sure an Ethernet link will not be overloaded with congestion as a result. 
+In order to find the weakest link in the path towards a service, data should be send using the expected maximum capacity of the devices in the path.
+When client and server are connected with 40Gb/s interfaces. One should send data using the full capacity of the links.
+This could result in overloading a device in the path, this immediately shows that the intermediate device is the weakest link.
+
+When data can be send at the links full capacity, there might be other limitations in the hardware used in the path.  
+For systems administrators it is important for monitoring purposes that these limitations are known.
 
 \paragraph{Throughput}\label{par:throughput}\mbox{}\\
-Throughput is the most significant value for generating load: how to best utilize the total capacity of a link. When using TCP the header causes 12 bytes more overhead in comparison to a UDP header (a UDP header is 8 bytes).
+Throughput is the most significant value for generating load: how to best utilize the total capacity of a link. When using TCP the header causes 12 bytes more overhead in comparison to a UDP header (a UDP header is 8 bytes). But in return TCP offers techniques that will not overload a device. 
 
 \paragraph{Packet size}\label{par:packetsize}\mbox{}\\
 Ethernet is used during this research, therefore all references to packet sizes are based on Ethernet standards\cite{ethernet_frame_2017} with IP and TCP headers included.
@@ -72,16 +69,17 @@ When new sessions to a server are opened, the firewall has to process them accor
 This is a table with accepted sessions, allowing traffic in the same session to be handled in hardware. This means that only the first packet of a new session is handled in the slow-path and the limitations of a firewall can be found in the amount of new sessions per second.
 
 \paragraph{Application specific traffic}\mbox{} \\
-According to Sandvine\cite{phenomena_2017},(a global communications solutions service provider that published bi-annual traffic baseline reports), around 70\% of the traffic is streaming audio and video. In second place is web browsing and third are marketplace solutions. A lot of on-line services are accessed through a web page. 
-Since web browsing is in second place it is interesting to look at HTTP traffic as a layer 7 protocol. 
+According to Sandvine\cite{phenomena_2017},(a global communications solutions service provider that published bi-annual traffic baseline reports), around 70\% of the traffic is streaming audio and video. 
+Dynamic Adaptive Streaming over HTTP (DASH)\cite{dash} is used to stream video and audio over HTTP. Netflix uses DASH to deliver content to the users. You Tube is accessible over HTTP.
+This makes HTTP a suited protocol to use for layer 7 tests during the research.  
 
 \paragraph{Packet size}\label{par:packetsize}\mbox{}\\
 According to Murray et all. \cite{murray2012state}  in 2012, 99\% of the traffic inside a corporate network has an MTU size of maximum 1500 bytes. When using Jumbo packets\cite{alliance_2017} (Best practice is an MTU of 9000 bytes towards clients\cite{jet}) the amount of overhead is less because more data can go into on packet. 
 More data inside a packet results in less packets. Therefore, less system overhead during the transfer of data. 
-Jumbo packets can help when large amounts of data need to be transfered.  
-Jumbo packets are not used during the project unless mentioned otherwise during a test.
+Jumbo packets are helpful when large amounts of data need to be transfered between 2 nodes.  
+Jumbo packets are not used during the project because according to Murray et all. less than one percent of transferred data has an MTU larger than 1500 bytes. 
+Exceptions can be made during a test to see if hardware limits can be reached.
 
-\newpage
 \section{Research question}\label{sec:researchquestion}
 The problem statement and the specifications lead to the following research question.
 

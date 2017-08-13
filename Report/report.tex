@@ -71,15 +71,18 @@ Bram ter Borch\\
 \end{footnotesize}
 
 \centering
-\vspace{2.0cm}
-\includegraphics[scale=0.07]{images/uva_logo.png}
-\vspace*{2.5cm}
+\vspace{1.0cm}
+\includegraphics[scale=0.06]{images/uva_logo.png}
+\vspace*{1.5cm}
 \begin{abstract}
-Pushing packets over a link does not seem hard to accomplish. This is true for UDP traffic since it doesn't do session synchronization nor congestion control and does not offer retransmission of data. 
-But for a session oriented reliable protocol such as TCP - which ensures that the data sent is actually received by the target like a Data Transfer Node (DTN), it is much more complex to achieve. For session-based traffic the techniques implemented in a standards-compliant TCP stack make it harder to overload a device in terms of raw bandwidth.
-Thus, both the amount of packets per second and the number of concurrent sessions are the possible limitations this research is focusing on.
-Based on a set of use cases, this research investigates the suitability of various load testing tools - with and without the use of the Data Plane Development Kit - and apply these tools to various end-to-end network topologies and hardware systems between a client and a target DTN. 
-The report demonstrates that the weakest links in the path can be identified and its load tolerance limits can be found through these use cases.
+Generating packets in order to fill the links capacity is not hard to accomplish. 
+Especially for UDP traffic since it doesn't do session synchronization nor congestion control and does not offer retransmission of data. 
+For a session oriented reliable protocol such as TCP - which ensures that the data sent is actually received by the target, it is much more complex to achieve. 
+For session-based traffic the techniques implemented in a standards-compliant TCP stack make it harder to reach the limits of a device in terms of raw bandwidth.
+Due to the techniques used by TCP, which do not allow the capacity of a link to be overloaded, the amount of packets per second and the number of concurrent sessions are possible limitations this research is focusing on in order to get the limitations of hardware and software.  
+Before new systems or services go into production, an engineer needs to know the limitations of the hardware or software to make sure alerts are raised at the correct thresholds.
+This research investigates the suitability of various load testing tools - with and without the use of the Data Plane Development Kit - and apply these tools to various end-to-end network topologies and hardware systems between a client and a target. 
+The report demonstrates that the weakest links in the path can be identified and its load tolerance limits can be found by using the tools examined during this research.
 \end{abstract}
 \end{center}
 \end{titlingpage}
