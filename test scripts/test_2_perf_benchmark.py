@@ -79,7 +79,7 @@ from warp17_app_http_pb2  import *
 from warp17_test_case_pb2 import *
 from warp17_service_pb2   import *
 
-# 10M sessions
+# 4M sessions
 sip_cnt = 1
 dip_cnt = 1
 sport_cnt = 40000
@@ -244,7 +244,7 @@ def run():
     print 'Description, req_size, resp_size, rate, tx pps, rx pps, tx usage, rx usage'
 
     # TCP RAW
-    tcp_raw_cfg = [(0, 0), (8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
+    tcp_raw_cfg = [(8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
                    (256, 256), (256, 512), (256, 1024), (256, 2048), (256, 4096),
                    (256, 8192), (512, 8192), (1024, 8192), (2048, 8192)]
 
@@ -254,11 +254,9 @@ def run():
                           TCP, RAW, req_size, resp_size, run_cnt)
 
     # HTTP
-    http_cfg = [(0, 0), (8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
+    http_cfg = [(8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
                 (256, 256), (256, 512), (256, 1024), (256, 2048), (256, 4096),
-                (256, 8192), (256, 65536), (256, 1048576), (256, 10485760),
-                (512, 10485760), (1024, 10485760), (2048, 10485760),
-                (4096, 10485760), (8192, 10485760)]
+                (256, 8192), (512, 8192), (1024, 8192), (2048, 8192)]
 
     for (req_size, resp_size) in http_cfg:
         run_test_averaged('HTTP request={req!s}b response={resp!s}b'.format(req=req_size,
@@ -266,14 +264,14 @@ def run():
                           TCP, HTTP, req_size, resp_size, run_cnt)
 
     # UDP RAW
-    udp_raw_cfg = [(0, 0), (8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
-                   (256, 256), (256, 512), (256, 2048), (512, 8192),
-                   (2048, 8192), (4096, 8192), (8192, 8192)]
+    #udp_raw_cfg = [(8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
+    #               (256, 256), (256, 512), (256, 2048), (512, 8192),
+    #               (2048, 8192), (4096, 8192), (8192, 8192)]
 
-    for (req_size, resp_size) in udp_raw_cfg:
-        run_test_averaged('UDP request={req!s}b response={resp!s}b'.format(req=req_size,
-                                                                           resp=resp_size),
-                          UDP, RAW, req_size, resp_size, run_cnt)
+    #for (req_size, resp_size) in udp_raw_cfg:
+    #    run_test_averaged('UDP request={req!s}b response={resp!s}b'.format(req=req_size,
+    #                                                                       resp=resp_size),
+    #                      UDP, RAW, req_size, resp_size, run_cnt)
 
 if __name__ == '__main__':
     run()

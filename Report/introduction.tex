@@ -1,27 +1,16 @@
 \chapter{Introduction}\label{ch:intro}
 
-This paper addresses and describes the path towards obtaining knowledge on the limitations of hardware in the path towards a service, whilst accounting the full path from client to application which operate in Open Systems Interconnect (OSI) layer 7. 
-The research considers and explains the importance of the end-to-end user experience.
+This paper addresses and describes the path towards obtaining knowledge on the limitations of hardware in the path towards a service, whilst accounting the full path from client to application (Open Systems Interconnect (OSI) layer 7). 
+The research considers and explains the importance of the end-to-end user experience
 
-Before an IT department offers a new systems or applications to the users, system and network administrators need to know the limitations of the hardware in the path towards an application in order to set thresholds for monitoring alerts. 
-These limitations can be caused by any of the devices in the path towards an application.
-Routers and switches are capable of forwarding packets at line rate, making sure the server running an applications receives all the data destined for the application without unnecessary delays.
-The OS and the running application should be able to handle the inbound traffic from the  Network Interface Card (NIC). 
+Before an IT department offers a new systems or an application to the users, system and network administrators need to know the limitations of the hardware in the path towards an application in order to set thresholds for monitoring alerts. 
+Routers and switches are capable of forwarding packets at line rate, making sure the server running an applications receives all the data destined for the application without unnecessary delays. 
 To provide more bandwidth to an application, link aggregation is used to bundle multiple physical links to one logical link.
 
-%Generating high bandwidth to saturate a link using a session based protocol is possible. 
+Generating high bandwidth to saturate a link using a session based protocol is possible. 
 Kernel based open source tooling capable of generating data to saturate links well beyond 100Gb/s using UDP traffic, are available.  
-Tools like iPerf\cite{iperf}, hping\cite{hping} and BoNeSi\cite{bonesi} are kernel based and can be used to perform session based throughput tests up to OSI layer 3.  
-Utilizing TCP in order the guarantee data delivery can result in capacity problems for both network infrastructures and applications. 
-
-Figure \ref{fig:layeredtesting} provides an example infrastructure and a representation of testing at different OSI layers.
-Testing at each and every layer can reveal different limitations in the infrastructure.
-
-\begin{figure}[H]
-  \includegraphics[scale=0.5]{images/layered-tests.pdf}
-  \caption{Representation of the mentioned OSI layers in a network diagram.}
-  \label{fig:layeredtesting}
-\end{figure}
+Tools like iPerf\cite{iperf}, hping\cite{hping} and BoNeSi\cite{bonesi}i are kernel based and can be used to perform throughput tests up to OSI layer 3.  
+%The needs for utilizing TCP to transfer data reliably and the increasing demand for bandwidth can result in capacity problems for both network infrastructures and applications. 
 
 A path towards an application could contain stateful devices like a firewall or a load balancer. 
 Stateful devices keep track of sessions, which evidently costs resources. 
@@ -33,13 +22,8 @@ Institutes like Nikhef (a tier 1 location for the large Hadron Collider (LHC) Co
 CERN produces around 30 petabytes annually\cite{cerndata}, which makes high-capacity links critical for Nikhef's research purposes.
 The Nikhef network is designed around a high-capacity core that contains only stateless switching and routing devices. 
 Distributed storage systems are directly connected thereto (akin to Data Transfer Nodes (DTN) in a ScienceDMZ\cite{sciencedmz}).
-Nikhef is constantly upgrading infrastructure devices to meet the increasing demands of bandwidth. 
 Besides capacity, data integrity is important, and therefore preferably TCP should be used for data streams between Nikhef and CERN. 
-Engineers at Nikhef have a need to find the limitations of the infrastructure up to OSI layer 7, before they put the hardware into production. 
-
-Testing the infrastructure using dedicated commercial equipment for every new service is costly.
-Budget constraints do not allow for the procurement of special commercial hardware or (expensive) tooling. 
-Currently the engineers of Nikhef rely on the hardware specification from the vendors. 
+New equipment and services implemented by the engineers of Nikhef need to be tested if they can handle the expected load up to OSI layer 7 (the application layer).
 
 The use of high bandwidth links and a need for session based application layer testing requires a different approach for traffic generation over network paths.
 
@@ -47,7 +31,6 @@ The Data Plane Development Kit\cite{dpdk} (DPDK) introduced by Intel offers a di
 Through DPDK, Linux userland applications are able to bypass the kernel and communicate with the network hardware directly. Memory, processors and interfaces have to be dedicated to DPDK.
 Applications are then built on top of DPDK, utilizing DPDK's functionality to bypass the kernel (and the copying of memory regions inherent in such use). 
 MoonGen\cite{moongen}, pktgen\cite{pktgen-dpdk}, and WARP\cite{warp} are designed based on different ideas offering the ability to test up to layer 7 of the OSI model.
-
 
 %\section{Document layout}\label{sec:layout}
 %The structure of this document is as follows: The problem is described in chapter \ref{ch:problem} which is followed by the research question from which this research project originated. To explain what research has been performed in this area chapter \ref{ch:related} shows the related work and provides a reason why this research was needed. The experimental setup is described in chapter \ref{ch:experiments}, this setup was used to evaluate what a selected set of tools had to offer as well as their limitations.

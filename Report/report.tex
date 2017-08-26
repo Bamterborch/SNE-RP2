@@ -75,14 +75,17 @@ Bram ter Borch\\
 \includegraphics[scale=0.06]{images/uva_logo.png}
 \vspace*{1.5cm}
 \begin{abstract}
-Generating packets in order to fill the links capacity is not hard to accomplish. 
-Especially for UDP traffic since it doesn't do session synchronization nor congestion control and does not offer retransmission of data. 
-For a session oriented reliable protocol such as TCP - which ensures that the data sent is actually received by the target, it is much more complex to achieve. 
-For session-based traffic the techniques implemented in a standards-compliant TCP stack make it harder to reach the limits of a device in terms of raw bandwidth.
-Due to the techniques used by TCP, which do not allow the capacity of a link to be overloaded, the amount of packets per second and the number of concurrent sessions are possible limitations this research is focusing on in order to get the limitations of hardware and software.  
-Before new systems or services go into production, an engineer needs to know the limitations of the hardware or software to make sure alerts are raised at the correct thresholds.
-This research investigates the suitability of various load testing tools - with and without the use of the Data Plane Development Kit - and apply these tools to various end-to-end network topologies and hardware systems between a client and a target. 
-The report demonstrates that the weakest links in the path can be identified and its load tolerance limits can be found by using the tools examined during this research.
+To maximize and ensure service availability, system and network administrators need to know what the limits of the infrastructure supporting a service are.
+That infrastructure often has to support multiple different services for users and systems, the combined application demand placed on the infrastructure can result in parts of that infrastructure reaching its (practical) limit.
+Generating packets in order to test the full capacity of a link is not hard to accomplish. 
+Especially for UDP traffic since it does not provide session synchronization nor congestion control and does not offer retransmission of data. 
+TCP, due to its design and used techniques, prevent the capacity of a network link or path from being overloaded. 
+
+This research however focuses on the testing of limits pertaining to the packets per second rate and the number of concurrent sessions
+This research investigates the suitability of various load testing tools - with and without the use of the Data Plane Development Kit - and apply these tools to various end-to-end network topologies and hardware systems that connect a client and a destination. 
+The result of this research is a set of proposed tests, making use of the most suitable tools, to test an infrastructure up to application level. 
+By using these proposed tests the report demonstrates that the weakest links in the path can be identified and its load tolerance limits can be found.
+
 \end{abstract}
 \end{center}
 \end{titlingpage}

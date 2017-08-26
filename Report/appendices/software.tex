@@ -1,10 +1,12 @@
 \thispagestyle{empty}
 
 \chapter{}\label{appendix:software}
+\section{Software}
 
 \textbf{Software used during research:}
 \begin{itemize}
 \item{Ubuntu 16.04 LTS}
+\item{FreeBSD 11.0}
 \item{DPDK 16.11}
 \item{pktgen(dpdk) 3.3.4}
 \item{WARP 1.4}
@@ -12,10 +14,339 @@
 \item{iPerf 3.1.3}
 \item{hping 3}
 \item{Bonesi V0.3}
-\item{pktgen(kernel) version depends on the kernel}
 \end{itemize}
-\textbf{Scripts to perform WARP tests:\\}
+
+\begin{landscape}
+\section{benchmark test}\label{app:benchmark}
+
+\textbf{Benchmark script for WARP:}
+\begin{verbatim}
+import sys
+import time
+
+from functools import partial
+
+sys.path.append('../../python')
+sys.path.append('../../api/generated/py')
+sys.path.append('../../ut/lib')
+
+from warp17_api import *
+
+from b2b_setup import *
+
+from warp17_common_pb2    import *
+from warp17_l3_pb2        import *
+from warp17_server_pb2    import *
+from warp17_client_pb2    import *
+from warp17_app_raw_pb2   import *
+from warp17_app_http_pb2  import *
+from warp17_test_case_pb2 import *
+from warp17_service_pb2   import *
+
+# 4M sessions
+sip_cnt = 1
+dip_cnt = 1
+sport_cnt = 40000
+dport_cnt = 100
+
+sess_cnt = sip_cnt * dip_cnt * sport_cnt * dport_cnt
+serv_cnt = dip_cnt * dport_cnt
+
+expected_rate = 1000000
+run_cnt = 3
+
+def die(msg):
+    sys.stderr.write(msg + ' Should cleanup but we just exit..\n')
+    sys.exit(1)
+
+def get_server_test_case(protocol, app, req_size, resp_size):
+    l4_scfg = L4Server(l4s_proto=protocol,
+                       l4s_tcp_udp=TcpUdpServer(tus_ports=b2b_ports(dport_cnt)))
+    app_scfg = {
+        RAW: AppServer(as_app_proto=RAW,
+                       as_raw=RawServer(rs_req_plen=req_size,
+                                        rs_resp_plen=resp_size)),
+        HTTP: AppServer(as_app_proto=HTTP,
+                        as_http=HttpServer(hs_resp_code=OK_200,
+                                           hs_resp_size=resp_size))
+    }.get(app)
+
+    return TestCase(tc_type=SERVER, tc_eth_port=1, tc_id=0,
+                    tc_server=Server(srv_ips=b2b_sips(1, sip_cnt),
+                                     srv_l4=l4_scfg,
+                                     srv_app=app_scfg),
+                    tc_criteria=TestCriteria(tc_crit_type=SRV_UP,
+                                             tc_srv_up=serv_cnt),
+                    tc_async=False)
+
+def get_client_test_case(protocol, app, req_size, resp_size):
+    l4_ccfg = L4Client(l4c_proto=protocol,
+                       l4c_tcp_udp=TcpUdpClient(tuc_sports=b2b_ports(sport_cnt),
+                                                tuc_dports=b2b_ports(dport_cnt)))
+    rate_ccfg = RateClient(rc_open_rate=Rate(),
+                           rc_close_rate=Rate(),
+                           rc_send_rate=Rate())
+
+    delay_ccfg = DelayClient(dc_init_delay=Delay(d_value=0),
+                             dc_uptime=Delay(),
+                             dc_downtime=Delay())
+
+    app_ccfg = {
+        RAW: AppClient(ac_app_proto=RAW,
+                       ac_raw=RawClient(rc_req_plen=req_size,
+                                        rc_resp_plen=resp_size)),
+        HTTP: AppClient(ac_app_proto=HTTP,
+                        ac_http=HttpClient(hc_req_method=GET,
+                                           hc_req_object_name='/index.html',
+                                           hc_req_host_name='www.foobar.net',
+                                           hc_req_size=req_size))
+    }.get(app)
+
+    return TestCase(tc_type=CLIENT, tc_eth_port=0,
+                    tc_id=0,
+                    tc_client=Client(cl_src_ips=b2b_sips(0, sip_cnt),
+                                     cl_dst_ips=b2b_dips(0, dip_cnt),
+                                     cl_l4=l4_ccfg,
+                                     cl_rates=rate_ccfg,
+                                     cl_delays=delay_ccfg,
+                                     cl_app=app_ccfg),
+                    tc_criteria=TestCriteria(tc_crit_type=CL_ESTAB,
+                                             tc_cl_estab=sess_cnt),
+                    tc_async=False)
+
+def configure_server_port(warp17_call, protocol, app, req_size, resp_size):
+    pcfg = b2b_port_add(eth_port=1, def_gw=Ip(ip_version=IPV4, ip_v4=0))
+    b2b_port_add_intfs(pcfg,
+                       [
+                        (Ip(ip_version=IPV4, ip_v4=b2b_ipv4(eth_port=1, intf_idx=i)),
+                         Ip(ip_version=IPV4, ip_v4=b2b_mask(eth_port=1, intf_idx=i)),
+                         b2b_count(eth_port=1, intf_idx=i)) for i in range(0, dip_cnt)
+                       ])
+
+    if warp17_call('ConfigurePort', pcfg).e_code != 0:
+        die('Error configuring port 1!')
+
+    scfg = get_server_test_case(protocol, app, req_size, resp_size)
+    if warp17_call('ConfigureTestCase', scfg).e_code != 0:
+        die('Error configuring server test case')
+
+def configure_client_port(warp17_call, protocol, app, req_size, resp_size):
+    pcfg = b2b_port_add(eth_port=0, def_gw=Ip(ip_version=IPV4, ip_v4=0))
+    b2b_port_add_intfs(pcfg,
+                       [
+                        (Ip(ip_version=IPV4, ip_v4=b2b_ipv4(eth_port=0, intf_idx=i)),
+                         Ip(ip_version=IPV4, ip_v4=b2b_mask(eth_port=0, intf_idx=i)),
+                         b2b_count(eth_port=0, intf_idx=i)) for i in range(0, sip_cnt)
+                       ])
+
+    if warp17_call('ConfigurePort', pcfg).e_code != 0:
+        die('Error configuring port 0!')
+
+    ccfg = get_client_test_case(protocol, app, req_size, resp_size)
+    if warp17_call('ConfigureTestCase', ccfg).e_code != 0:
+        die('Error configuring client test case')
+
+
+def run_test(protocol, app, req_size, resp_size):
+    env = Warp17Env(path='./test_2_perf_benchmark.ini')
+    warp17_pid = warp17_start(env=env, exec_file='../../build/warp17',
+                              output_args=Warp17OutputArgs(out_file='/tmp/test_2_perf.out'))
+    warp17_wait(env=env, logger=LogHelper(name='benchmark',
+                                          filename='/tmp/test_2_perf.log'))
+
+    warp17_call = partial(warp17_method_call, env.get_host_name(),
+                          env.get_rpc_port(), Warp17_Stub)
+
+    configure_server_port(warp17_call, protocol, app, req_size, resp_size)
+    configure_client_port(warp17_call, protocol, app, req_size, resp_size)
+    timeout_s = int(sess_cnt / float(expected_rate)) + 2
+
+    if warp17_call('PortStart', PortArg(pa_eth_port=1)).e_code != 0:
+        die('Error starting server test cases!')
+
+    if warp17_call('PortStart', PortArg(pa_eth_port=0)).e_code != 0:
+        die('Error starting client test cases!')
+
+    time.sleep(timeout_s)
+
+    result = warp17_call('GetTestStatus', TestCaseArg(tca_eth_port=0,
+                                                      tca_test_case_id=0))
+    if result.tsr_state != PASSED:
+        die('Test case didn\'t pass: ' + str(result))
+
+    start_time = result.tsr_stats.tcs_start_time
+    end_time = result.tsr_stats.tcs_end_time
+
+    # start and stop ts are in usecs
+    duration = (end_time - start_time) / float(1000000)
+    rate = sess_cnt / duration
+    txr = result.tsr_link_stats.ls_tx_pkts / duration
+    rxr = result.tsr_link_stats.ls_rx_pkts / duration
+    link_speed_bytes = float(result.tsr_link_stats.ls_link_speed) * 1024 * 1024 / 8
+    tx_usage = min(float(result.tsr_link_stats.ls_tx_bytes) * 100 / duration / link_speed_bytes, 100.0)
+    rx_usage = min(float(result.tsr_link_stats.ls_rx_bytes) * 100 / duration / link_speed_bytes, 100.0)
+
+    warp17_stop(env, warp17_pid, force=True)
+    return (rate, txr, rxr, tx_usage, rx_usage)
+
+def run_test_averaged(descr, protocol, app, req_size, resp_size, run_cnt):
+    results = [run_test(protocol, app, req_size, resp_size)
+               for i in range(0, run_cnt)]
+    avgs = [sum(result, 0.0) / run_cnt for result in zip(*results)]
+
+    # Print as csv
+    print '%(descr)s,%(req_size)u,%(resp_size)u,%(rate).0f,%(txr).0f,%(rxr).0f,%(txu).2f,%(rxu).2f' % \
+           {
+            'descr': descr, 'req_size': req_size, 'resp_size': resp_size,
+            'rate': avgs[0], 'txr': avgs[1], 'rxr': avgs[2],
+            'txu': avgs[3], 'rxu': avgs[4]
+           }
+
+def run():
+
+    # Print csv header
+    print 'Description, req_size, resp_size, rate, tx pps, rx pps, tx usage, rx usage'
+
+    # TCP RAW
+    tcp_raw_cfg = [(8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
+                   (256, 256), (256, 512), (256, 1024), (256, 2048), (256, 4096),
+                   (256, 8192), (512, 8192), (1024, 8192), (2048, 8192)]
+
+    for (req_size, resp_size) in tcp_raw_cfg:
+        run_test_averaged('TCP request={req!s}b response={resp!s}b'.format(req=req_size,
+                                                                           resp=resp_size),
+                          TCP, RAW, req_size, resp_size, run_cnt)
+
+    # HTTP
+    http_cfg = [(8, 8), (16, 16), (32, 32), (64, 64), (128, 128),
+                (256, 256), (256, 512), (256, 1024), (256, 2048), (256, 4096),
+                (256, 8192), (512, 8192), (1024, 8192), (2048, 8192)]
+
+    for (req_size, resp_size) in http_cfg:
+        run_test_averaged('HTTP request={req!s}b response={resp!s}b'.format(req=req_size,
+                                                                            resp=resp_size),
+                          TCP, HTTP, req_size, resp_size, run_cnt)
+
+if __name__ == '__main__':
+    run()
+\end{verbatim}
+
+\textbf{Benchmark script for Moongen:}
+\begin{verbatim}
+local mg                = require "moongen"
+local memory    = require "memory"
+local device    = require "device"
+local stats             = require "stats"
+local log               = require "log"
+
+function configure(parser)
+        parser:description("Generates TCP SYN flood from varying source IPs, supports both IPv4 and IPv6")
+        parser:argument("dev", "Devices to transmit from."):args("*"):convert(tonumber)
+        parser:option("-r --rate", "Transmit rate in Mbit/s."):default(10000):convert(tonumber)
+        parser:option("-i --ip", "Source IP (IPv4 or IPv6)."):default("10.0.0.1")
+        parser:option("-d --destination", "Destination IP (IPv4 or IPv6).")
+        parser:option("-f --flows", "Number of different IPs to use."):default(100):convert(tonumber)
+end
+
+function master(args)
+        for i, dev in ipairs(args.dev) do
+                local dev = device.config{port = dev}
+                dev:wait()
+                dev:getTxQueue(0):setRate(args.rate)
+                mg.startTask("loadSlave", dev:getTxQueue(0), args.ip, args.flows, args.destination)
+        end
+        mg.waitForTasks()
+end
+
+function loadSlave(queue, minA, numIPs, dest)
+        --- parse and check ip addresses
+        local minIP, ipv4 = parseIPAddress(minA)
+        if minIP then
+                log:info("Detected an %s address.", minIP and "IPv4" or "IPv6")
+        else
+                log:fatal("Invalid minIP: %s", minA)
+        end
+
+        -- min TCP packet size for IPv6 is 74 bytes (+ CRC)
+        local packetLen = ipv4 and 60 or 74
+
+        -- continue normally
+        local mem = memory.createMemPool(function(buf)
+                buf:getTcpPacket(ipv4):fill{
+                        ethSrc = queue,
+                        ethDst = "12:34:56:78:90",
+                        ip4Dst = dest,
+                        ip6Dst = dest,
+                        tcpSyn = 1,
+                        tcpSeqNumber = 1,
+                        tcpWindow = 10,
+                        pktLength = packetLen
+                }
+        end)
+
+        local bufs = mem:bufArray(128)
+        local counter = 0
+        local c = 0
+
+        local txStats = stats:newDevTxCounter(queue, "plain")
+        while mg.running() do
+                -- fill packets and set their size 
+                bufs:alloc(packetLen)
+                for i, buf in ipairs(bufs) do
+                        local pkt = buf:getTcpPacket(ipv4)
+
+                        --increment IP
+                        if ipv4 then
+                                pkt.ip4.src:set(minIP)
+                                pkt.ip4.src:add(counter)
+                        else
+                                pkt.ip6.src:set(minIP)
+                                pkt.ip6.src:add(counter)
+                        end
+                        counter = incAndWrap(counter, numIPs)
+
+                        -- dump first 3 packets
+                        if c < 3 then
+                                buf:dump()
+                                c = c + 1
+                        end
+                end
+                --offload checksums to NIC
+                bufs:offloadTcpChecksums(ipv4)
+
+                queue:send(bufs)
+                txStats:update()
+        end
+        txStats:finalize()
+end
+
+\end{verbatim}
+
+\section{scripts used during the tests}\label{app:realworld}
+
+\textbf{Script used during the real world pktgen test:}
+It starts of sending 64 byte frames, where after 400 byte frames are send to the destination.
+
+\begin{verbatim}
+set ip src 0 1.2.3.4/24
+set ip dst 0 4.3.2.1
+set mac 0 ff:ff:ff:ff:ff:ff
+proto tcp 0
+set 0 size 64
+sleep 30
+start 0
+sleep 90
+stop 0
+set 0 size 400
+sleep 30
+start 0
+sleep 90
+stop 0
+\end{verbatim}
+
+\textbf{Scripts to perform WARP tests during real world test:\\}
 \textbf{Server responding to requests from client using WARP}:
+
 \begin{verbatim}
 #Set client IP on interface
 add tests l3_intf port 0 ip 1.2.3.4 mask 255.255.255.0
@@ -39,6 +370,7 @@ set tests server http port 0 test-case-id 4 200-OK resp-size 2048
 start tests port 0
 show tests ui
 \end{verbatim}
+
 \textbf{Client requesting a file from a server (can be run to an NGINX server or to a WARP server)}:
 \begin{verbatim}
 add tests l3_intf port 0 ip 4.3.2.1 mask 255.255.255.0
@@ -97,21 +429,5 @@ set tests criteria port 0 test-case-id 4 run-time 90
 start tests port 0
 show tests ui
 \end{verbatim}
-\textbf{Script to perform pktgen test:}
-\begin{verbatim}
-set ip src 0 1.2.3.4/24
-set ip dst 0 4.3.2.1
-set mac 0 ff:ff:ff:ff:ff:ff
-proto tcp 0
-set 0 size 64
-sleep 30
-start 0
-sleep 90
-stop 0
-set 0 size 400
-sleep 30
-start 0
-sleep 90
-stop 0
-\end{verbatim}
 
+\end{landscape}

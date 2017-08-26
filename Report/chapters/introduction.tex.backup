@@ -1,0 +1,59 @@
+\chapter{Introduction}\label{ch:intro}
+Internet Service Providers (ISPs) offer high bandwidth links to customers to connect to the Internet. Dutch Universities and institutes are able to connect with redundant 100Gb/s links to their ISP.
+Institutes like Nikhef (a tier 1 location for the large Hadron Collider (LHC) Computing Grid) need to transfer large datasets from CERN. CERN produces around 30 petabytes annually\cite{cerndata}, which makes high-capacity links critical for Nikhef's research purposes.
+The Nikhef network is designed around a high-capacity core that contains only stateless switching and routing devices. Distributed storage systems are directly connected thereto (akin to Data Transfer Nodes (DTN) in a ScienceDMZ\cite{sciencedmz}).
+Besides capacity, data integrity is important, and therefore preferably TCP should be used instead of UDP. TCP offers a reliable connection oriented transfer of the data. 
+Mechanisms like flow and congestion control in TCP try to ensure links will not be overloaded in order to best utilize the available bandwidth, clients need to acknowledge received datagrams to the server in order to keep packets flowing. 
+The negotiated window size between client and server determines the amount of data that can be in flight.  
+All these techniques make it nearly impossible to saturate a service using high bandwidth traffic.
+
+\section{Scope}\label{sec:scope}
+
+Before new systems and services become accessible for the users, system and network administrators need to know the limitations of the hardware in the path towards the service in order to set thresholds for monitoring alerts and to take preemptive measures. 
+Where routers and switches are capable of forwarding packets at line rate, making sure the server running an applications receives all the data destined for the application without unnecessary delays, 
+the application might not be able to process the data at line rate.
+The network should not be the bottleneck in the path towards an application. But the network administrator needs to know what the limitations are for the application running on the server. 
+This should be tested before a system is moved into production. 
+
+Generating UDP and TCP packets to test the capacity of a link on Open Systems Interconnection (OSI) layer 2 and 3 can be done using command line based tools. 
+For link testing, these tools can be used to saturate links well beyond 100Gb/s using UDP traffic. 
+The 'easy to use' tools like iPerf\cite{iperf}, Kernel module pktgen\cite{pktgen-kernel}, hping\cite{hping} and BoNeSi\cite{bonesi} have their own use cases and limitations.
+The need for high bandwidth capacity testing and application based testing requires a different approach for traffic generation over network paths.
+
+The Data Plane Development Kit\cite{dpdk} (DPDK) introduced by Intel offers a different approach for traffic generation, it does so without using the kernel TCP/IP and network stack.  
+Through DPDK, Linux userland applications are able to bypass the kernel and communicate with the network hardware directly. Memory, processors and interfaces have to be dedicated to DPDK.
+Applications are then build on top of DPDK, utilizing DPDK's functionality to bypass the kernel (and the copying of memory regions inherent in such use). MoonGen\cite{moongen}, pktgen\cite{pktgen-dpdk}, and WARP\cite{warp} each designed based on different ideas offering the ability to test beyond layer 2 and 3 of the OSI model.
+Some going up to application layer protocols. Which is needed to determine the limits of an application.
+
+The needs for utilizing TCP to transfer data reliably and the increasing demand for bandwidth can result in capacity problems for both network infrastructures and applications. 
+Stateful devices keep track of sessions, which evidently costs resources. These stateful devices in a path towards an application can become a bottleneck when resources run out.
+Alerting before resources run out, is needed to keep a network behave predictable.  
+This paper addresses and describes the path towards obtaining knowledge on these limitations. Whilst accounting the full path from start to end. Thus considering the end-to-end user experience.
+
+\section{Document layout}\label{sec:layout}
+
+The structure of this document is as follows: The problem is described in chapter \ref{ch:problem} which is followed by the research question from which this research project originated. To explain what research has been performed in this area chapter \ref{ch:related} shows the researched fields. The experimental setup is described in chapter \ref{ch:experiments}, this setup was used to evaluate what a selected set of tools had to offer as well as their limitations.
+Chapter \ref{ch:method} explains the usability of the tools and describes some tests that could be conducted using the tools. The tests where carried out on an environment that was planned to go into production - provided the tests described here demonstrated stable and scalable operation. All tests where conducted during a scheduled maintenance windows with approval of the owner of the environment. The results of the real world test can be found in chapter \ref{ch:results}. 
+From the results, conclusions are drawn in chapter \ref{ch:conclusion}. Appendix \ref{appendix:software} shows the test scripts used during tests on production infrastructures.
+
+\section{Terminology and Acronyms}\label{sec:terminology}
+The terminology used in this paper is based on RFC1242 \cite{rfc1242}, with the most relevant terms listed in table \ref{table:terms} for convenience.
+A list of acronyms used in this paper can be found in appendix \ref{appendix:acronym}.
+
+\begin{table}[]
+\centering
+\caption{Useful terminology}
+\label{table:terms}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Term}                  & \textbf{Explanation}                                                                                                                                                                                 \\ \hline
+Constant Load         & Fixed length frames at a fixed interval time.                                                                                                                                                                    \\ \hline
+Data link frame size  & \begin{tabular}[c]{@{}l@{}}The number of octets in the frame from the first octet \\ following the preamble to the end of the Frame check \\ Sequence (FCS), if present, or to the last octet of the data if \\ there is no FCS.\end{tabular} \\ \hline
+Inter Frame Gap       & \begin{tabular}[c]{@{}l@{}}The delay from the end of a data link frame, \\ to the start of the preamble of the next data link frame.\end{tabular}                                                                \\ \hline
+MTU-mismatch behavior & \begin{tabular}[c]{@{}l@{}}The network MTU (Maximum Transmission Unit) of the output \\ network is smaller than the MTU of the input network, this \\ results in fragmentation.\end{tabular}                        \\ \hline
+Overload behavior   & When demand exceeds available system resources.                                                                                                                                                                  \\ \hline
+Throughput            & \begin{tabular}[c]{@{}l@{}}The maximum rate at which none of the offered frames, are \\ dropped by the device. \end{tabular}                                                                                                                                  \\ \hline
+\end{tabular}
+\end{table}
+
+

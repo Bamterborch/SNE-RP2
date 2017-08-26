@@ -1,37 +1,46 @@
-\chapter{Related Work}\label{ch:related}
-As described in chapter \ref{ch:problem}, the goal of this research is the study of a reference model that can be used for high bandwidth session and application based throughput testing.
-Tests will be described, which can be used to find the limits of hardware between client and server. 
+\chapter{Related work and available tooling}\label{ch:related}
+As described in chapter \ref{ch:problem}, the goal of this research is the study for the usability of bandwidth generation tools in order to find the limits of an end-to-end path between a client and a destination, possibly going up to the application layer.
+Techniques used by TCP to prevent links being overloaded is a well researched topic. 
+When looking into limitations of an infrastructure using session based protocols, there is a limited amount of related papers. 
+In the field of end-to-end performance testing focusing on a minimum bandwidth of 40Gb/s this research provides a beginning.
+Therefore this chapter will focus on different tools that can be used for bandwidth generation up to layer 7 of the OSI model.
+%Tests will be described using the available tools, which can be used to find the limits of hardware between client and server. 
 
-\section{Transport layer protocols}
-The projects goal is to evaluate session-based high-throughput testing, which naturally leads to a focus on the session-oriented transport layer protocol TCP.
-
+\section{Related work}
+%The goal of this research is to evaluate session-based high-throughput testing, which naturally leads to a focus on the session-oriented transport layer protocol TCP. 
+%Generating application based request to evaluate the application itself is a well researched topic, but generating data to find the limitations when it comes to packets or session per second is a topic to be explored. \\
 %\subsection{UDP}
 %When UDP traffic is generated, data is being dumped on the wire without keeping state nor resources need to be claimed for sessions on end hosts, except for the UDP send and receive buffers. 
 %Pktgen from the Linux kernel is an 'easy to use' application that is able to generate UDP-only traffic towards a destination. The destination does not need to run an application to receive the data.
 %The report written by Turull et al. \cite{turull2016pktgen} about pktgen is an updated report from their work in 2005 and looks at high speed networks. Where high speed for that report is everything over 10Gb/s.  
 
-\subsection{TCP}
-When TCP is used to transfer data, session states need to be kept by all the stateful hardware in the path from client to server. 
-Congestion control starts to play a role at the senders end to make sure the intermediate devices will not be overloaded. 
-The bandwidth filled by the client is dependent on the congestion control mechanism used by the sender.   
+%\subsection{Packet generation}
+%When TCP is used to transfer data, session states need to be kept by all the stateful hardware in the path from client to server. 
+%Congestion control starts to play a role at the senders end to make sure the intermediate devices will not be overloaded. 
+%The bandwidth filled by the client is dependent on the congestion control mechanism used by the sender.   
+The amount of related work for end-to-end testing is limited when using session based protocols and trying to generate bandwidth over 40Gb/s.
+There is a prior research performed by Emmerich et al. for generating bandwidth over 40Gb/s using DPDK and a research is performed looking into application based throughput testing using DPDK by Malakshmi et al. \\ 
+
 Emmerich et al. \cite{emmerich_gallenm¸ller_raumer_wohlfart_carle_2015} published a paper about MoonGen in 2015, MoonGen is capable of generating 120Gb/s and 178.5 Mpps (over multiple 10Gb ethernet interfaces using twelve 2 GHz CPU cores) according to the developers.
 Exceeding the criteria for bandwidth and being session-based, it thus meets the requirements for this study.
-Therefore, MoonGen looks like a good candidate for OSI layer 2, 3 and 4 testing. 
+Therefore, MoonGen will be used for OSI layer 2, 3 and 4 testing. \\ 
 
-\subsection{Application specific}
-In 2016 research was performed by Malakshmi et al. \cite{mahalakshmi2016study} on different DPDK applications with the purpose of creating a tool for L4 to L7 application testing. 
+%\subsection{Application specific}
+In 2016 research was performed by Malakshmi et al. \cite{mahalakshmi2016study} on different DPDK applications with the purpose of creating a tool for layer 4 to layer 7 application testing. 
 The result of Malakshmi's research is a tool called T-REX. Their projects goal is to generate stateful traffic up to 10Gb/s. 
-However, the main T-REX functionality is Cisco-proprietary and requires a Cisco device to run. The public (free) version is limited in functionality to an extent that it is not interesting for this report.
+However, the main T-REX functionality is Cisco-proprietary and requires a Cisco device to run. The public (free) version is limited in functionality to an extent that it is not applicable to this research.\\
+
 \section{Tools}\label{sec:tools}
-A lot of 'easy to use' tools are available for bandwidth testing. 
-These tools each address one or more of the requirements for this study.
-Specifically, we consider the tools listed in table \ref{table:tools} in order to assess the suitability of these tools for session based bandwidth testing at high volumes.
-iPerf3, hping and BoNeSi are considered 'easy to use' tools.
+A lot of tools are available for bandwidth testing. 
+The tools in table \ref{table:tools} each satisfy one or more of the requirements mentioned in chapter \ref{ch:problem}.
+Specifically, we consider these tools in order to assess the suitability of these tools for session based bandwidth testing at high volumes.
+
+iPerf3, hping and BoNeSi depend on kernel drivers and the kernel TCP stack. pktgen, MoonGen and WARP use drivers and the TCP stack provided by DPDK.
 
 \begin{table*}[ht]
 \centering
 \begin{tabular}{|c|c|c|} \hline
-\textbf{Tool} & \textbf{Session based} & \textbf{depends on} \\ \hline
+\textbf{Tool} & \textbf{Session based} & \textbf{TCP stack and drivers} \\ \hline
 iPerf3\cite{iperf} & Yes & Kernel  \\ \hline
 hping\cite{hping}  & Yes & Kernel \\ \hline
 BoNeSi\cite{bonesi} & Yes & Kernel \\ \hline
@@ -46,14 +55,17 @@ WARP\cite{warp} & Yes & DPDK \\ \hline
 
 \subsection{iPerf3}\label{sub:iperf3}
 IPerf3 is a client-server based tool that allows packet generation.
-IPerf3 is an improved version of iPerf that makes it possible the send traffic at higher rates than its predecessors. It needs a client and server to generate traffic and it needs tweaking of kernel parameter to generate traffic over 40Gb/s. Efforts have been made to make it available for DPDK \cite{jelte}. Unfortunately these efforts did not have the success the author was hoping for. 
+It needs a client and server to generate traffic and it needs tweaking of kernel parameter to generate traffic over 40Gb/s. Efforts have been made to make it available for DPDK \cite{jelte}. Unfortunately these efforts did not have the success the author was hoping for. 
 A small test is performed to see if the kernel based version of iPerf3 can be used to generate high bandwidth session based traffic streams. The test and the results can be found in chapter \ref{ch:experiments}.
 
 \subsection{hping}\label{sub:hping}
-Hping was started in 2006. It is a command-line oriented TCP/IP packet assembler. Hping is capable of sending crafted packets to a destination using spoofed IP addresses if necessary. ICMP, UDP, TCP and RAW IP modes are supported. Random source addresses can be used to send requests to simulate a DDOS attack.    
+Hping was started in 2006. It is a command-line oriented TCP/IP packet assembler. 
+Hping is capable of sending crafted packets to a destination using spoofed IP addresses if necessary. 
+ICMP, UDP, TCP and raw IP modes are supported. Random source addresses can be used to sent requests to simulate a DDoS attack. 
+Tests will be performed to see if hping is able to generate the bandwidth or packet and session per second needed for this research. 
 
 \subsection{BoNeSi}\label{sub:bonesi}
-BoNeSi is 'the DDOS botnet simulator' according to its developers. BoNeSi supports ICMP, UDP and TCP (HTTP) flooding attacks from a defined botnet size. Source addresses can be specified in a text file which is used as input. By doing this, one becomes capable of sending crafted packets from different source addresses.  
+BoNeSi is 'the DDoS botnet simulator' according to its developers. BoNeSi supports ICMP, UDP and TCP (HTTP) flooding attacks from a defined botnet size. Source addresses can be specified in a text file which is used as input. This makes it possible to send crafted packets masquerading the original source of attack.  
 
 %\subsection{pktgen(kernel module)}\label{sub:pktgenkernel}
 %To generate a single flow of UDP traffic without the need of an application at the other side, pktgen from the Linux kernel is the way to go. During the test phase preceding this paper, pktgen was tested on an Ubuntu machine and on a FreeBSD machine. 
@@ -63,16 +75,17 @@ BoNeSi is 'the DDOS botnet simulator' according to its developers. BoNeSi suppor
 %Pktgen (kernel module) is only capable of generating UDP traffic and therefore, not usable for this research. 
 
 \subsection{Data Plane Development Kit}\label{sub:dpdk}
-The Data Plane Development Kit\cite{dpdk} (DPDK) offers the ability to generate traffic from user space, bypassing the kernel and directly talking to the network hardware. In order to make DPDK run, supported NIC's \cite{dpdknic} needs to be used. Applications can be created to run on top of DPDK. Pktgen, MoonGen and WARP are three applications that are written on top of DPDK and should thus to be able to generate traffic in high volumes, both UDP and TCP based. 
-%DPDK cannot be run on BSD kernels. For the DPDK experiments all machines where running Ubuntu 16.04 LTS. 
+The Data Plane Development Kit\cite{dpdk} (DPDK) was developed by Intel to provide the ability to generate traffic from user space, bypassing the kernel and directly talking to the network hardware. In order to make DPDK run, supported NICs \cite{dpdknic} needs to be used. Applications can be created to run on top of DPDK. Pktgen, MoonGen and WARP are three applications that are written on top of DPDK and should thus be able to generate traffic in high volumes for UDP and TCP based. 
 
 \subsubsection{Pktgen}\label{subsub:dpdk-pktgen}
 Pktgen for DPDK is available since May 2013. The developers from DPDK provide Pktgen from the DPDK download page. This makes it a good option for a reference experiment to assess the difference of DPDK compared to kernel-based tests. 
 
 \subsubsection{MoonGen}\label{}
-MoonGen was initially released in October 2014. It is designed to generate packets at high speed using a minimum amount of resources from the source. According to the developers it is more efficient than Pktgen. A 10Gb/s link can be filled using only one core. MoonGen builds on libmoon \cite{libmoon} by extending it with features for packet generators such as software rate control and software timestamping. MoonGen offers a report displaying test results \cite{emmerich_gallenm¸ller_raumer_wohlfart_carle_2015}.
+MoonGen was initially released in October 2014. It is designed to generate packets at high speed using a minimum amount of resources from the source. According to the developers it is more efficient than Pktgen\cite{emmerich_gallenm¸ller_raumer_wohlfart_carle_2015}. A 10Gb/s link can be filled using only one core. MoonGen builds on libmoon \cite{libmoon} by extending it with features for packet generators such as software rate control and software timestamping. 
+%MoonGen offers a report displaying test results \cite{emmerich_gallenm¸ller_raumer_wohlfart_carle_2015}.
 
 \subsubsection{WARP}\label{subsub:dpdk-WARP17}
-Juniper WARP was released in May 2016. It allows users to execute performance testing up to layer 7, where however currently only HTTP version 1.1 is supported. IPv6 is not supported at this moment. A server equipped with two Intel® Xeon® E5-2660 v3 processor, 128Gb RAM and two 40 Gb Ethernet interfaces, is supposed to be able to generate around 2 million sessions per second between client and server.  
-WARP has not been subject to a research paper. It looks capable of generating high throughput and a high amount of sessions per second up to the application layer.   
+Juniper WARP was released in May 2016. It allows users to execute performance testing up to layer 7, where however currently only HTTP version 1.1 as a layer 7 protocol is supported and only IPv4 is supported at layer 3. 
+A server equipped with two Intel® Xeon® E5-2660 v3 processor, 128Gb RAM and two 40 Gb Ethernet interfaces, is suggested to be able to generate around 2 million sessions per second between client and server.  
+The performance graphs included in the packets source provide the idea that WARP can generate high throughput and a high amount of sessions per second up to the application layer.   
 
