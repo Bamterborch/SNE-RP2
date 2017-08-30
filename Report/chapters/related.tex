@@ -1,5 +1,5 @@
 \chapter{Related work and available tooling}\label{ch:related}
-As described in chapter \ref{ch:problem}, the goal of this research is the study for the usability of bandwidth generation tools in order to find the limits of an end-to-end path between a client and a destination, possibly going up to the application layer.
+As described in chapter \ref{ch:problem}, the goal of this research is the study for the usability of traffic generation tools in order to find the limits of an end-to-end path between a client and a destination, possibly going up to the application layer.
 Techniques used by TCP to prevent links being overloaded is a well researched topic. 
 When looking into limitations of an infrastructure using session based protocols, there is a limited amount of related papers. 
 In the field of end-to-end performance testing focusing on a minimum bandwidth of 40Gb/s this research provides a beginning.
@@ -18,16 +18,16 @@ Therefore this chapter will focus on different tools that can be used for bandwi
 %When TCP is used to transfer data, session states need to be kept by all the stateful hardware in the path from client to server. 
 %Congestion control starts to play a role at the senders end to make sure the intermediate devices will not be overloaded. 
 %The bandwidth filled by the client is dependent on the congestion control mechanism used by the sender.   
-The amount of related work for end-to-end testing is limited when using session based protocols and trying to generate bandwidth over 40Gb/s.
-There is a prior research performed by Emmerich et al. for generating bandwidth over 40Gb/s using DPDK and a research is performed looking into application based throughput testing using DPDK by Malakshmi et al. \\ 
+The amount of related work for end-to-end testing is limited when using session based protocols and trying to generate throughput over 40Gb/s.
+There is a prior research performed by Emmerich et al. for generating throughput over 40Gb/s using DPDK and a research is performed looking into application based throughput testing using DPDK by Malakshmi et al. \\ 
 
 Emmerich et al. \cite{emmerich_gallenm¸ller_raumer_wohlfart_carle_2015} published a paper about MoonGen in 2015, MoonGen is capable of generating 120Gb/s and 178.5 Mpps (over multiple 10Gb ethernet interfaces using twelve 2 GHz CPU cores) according to the developers.
-Exceeding the criteria for bandwidth and being session-based, it thus meets the requirements for this study.
+Exceeding the throughput criteria and being session-based, it thus meets the requirements for this study.
 Therefore, MoonGen will be used for OSI layer 2, 3 and 4 testing. \\ 
 
 %\subsection{Application specific}
 In 2016 research was performed by Malakshmi et al. \cite{mahalakshmi2016study} on different DPDK applications with the purpose of creating a tool for layer 4 to layer 7 application testing. 
-The result of Malakshmi's research is a tool called T-REX. Their projects goal is to generate stateful traffic up to 10Gb/s. 
+The result of Malakshmi's research is a tool called T-REX. Their project goal is to generate stateful traffic up to 10Gb/s. 
 However, the main T-REX functionality is Cisco-proprietary and requires a Cisco device to run. The public (free) version is limited in functionality to an extent that it is not applicable to this research.\\
 
 \section{Tools}\label{sec:tools}
@@ -75,7 +75,7 @@ BoNeSi is 'the DDoS botnet simulator' according to its developers. BoNeSi suppor
 %Pktgen (kernel module) is only capable of generating UDP traffic and therefore, not usable for this research. 
 
 \subsection{Data Plane Development Kit}\label{sub:dpdk}
-The Data Plane Development Kit\cite{dpdk} (DPDK) was developed by Intel to provide the ability to generate traffic from user space, bypassing the kernel and directly talking to the network hardware. In order to make DPDK run, supported NICs \cite{dpdknic} needs to be used. Applications can be created to run on top of DPDK. Pktgen, MoonGen and WARP are three applications that are written on top of DPDK and should thus be able to generate traffic in high volumes for UDP and TCP based. 
+The Data Plane Development Kit\cite{dpdk} (DPDK) was developed by Intel to provide the ability to generate traffic from user space, bypassing the kernel and directly talking to the network hardware. In order to make DPDK run, supported NICs \cite{dpdknic} needs to be used. Applications can be created to run on top of DPDK. Pktgen, MoonGen and WARP are three applications that are written on top of DPDK and should thus be able to generate traffic in high volumes. 
 
 \subsubsection{Pktgen}\label{subsub:dpdk-pktgen}
 Pktgen for DPDK is available since May 2013. The developers from DPDK provide Pktgen from the DPDK download page. This makes it a good option for a reference experiment to assess the difference of DPDK compared to kernel-based tests. 
@@ -87,5 +87,5 @@ MoonGen was initially released in October 2014. It is designed to generate packe
 \subsubsection{WARP}\label{subsub:dpdk-WARP17}
 Juniper WARP was released in May 2016. It allows users to execute performance testing up to layer 7, where however currently only HTTP version 1.1 as a layer 7 protocol is supported and only IPv4 is supported at layer 3. 
 A server equipped with two Intel® Xeon® E5-2660 v3 processor, 128Gb RAM and two 40 Gb Ethernet interfaces, is suggested to be able to generate around 2 million sessions per second between client and server.  
-The performance graphs included in the packets source provide the idea that WARP can generate high throughput and a high amount of sessions per second up to the application layer.   
+The performance graphs included in the packet source provide the idea that WARP can generate high throughput and a high amount of sessions per second up to the application layer.   
 

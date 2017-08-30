@@ -3,16 +3,16 @@
 This paper addresses and describes the path towards obtaining knowledge on the limitations of hardware in the path towards a service, whilst accounting the full path from client to application which operate in Open Systems Interconnect (OSI) layer 7. 
 The research considers and explains the importance of the end-to-end user experience.
 
-Before an IT department offers a new systems or applications to the users, system and network administrators need to know the limitations of the hardware in the path towards an application in order to set thresholds for monitoring alerts. 
+Before an IT department offers new systems or applications to the users, system and network administrators need to know the limitations of the hardware in the path towards an application in order to set thresholds for monitoring alerts. 
 These limitations can be caused by any of the devices in the path towards an application.
-Routers and switches are capable of forwarding packets at line rate, making sure the server running an applications receives all the data destined for the application without unnecessary delays.
+Routers and switches are capable of forwarding packets at line rate, making sure the server running an application receives all the data destined for the application without unnecessary delays.
 The OS and the running application should be able to handle the inbound traffic from the  Network Interface Card (NIC). 
-To provide more bandwidth to an application, link aggregation is used to bundle multiple physical links to one logical link.
+To provide more bandwidth to an application, for example link aggregation can used to bundle multiple physical links to one logical link.
 
 %Generating high bandwidth to saturate a link using a session based protocol is possible. 
 Kernel based open source tooling capable of generating data to saturate links well beyond 100Gb/s using UDP traffic, are available.  
 Tools like iPerf\cite{iperf}, hping\cite{hping} and BoNeSi\cite{bonesi} are kernel based and can be used to perform session based throughput tests up to OSI layer 3.  
-Utilizing TCP in order the guarantee data delivery can result in capacity problems for both network infrastructures and applications. 
+Utilizing TCP in order to guarantee data delivery can result in capacity problems for both network infrastructures and applications. 
 
 Figure \ref{fig:layeredtesting} provides an example infrastructure and a representation of testing at different OSI layers.
 Testing at each and every layer can reveal different limitations in the infrastructure.
@@ -41,7 +41,7 @@ Testing the infrastructure using dedicated commercial equipment for every new se
 Budget constraints do not allow for the procurement of special commercial hardware or (expensive) tooling. 
 Currently the engineers of Nikhef rely on the hardware specification from the vendors. 
 
-The use of high bandwidth links and a need for session based application layer testing requires a different approach for traffic generation over network paths.
+The use of high capacity links and a need for session based application layer testing requires a different approach for traffic generation over network paths.
 
 The Data Plane Development Kit\cite{dpdk} (DPDK) introduced by Intel offers a different approach for traffic generation, it does so without using the kernel network stack.  
 Through DPDK, Linux userland applications are able to bypass the kernel and communicate with the network hardware directly. Memory, processors and interfaces have to be dedicated to DPDK.

@@ -1,22 +1,22 @@
 \chapter{Conclusion}\label{ch:conclusion}
 From the tool assessment performed in chapter \ref{ch:experiments} and the tests described in chapter \ref{ch:method}, results are gathered and described in chapter \ref{ch:results}.
-The results, executed according to current standards and best practices and reproduced as a matter of course, allow to draw conclusions on tool suitability and the necessary characteristics of high-bandwidth session based throughput tests in a real-world environment. \\
+The results, executed according to current standards and best practices, allow to draw conclusions on tool suitability and the necessary characteristics of high-bandwidth session based throughput tests in a real-world environment. \\
 When it comes to generating session based high bandwidth throughput testing, DPDK should be used in combination with pktgen in order to reach hardware limitations. 
 Using DPDK in combination with WARP creates the possibility to generate traffic at the application layer. 
-The kernel based tools could not provide the goals this research was looking for. 
+The kernel based tools could not provide the results this research was looking for. 
 
 During this research, the limitations of the hardware used in the experimental setup were found by executing the tests. 
-The tests can be used as guideline to find the hardware limits in the path from client to server. 
+The tests can be used as a guideline to find the hardware limits in the path from client to server. 
 T1 revealed  a limitation for the amount of packets per second in the PCI Express bus. 
-T2 was used to get the maximum possible bandwidth from client to server, the hashing settings were shown to be a limitation in the setup as expected.
+T2 was used to get the maximum possible throughput from client to server, the hashing settings were shown to be a limitation in the setup as expected.
 T3 revealed the hardware limits for client and server with regards to the amount of sessions and bandwidth usage.
 Next to the hardware  limits T3 revealed a limitation of a stateful firewall in the path towards the destination, the overload behavior of the firewall is also known by executing this test.\\ 
 T4 stressed an application to get the performance limits for this specific application.
  
-These tests should be used to get a better insight in performance requirements for high bandwidth infrastructure predictability.
+These tests should be used to get a better insight in the limitations of an infrastructure that is used to provide services.
 Combining DPDK with pktgen and WARP can reveal the limits of an infrastructure.
 To perform high bandwidth session based throughput tests up to layer 3, pktgen on top of DPDK is capable of reaching hardware limits.
-For application layer link testing, WARP is the framework to use. Support for other applications need to be added to WARP but the start looks promising.
+For application layer link testing, WARP is the framework to use. Support for other applications must be added to WARP in order to improve the employability, but the start looks promising.
 The use of different kernels did not show any major differences in the results of executed kernel based application tests during this research. 
 
 The exact limit of the firewall was not found, it is only known that one server using WARP can generate the amount of sessions per second to make the system fail.
@@ -29,7 +29,7 @@ By increasing the amount of sessions step by step we could have pinpointed the a
 The Data Plane Development Kit is still a work in progress, and today we see only the beginning of its potential being harnessed for network load testing. New tools that use the power of DPDK are introduced every year:
 Pktgen (2013), MoonGen(2014), T-rex (2015), WARP(2016).
 The possibilities to test up to layer 7 in the OSI model are now becoming available to system and network administrators. 
-Current tooling is capable of generating a million session per second using simple server hardware. 
+Current tooling is capable of generating a million sessions per second using simple server hardware. 
 DPDK applications supporting IPv6 and multiple application layer protocols are needed to improve infrastructures in order to offer services. 
 
 \section{Future Work}
@@ -42,7 +42,7 @@ During this project an attempt was  made to use an IBM Power8 machine (server E)
 This project used HTTP version 1.1 for application testing. Support for more protocols need to be added to WARP to make it more powerful. 
 Currently WARP supports IPv4 only. When IPv6 is supported, the performance should be tested using IPv6. 
 Monitoring in WARP should be improved, currently the API provides the only way of getting detailed results.
-NGINX is made available for DPDK recently. Running WARP towards a DPDK NGINX server should provide the capabilities of NGINX when it does not rely on kernel interrupts. \\
+NGINX was made available for DPDK recently. Running WARP towards a DPDK NGINX server should provide the capabilities of NGINX when it does not rely on kernel interrupts. \\
 
 DPDK supports multiple NICs. During the project an effort was made to start generating traffic over 100Gb/s Mellanox cards.
 This was successful up to 60Gb/s TCP traffic, until the system crashed for reasons that could not be determined within the scope of this project. 

@@ -2,7 +2,7 @@
 In order to find the limits and the usability of the tools in table \ref{table:tools} for high bandwidth session based throughput testing, the tools are subject to various experiments.
 The results the research is looking for: 
 \begin{itemize}
-\item{The capability of generating 40Gb/s of bandwidth.} 
+\item{The capability of generating 40Gb/s of throughput.} 
 \item{The maximum amount of packets per second.} 
 \item{The maximum amount of sessions per second.}
 \end{itemize}
@@ -20,7 +20,7 @@ All experiments described in this chapter are executed in a test environment at 
 \end{figure}
 
 The figure shows five server systems, of which three identical servers (A, B and C in table \ref{tab:testmachines}) are used to perform the tests, which results are described in this paper.
-During the experiments 2 extra machines (D and E in table 4.1), both containing 100Gb/s Mellanox NIC cards, have been introduced into the network to test links with a capacity up to 100Gb/s to verify if reached limits are resource or hardware based. All servers were connected to a Juniper QFX10002 (device S in Fig. \ref{fig:testenv}), which provides 32 40Gb/s QSFP ports, of which some are configured as a single 100Gb/s interface.
+During the experiments 2 extra machines (D and E in table 4.1), both containing 100Gb/s Mellanox NIC cards, have been introduced into the network to test links with a capacity up to 100Gb/s to verify if reached limits are resource or hardware based. All servers were connected to a Juniper QFX10002 (device S in Fig. \ref{fig:testenv}), which provides 32 40Gb/s QSFP ports, of which some are configured as a single 100Gb/s interface \cite{pic100g}.
 
 \begin{table}[H]
 \centering
@@ -43,7 +43,8 @@ Machine M is a Simple Network Management Protocol (SNMP) collector. This SNMP co
 Packets per second and bits per second are retrieved from the devices under test.
 Switch S is also added to the collector as a data source. 
 SNMP is active on the management interface of the devices.
-The high bandwidth interfaces are able to connect to each other over a non-routed VLAN. This makes sure the test traffic cannot interfere with SNMP reads from collector M. 
+The high bandwidth interfaces are connected to switch S in order to perform throughput tests. 
+The SNMP collector polls the servers through their management interfaces to make sure the SNMP data is not a part of the collected measurements during the executed tests. 
 
 \section{Standards and best practices}\label{sub:rfc}
 Multiple RFCs have been written that provide guidelines for throughput testing.
@@ -58,7 +59,7 @@ A quick list with guidelines from these RFCs is as follows:
 \item{Throughput tests should have a minimum runtime of 60 seconds}
 \item{The environment cannot be a production environment}
 \item{Devices Under Test (DUT) will possibly be overloaded}
-\item{Tests should be done 3 times and average the results.}
+\item{Tests should be done 3 times and the average should be taken from the results.}
 \end{itemize} 
 
 \section{Kernel based tools}
@@ -68,8 +69,9 @@ All the tools were used to find its limits for bandwidth generation, maximum amo
 \paragraph{iPerf3}\mbox{}\\
 Machine A is set up as a server running on default TCP port 5201, machine B is setup as a client connecting to the server. 
 Tests are executed from the client side on a FreeBSD and Ubuntu server and the performance differences were minimal. 
-The initial tests were performed sending 64 byte Ethernet frames. The practical maximum amount of 42Mpps was not reached until 6 threads were utilized to generate traffic (the practical maximum amount of packets is explained in section \ref{sub:pktgen}). 
-The link capacity was filled using 16 threads and a packet size of 1500 bytes. 
+The initial tests were performed sending 46 byte of data, which concluded in a minimal Ethernet frame of 88 bytes as described in chapter \ref{par:framesize} . 
+The practical maximum amount of 42Mpps was not reached until 6 threads were utilized to generate traffic (the practical maximum amount of packets is explained in section \ref{sub:pktgen}). 
+The link capacity was filled using 16 threads and a 1500 bytes of data in an Ethernet frame. 
 iPerf3 starts a TCP session per running thread. This makes it less useful for this project since we explained already that maximizing bandwidth utilization is not enough to reach the performance limitations.
 
 \paragraph{Hping}\mbox{}\\
@@ -118,15 +120,11 @@ This packet size is the  optimal packet size since it generates a bandwidth usag
 %  \label{fig:pktgenpps}
 %\end{figure}
 
-\subsection{MoonGen}
-MoonGen offers benchmark scripts to determine the machines capabilities. 
-The benchmark script used for the tests can be found in appendix \ref{app:benchmark}. 
-A single machine (B) is connected to the switch using two 40Gb/s ports at 2 separate cards (similar to the setup of the WARP test), both connected to switch S (one NIC for the server part and the other for the clients part of the benchmark). Sending UDP traffic with a size of 1500 bytes resulted in a maximum of 24 Gb/s. When the smallest possible Ethernet packets of 64 bytes are sent over the line a maximum of 15Mpps is reached. When TCP is used on the same machine (B) connected to the switch using two interfaces, a maximum of 10Gb/s was reached. These low values did not make MoonGen interesting enough since Pktgen is capable of reaching hardware limits. 
 
 \subsection{WARP}\label{sub:warp}
 In order to get to know the capabilities of DPDK in combination with WARP on top of the hardware in the experimentation environment a benchmark was run on server B.
 A machine running WARP as a client needs a service to respond to SYN packets, otherwise sessions are not opened and there will not be any traffic flowing between client and server. 
-Appendix \ref{app:benchmark} displays the benchmark script used for this test.
+Appendix \ref{app:benchmark} displays the benchmark script used for this test. The benchmark script was provides in the application source.
 For this benchmark the server B  will be acting as the client and as the destination for the traffic, both client and destination are using a dedicated NIC. 
 An extra Intel XL710 card is added to machine B since the XL710 card (which is a NIC providing two ports) can not utilize both ports in one slot at their full capacity\cite{intellinuxguidxl710}.
 The second port on the card is designed as a fail-over interface. 
@@ -135,13 +133,13 @@ Traffic is generated from port A of NIC 1 to port A of NIC 2.
 All of the machine's CPUs and memory will be dedicated to this test. 
 The benchmark first does the tests for raw TCP, where after it will perform the tests using HTTP.
 
-The client side of the benchmark attempted to open 4 million session although not all of the session succeed.
+The client side of the benchmark attempted to open 4 million session although not all of the sessions succeed.
 The amount of sessions per second, packets per second and the used bandwidth is registered along with the time spent until all sessions are tried. 
 When a TCP session is opened between client and server, the tests will request a file or send a raw TCP packet.
 The raw TCP reply is a TCP packet, for the HTTP file request a padded 200-OK message is returned. 
 The goal for this test is to find the capabilities of the server while it is running WARP therefore the guidelines for bandwidth testing regarding runtime from RFC2544 are not applicable. 
 
-The first test is raw TCP. As seen in figure \ref{fig:rawtcpsession} about one million sessions per second are tempted to open by the client.
+The first test is raw TCP. As seen in figure \ref{fig:rawtcpsession} the client attempts to open about one million sessions per second.
 When the packet size goes up the amount of sessions per second drops slightly.
 The succeeded sessions use up some of the link's total capacity as is displayed in figure \ref{fig:rawtcplink}.
 This means that the sessions that succeed are capable of filling 50 \% of the link capacity.  
@@ -182,4 +180,9 @@ It can fill up half of the link capacity when large packets are generated.
 WARP is capable of generating 1 million sessions per second for raw TCP and HTTP traffic towards a destination, when the packet size increases it can generate 20Gb/s of application layer data.
 For stateful devices in a path to a server, the amount of sessions can be problematic. Overload behavior is expected from stateful devices in a path when WARP is used for limitation testing.  
 This makes WARP useful for application level testing purposes. 
+
+\subsection{MoonGen}
+MoonGen offers benchmark scripts to determine the machines capabilities. 
+The benchmark script used for the tests can be found in appendix \ref{app:benchmark} and is also provided with the application source. 
+A single machine (B) is connected to the switch using two 40Gb/s ports at 2 separate cards (similar to the setup of the WARP test), both connected to switch S (one NIC for the server part and the other for the clients part of the benchmark). Sending UDP traffic with a size of 1500 bytes resulted in a maximum of 24 Gb/s. When the smallest possible Ethernet frames of 64 bytes are sent over the line a maximum of 15Mpps is reached. When TCP is used on the same machine (B) connected to the switch using two interfaces, a maximum of 10Gb/s was reached. These low values did not make MoonGen interesting enough since Pktgen is capable of reaching hardware limits. 
 

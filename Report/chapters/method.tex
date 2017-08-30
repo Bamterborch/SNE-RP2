@@ -1,6 +1,6 @@
 \chapter{Methodology}\label{ch:method}
-From the results of the preliminary conducted experiments in chapter \ref{ch:experiments}, two of the DPDK tools reached hardware limits and have given the means to go up to application layer testing.  
-As the underlying research question asks how this can be applied to end-to-end application level testing the research some tests using the most adequate tools from the experimental phase.
+From the results of the preliminary conducted experiments in chapter \ref{ch:experiments}, two of the DPDK tools reached hardware limits and have provided the possibility to go up to application layer testing.  
+to answer the underlying research question "how can this be applied to end-to-end application level testing", the research produced some tests using the most adequate tools from the experimental phase.
 Executing the proposed tests can pinpoint the limits of an infrastructure up to application level.
 The product of this research is presented in this chapter in the form of a set of tests using open source applications which enables network and system engineers to perform tests up to the application layer.
 
@@ -14,7 +14,7 @@ Test 3 will find the client and server limits up to layer 4. To handle TCP sessi
 Test 4 will find the limits of an application running on top of a kernel. This test should be performed as an end-to-end test.  
 
 Tests 1 and 2 will show possible limitation at OSI layer 2 and 3. 
-Tests 3 and 4 are meant to test the entire path from a client to a server over a production network, that might include a stateful firewall, aggregated links and fail over systems. 
+Tests 3 and 4 are meant to test the entire path from a client to a server over a production network, that might include a stateful firewall, aggregated links and redundant systems. 
 The tests will stress the weakest link in the infrastructure towards the server.  
 It should be noted that monitoring is a necessary part of the test in order to determine which device in the path is the 'weakest' and to find the threshold for a device before it starts to fail or exhibit other non-characteristic behavior. 
 
@@ -25,7 +25,7 @@ It should be noted that monitoring is a necessary part of the test in order to d
 \begin{tabular}{|l|l|l|l|}
 \hline
 NR & Tests                        & DUT            & Goal                                                                                             \\ \hline
-T1  & \begin{tabular}[c]{@{}l@{}}Bandwidth \\ generation\end{tabular}       & Client         & \begin{tabular}[c]{@{}l@{}}The goal is to see if the client is capable \\ of filling up the link and to reach the \\ maximum amount of pps \end{tabular} \\ \hline
+T1  & \begin{tabular}[c]{@{}l@{}}Traffic \\ generation\end{tabular}       & Client         & \begin{tabular}[c]{@{}l@{}}The goal is to see if the client is capable \\ of filling up the link and to reach the \\ maximum amount of pps \end{tabular} \\ \hline
 T2  & Throughput                    & Switch/router  & \begin{tabular}[c]{@{}l@{}}Generate the maximum amount of data in both ways \\ to make sure the hardware is able to forward\\ at line rate\end{tabular} \\ \hline
 T3  & TCP based                     & Client/Server  & \begin{tabular}[c]{@{}l@{}}Get the limitations of the systems \\ regarding memory and CPU usage \end{tabular} \\ \hline
 T4  & Application             & \begin{tabular}[c]{@{}l@{}}Server and \\intermediate devices\end{tabular}         & \begin{tabular}[c]{@{}l@{}}The clients will try to overload the \\ server with requests at application level\end{tabular}  \\ \hline
@@ -33,7 +33,7 @@ T4  & Application             & \begin{tabular}[c]{@{}l@{}}Server and \\intermed
 \end{table}
 
 \subsection{T1 Bandwidth Generation}
-In paragraph \ref{par:pps} it is stated that a 40Gb/s card needs to be able to handle 56 million packets per second with a size of 88 bytes to in a unidirectional stream of 40Gb/s.
+In paragraph \ref{par:pps} it is stated that a 40Gb/s card needs to be able to handle 56 million packets per second with a size of 88 bytes in a unidirectional stream of 40Gb/s.
 In chapter \ref{ch:experiments} it is explained that the new practical maximum of 42 million packets per second can be reached during this research due to the limitations of the PCI express bus.  
 Using pktgen on top of DPDK, Ethernet frames with a minimum size of 64 bytes containing TCP traffic (without inter frame gap, preamble and VLAN tag) can be created. 
 To reach the 40Gb/s, larger packets have to be created. 
@@ -47,7 +47,7 @@ For this test the clients should try to generate the maximum amount of packets p
 Section \ref{sub:pktgen} explained that an optimum of maximum throughput and 11 Mpps can be sent by the client using a frame size of 400 bytes. This needs to be done during the second phase of the test to see if the required maximum bandwidth can be generated.  
 
 \subsection{T2 Throughput}
-The backplane of a switch should be able to forward traffic from one port to another at line rate. This should also be possible when the traffic is routed from one VLAN to the other. Routers should be able to route packets at line rate. To test this a client and a server need to be connected to two different ports of the router in a different segment or VLAN and the links maximum capacity should be filled. Frames of 400 bytes or more should be generated from the client to the server and vise versa, preferably the maximum link capacity. Monitoring the ports of the switch using SNMP should show the same input rate on port 1 compared to the output rate of port 2.    
+The backplane of a switch should be able to forward traffic from one port to another at line rate. This should also be possible when the traffic is routed from one VLAN to the other. Routers should be able to route packets at line rate. To test this a client and a server need to be connected to two different ports of the router in a different segment or VLAN and the links maximum capacity should be filled. Frames of 400 bytes or more should be generated from the client to the server and vice versa, preferably the maximum link capacity. Monitoring the ports of the switch using SNMP should show the same input rate on port 1 compared to the output rate of port 2.    
 
 \subsection{T3 TCP Based}
 To determine the limitations of the server hardware when TCP is used, we have shown that the kernel has to be bypassed to reach the requirements this research was looking for. 
@@ -62,18 +62,18 @@ End-to-end testing means testing from a client to a server application running o
 Running a web server offering files to clients, using HTTP request to retrieve files (since HTTP is the protocol that is used to distribute audio and video streaming) is a representative test.
 HTTP GET requests can be generated by WARP at a high rate (1 million session per second). 
 %When a live web application server is running this server can be used to get performance data for the particular web service. 
-One should keep in mind that this web server will be a DUT and, according to RFC 2544, it probably will go down.   
+%One should keep in mind that this web server will be a DUT and, according to RFC 2544, it probably will go down.   
 The client will use WARP to generate HTTP GET requests for a web page hosted by the destination server. The web server can provide some files of different sizes. WARP has to send a request for a certain file using a request size determined by the user (the content of the requests will be padded to generate the configured frame size).  Resources of the client, the web server and stateful devices on the path towards the server will be claimed opening up the sessions. By sending a million requests per second the machines will be experiencing a Denial of Service (DoS) like attack.
 
 \section{Real world scenario}
 The tests mentioned in section \ref{sec:tests} need to be performed in a real world scenario to see if they can find limitation in the design of the environment. 
 Therefore the infrastructure of a company was used to test this method, keeping in mind the guidance from section 4.1 on the use of production networks.
 Figure \ref{fig:nikhefuva} shows the simplified infrastructure for the test between client and server.
-It is displaying the main equipment that had to traversed in order to get from the client to the destination, including aggregated links, an upstream Internet provider, a stateful firewall and a data center layer using an overlay technique.  
+It is displaying the main equipment in the path from the client to the destination, including aggregated links, an upstream Internet provider, a stateful firewall and a data center layer using an overlay technique.  
 The tests are performed during a maintenance window at the side of the destination, downtime for the tested part of the infrastructure was allowed during this window. 
 All tests were generating and sending traffic for 90 seconds, with a gap of 30 seconds to let buffers be depleted before the next step of the test started in the same category.
 The monitoring system used at company x collects the links usage every minute. A 2 minute interval between the tests is 2 collection cycles and should provide the correct feedback. 
-The server is connected to a Data Center Interconnect (DCI) switch where an overlay technique (Ethernet Virtual Private Network (EVPN)) is used to guarantee uptime of the data centers. 
+The server is connected to a Data Center Interconnect (DCI) switch where an overlay technique (Ethernet Virtual Private Network (EVPN)) is used to guarantee service uptime. 
 
 \begin{figure}
   \includegraphics[scale=0.6]{images/nikhefuva.pdf}
@@ -82,7 +82,7 @@ The server is connected to a Data Center Interconnect (DCI) switch where an over
 \end{figure}
 
 \subsection{T1 Bandwidth Generation}
-Using pktgen on top of DPDK with a packet size of 64 bytes generated a maximum of 42 Mpps towards the server during the experimental phase. 
+Using pktgen on top of DPDK with an Ethernet frame size of 64 bytes generated a maximum of 42 Mpps towards the server during the experimental phase. 
 Pktgen only sends from one source to one destination, also using just one source and destination port. 
 Appendix \ref{app:realworld} contains the script used for this test. The plan was to ramp up the frame size from 64 bytes to 400 bytes. 
 The link from the switch to the router at the client side is an aggregated link built up from 4x 10Gb/s interfaces. 
@@ -90,24 +90,25 @@ Hashing algorithms \cite{hashing} decide what physical interface of the aggregat
 A switch's default hashing algorithm uses layer 2 addresses as input in this case causing all the traffic to end up in a single 10Gb/s link towards the destination. 
 Even when a different hashing algorithm was used the link would have been the same since source and destination address and port are the same in this test. 
 To reach the network of company x, the data had to flow over the production network at Nikhef. Hashing algorithms could not be altered during the tests since hashing algorithms affect every aggregated link on the device. 
-Using extra sources to generate traffic, using different IP addresses could produce a higher amount of bandwidth because the hashing algorithm would choose a different link per server (depending on the chosen algorithm).  
+Using extra sources to generate traffic, using different IP addresses could produce a higher amount of throughput because the hashing algorithm would choose a different link per server (depending on the chosen algorithm).  
 %Expecting this behavior makes this test less useful in this case. For engineers that do not expect this behavior, the test will show the limitation and an engineer can correct the hashing behavior if desired.
 
 \subsection{T2 Throughput}
 Due to the hashing settings that could not be changed without affecting Nikhef's production environment, the result of the second test is predictable and will be 10Gb/s (capacity of the single link used). 
-Using four servers as a traffic source could generate a total bandwidth of 40Gb/s. Since the test environment had only 2 servers left (one was acting as the destination in the data center of company x), the link limitations could never be reached. 
+Using four servers as a traffic source could generate a total throughput of 40Gb/s. Since the test environment had only 2 servers left (one was acting as the destination in the data center of company x), the link limitations could never be reached. 
 
 \subsection{T3 TCP Based}
 Sending raw TCP sessions between 2 servers using WARP with different packet sizes should provide a good representation of the capabilities of the servers and the intermediate devices in the path from source to destination. 
 The server should be running WARP, acting as a raw TCP server listening on 100 ports, and sending responses of a specified size when requests come in. The client should be configured to use 40.000 ports for the requests, targeting the 100 ports at the server side. This makes a total of 4 million possible flows between client and server. Request and response sizes can be equal at every run. 
 Chosen TCP packet sizes are, 64, 256, 512, 1024 and 2048 bytes since utilization of the link is only 10\% of the 40Gb/s connection when a TCP packet size of 256 bytes is used, since the test is looking for limitations, some load was necessary. Packets with a size of 2048 bytes take up 50\% of the links capacity.   
-The source and destination ports were changing at every session so we expected generate traffic up to a link capacity of 20 Gb/s.  
+The source and destination ports were changing at every session, therefore we expected to generate traffic up to a link capacity of 20 Gb/s.  
 
 Appendix \ref{app:realworld} displays the script that was used for this test. WARP was started using 8 CPU's and using all the memory. 
 Server A from the experimental phase was used as the server side. Server B was used as the client generating the requests.
 
 \subsection{T4 Application}\label{sub:t4real}
 A web server needs to be set up offering a couple of different files. The files must be hosted in memory (on a RAM disk) to make sure disk IO will not become the bottleneck for the tests. Caching was disabled to make sure the performance of the web service was tested. Using WARP at the client side requesting the files from the web server. NGINX\cite{nginx} was used as the web service for this test. The performance tuning page from NGINX was used to set the correct settings for the tests\cite{nginxtuning}. The amount of maximum available sockets was set to 50.000. This test will show the limits of the infrastructure towards the destination or from the server running the web application. 
-WARP can be used as a web server responding with an HTTP 200-OK message, padded to make the Ethernet frame get the response size as configured. Testing application layer protocols using WARP as a client can result in more bandwidth and more sessions per second then ever will happen in a real life scenario. Pushing the amount of sessions up could stress the intermediate hardware to their limits.
+WARP can be used as a web server responding with an HTTP 200-OK message, padded to enlarge the Ethernet frame to match the configured size. Testing application layer protocols using WARP as a client can result in more throughput and more sessions per second then during normal usage in a real life scenario. 
+Pushing the amount of sessions up could stress the intermediate hardware to their limits.
 
 \
